@@ -1,33 +1,27 @@
 {
-  "name": "bun-chrome-extension-boilerplate",
-  "module": "src/index.ts",
-  "type": "module",
-  "devDependencies": {
-    "@types/chrome": "^0.0.262",
-    "@typescript-eslint/eslint-plugin": "^7.1.0",
-    "@typescript-eslint/parser": "^7.1.0",
-    "bun-types": "latest",
-    "eslint": "^8.57.0",
-    "husky": "^9.0.11"
-  },
-  "peerDependencies": {
-    "typescript": "^5.0.0"
-  },
-  "dependencies": {
-    "@types/signale": "^1.4.7",
-    "chalk": "^5.3.0",
-    "chokidar": "^3.6.0",
-    "eslint-config-prettier": "^9.1.0",
-    "prettier": "^3.2.5",
-    "rimraf": "^5.0.5",
-    "serve-static-bun": "^0.5.3"
-  },
-  "scripts": {
-    "build": "bun run fix && bun run scripts/build.ts",
-    "dev": "bun run fix && bun run scripts/build.ts --server",
-    "fix": "bun run fix:eslint && bun run fix:prettier",
-    "fix:eslint": "bunx eslint --ext .ts ./src/",
-    "fix:prettier": "bunx prettier --write ./src/*",
-    "prepare": "husky"
-  }
+	"name": "bun-chrome-extension-boilerplate",
+	"module": "src/index.ts",
+	"type": "module",
+	"devDependencies": {
+		"@biomejs/biome": "1.8.1",
+		"@types/chrome": "^0.0.262",
+		"bun-types": "latest",
+		"husky": "^9.0.11"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	},
+	"dependencies": {
+		"@types/signale": "^1.4.7",
+		"chalk": "^5.3.0",
+		"chokidar": "^3.6.0",
+		"rimraf": "^5.0.5",
+		"serve-static-bun": "^0.5.3"
+	},
+	"scripts": {
+		"build": "bun run biome && bun run scripts/build.ts",
+		"dev": "bun run biome && bun run scripts/build.ts --server",
+		"biome": "npx @biomejs/biome check --write .",
+		"prepare": "husky"
+	}
 }

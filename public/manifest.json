@@ -1,6 +1,6 @@
 {
-  "manifest_version": 3,
-  "name": "Example Extension bundled via Bun",
-  "description": "Example Extension bundled via Bun",
-  "version": "1.0.0"
+	"manifest_version": 3,
+	"name": "Example Extension bundled via Bun",
+	"description": "Example Extension bundled via Bun",
+	"version": "1.0.0"
 }

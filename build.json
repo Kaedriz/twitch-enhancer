@@ -1,10 +1,10 @@
 {
-  "build": {
-    "source": "./src/",
-    "entrypoints": ["./src/inject.ts", "./src/index.ts"],
-    "out": "./build/"
-  },
-  "server": {
-    "port": 3360
-  }
+	"build": {
+		"source": "./src/",
+		"entrypoints": ["./src/inject.ts", "./src/index.ts"],
+		"out": "./build/"
+	},
+	"server": {
+		"port": 3360
+	}
 }

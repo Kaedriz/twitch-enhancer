@@ -1,1 +1,1 @@
-console.log('Hello via Bun Extension Boilerplate!');
+console.log("Hello via Bun Extension Boilerplate!");
