@@ -1,3 +1,4 @@
+import { SolidPlugin } from "bun-plugin-solid";
 import chalk from "chalk";
 import { copyContent, removeDirectory } from "./files.ts";
 
@@ -16,9 +17,10 @@ export default class Bundler {
 		await Bun.build({
 			entrypoints: this.entrypoints,
 			outdir: this.buildDir,
+			plugins: [SolidPlugin()],
 			sourcemap: mode === "production" ? "none" : "inline",
 			define: {
-				__bundle__: mode,
+				__mode__: JSON.stringify(mode),
 			},
 		});
 	}
@@ -41,7 +43,7 @@ export default class Bundler {
 	}
 
 	private log(...message: string[]) {
-		console.info(chalk.cyan.bold("Build >"), chalk.white(...message));
+		console.info(chalk.cyan.bold("Bundler:"), chalk.white(...message));
 	}
 }
 
