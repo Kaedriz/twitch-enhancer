@@ -1,4 +1,5 @@
 import type { Component } from "solid-js";
+import styles from "./chatters.module.css";
 
 interface ChattersComponentProps {
 	count: number;
@@ -6,8 +7,8 @@ interface ChattersComponentProps {
 
 export const ChattersComponent: Component<ChattersComponentProps> = (props) => {
 	return (
-		<div>
-			<span>—</span>
+		<div class={styles.wrapper}>
+			<span>·</span>
 			<span>{props.count === -1 ? "???" : props.count}</span>
 		</div>
 	);

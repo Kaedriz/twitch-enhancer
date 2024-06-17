@@ -1,3 +1,4 @@
+import lightningcss from "bun-lightningcss";
 import { SolidPlugin } from "bun-plugin-solid";
 import chalk from "chalk";
 import { copyContent, removeDirectory } from "./files.ts";
@@ -17,7 +18,7 @@ export default class Bundler {
 		await Bun.build({
 			entrypoints: this.entrypoints,
 			outdir: this.buildDir,
-			plugins: [SolidPlugin()],
+			plugins: [SolidPlugin(), lightningcss()],
 			sourcemap: mode === "production" ? "none" : "inline",
 			define: {
 				__mode__: JSON.stringify(mode),

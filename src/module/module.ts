@@ -31,4 +31,12 @@ export default class Module {
 	enable() {}
 
 	disable() {}
+
+	getElementId() {
+		return `#${this.getRawElementId()}`;
+	}
+
+	getRawElementId() {
+		return `enhancer-${this.name}`.replace(`${this.config.platform}-`, "");
+	}
 }

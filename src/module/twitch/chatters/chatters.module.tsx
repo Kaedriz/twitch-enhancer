@@ -5,7 +5,7 @@ import { CHATTERS_QUERY } from "../../../util/twitch-gql/queries.ts";
 import type { ChattersResponse } from "../../../util/twitch-gql/types.ts";
 import type TwitchUtil from "../../../util/twitch.util.ts";
 import TwitchModule from "../twitch-module.ts";
-import { ChattersComponent } from "./component.tsx";
+import { ChattersComponent } from "./chatters.component.tsx";
 
 export default class ChattersModule extends TwitchModule {
 	private chattersUpdater: Timer | undefined;
@@ -21,7 +21,9 @@ export default class ChattersModule extends TwitchModule {
 		this.parent = this.utils.getElementParent(
 			'p[data-a-target="animated-channel-viewers-count"]',
 		);
-		return !!this.parent && !this.utils.elementAlreadyExists(`#${this.name}`);
+		return (
+			!!this.parent && !this.utils.elementAlreadyExists(this.getElementId())
+		);
 	}
 
 	async run() {
@@ -52,7 +54,11 @@ export default class ChattersModule extends TwitchModule {
 		if (!this.parent)
 			throw new Error("Cannot create component for undefined parent");
 		if (this.chattersUpdater) clearInterval(this.chattersUpdater);
-		this.utils.removeElement(this.name);
-		return this.utils.createElementByParent(this.name, "div", this.parent);
+		this.utils.removeElement(this.getElementId());
+		return this.utils.createElementByParent(
+			this.getRawElementId(),
+			"div",
+			this.parent,
+		);
 	}
 }

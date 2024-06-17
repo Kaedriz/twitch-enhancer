@@ -5,9 +5,11 @@
 	"devDependencies": {
 		"@biomejs/biome": "1.8.1",
 		"@types/chrome": "^0.0.262",
+		"bun-lightningcss": "^0.2.0",
 		"bun-plugin-solid": "^1.0.0",
 		"bun-types": "latest",
-		"husky": "^9.0.11"
+		"husky": "^9.0.11",
+		"postcss": "^8.4.38"
 	},
 	"peerDependencies": {
 		"typescript": "^5.0.0"
@@ -19,7 +21,8 @@
 		"chokidar": "^3.6.0",
 		"rimraf": "^5.0.5",
 		"serve-static-bun": "^0.5.3",
-		"solid-js": "^1.8.17"
+		"solid-js": "^1.8.17",
+		"solid-styled": "^0.11.1"
 	},
 	"scripts": {
 		"build": "bun run biome && bun run scripts/build.ts",

@@ -1,0 +1,8 @@
+.wrapper {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    margin-left: 4px;
+    color: #ff8280;
+    font-weight: 600 !important;
+}
