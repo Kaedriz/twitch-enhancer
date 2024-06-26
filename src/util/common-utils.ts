@@ -39,4 +39,12 @@ export default class CommonUtils {
 	elementAlreadyExists(selector: string) {
 		return !!document.querySelector(selector);
 	}
+
+	isElementAlreadyUsed(element: Element) {
+		return element.hasAttribute("enhanced");
+	}
+
+	markElementAsUsed(element: Element) {
+		element.setAttribute("enhanced", "true");
+	}
 }

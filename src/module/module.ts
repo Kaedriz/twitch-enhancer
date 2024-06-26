@@ -3,40 +3,38 @@ import type CommonUtils from "../util/common-utils.ts";
 import type { ModuleConfig } from "./types.ts";
 
 export default class Module {
+	private readonly id: string;
+
 	constructor(
 		readonly name: string,
 		readonly config: ModuleConfig,
 		readonly logger: Logger,
 		readonly utils: CommonUtils,
-	) {}
+	) {
+		this.id = [this.config.platform, this.name].join("-");
+	}
 
-	async initialize() {}
-
-	async canSilentRun(): Promise<boolean> {
+	// biome-ignore lint/suspicious/noExplicitAny: idk
+	async canRun(data: any): Promise<boolean> {
 		return false;
 	}
 
-	async silentRun() {
-		throw new Error("Not implemented");
+	// biome-ignore lint/suspicious/noExplicitAny: idk
+	async run(data: any) {}
+
+	getId() {
+		return this.id;
 	}
 
-	async canRun(): Promise<boolean> {
-		return false;
-	}
+	async enable() {}
 
-	async run() {
-		throw new Error("Not implemented");
-	}
-
-	enable() {}
-
-	disable() {}
+	async disable() {}
 
 	getElementId() {
 		return `#${this.getRawElementId()}`;
 	}
 
 	getRawElementId() {
-		return `enhancer-${this.name}`.replace(`${this.config.platform}-`, "");
+		return `enhancer-${this.name}`;
 	}
 }

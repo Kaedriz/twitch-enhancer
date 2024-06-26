@@ -1,6 +1,7 @@
 import lightningcss from "bun-lightningcss";
 import { SolidPlugin } from "bun-plugin-solid";
 import chalk from "chalk";
+import manifest from "../public/manifest.json";
 import { copyContent, removeDirectory } from "./files.ts";
 
 export default class Bundler {
@@ -22,6 +23,7 @@ export default class Bundler {
 			sourcemap: mode === "production" ? "none" : "inline",
 			define: {
 				__mode__: JSON.stringify(mode),
+				__version__: JSON.stringify(manifest.version),
 			},
 		});
 	}

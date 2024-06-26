@@ -22,7 +22,8 @@
 		"rimraf": "^5.0.5",
 		"serve-static-bun": "^0.5.3",
 		"solid-js": "^1.8.17",
-		"solid-styled": "^0.11.1"
+		"solid-styled": "^0.11.1",
+		"tiny-typed-emitter": "^2.1.0"
 	},
 	"scripts": {
 		"build": "bun run biome && bun run scripts/build.ts",

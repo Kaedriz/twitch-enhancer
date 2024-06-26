@@ -10,6 +10,6 @@ export default class TwitchModule extends Module {
 		logger: Logger,
 		readonly utils: TwitchUtil,
 	) {
-		super(`twitch-${name}`, config, logger, utils);
+		super(name, config, logger, utils);
 	}
 }

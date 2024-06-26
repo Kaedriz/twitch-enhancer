@@ -1,18 +1,8 @@
+import type { ModuleEvent } from "../event/types.ts";
 import type { Platform } from "../platform/types.ts";
 
-export type ModuleConfig = TimerModuleConfig | EventModuleConfig;
-
-export interface TimerModuleConfig extends DefaultModuleConfig {
-	type: "timer";
-}
-
-export interface EventModuleConfig extends DefaultModuleConfig {
-	type: "timer";
-}
-
-export interface DefaultModuleConfig {
-	type: ModuleType;
+export interface ModuleConfig {
+	event: ModuleEvent;
 	platform: Platform;
+	priority?: number;
 }
-
-type ModuleType = "timer" | "event";

@@ -14,7 +14,7 @@ export default class ChattersModule extends TwitchModule {
 	private parent: Element | undefined;
 
 	constructor(logger: Logger, utils: TwitchUtil) {
-		super("chatters", { type: "timer", platform: "twitch" }, logger, utils);
+		super("chatters", { event: "seek", platform: "twitch" }, logger, utils);
 	}
 
 	async canRun(): Promise<boolean> {
