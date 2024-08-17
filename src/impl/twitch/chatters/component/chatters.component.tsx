@@ -9,7 +9,7 @@ export const ChattersComponent: Component<ChattersComponentProps> = (props) => {
 	return (
 		<div class={styles.wrapper}>
 			<span>·</span>
-			<span>{props.count === -1 ? "???" : props.count}</span>
+			<span>{props.count === -1 ? "Loading..." : props.count}</span>
 		</div>
 	);
 };

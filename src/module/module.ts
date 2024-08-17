@@ -1,40 +1,58 @@
-import type Logger from "../logger/logger.ts";
-import type CommonUtils from "../util/common-utils.ts";
-import type { ModuleConfig } from "./types.ts";
+import type Logger from "logger";
+import type CommonUtils from "utils/common-utils.ts";
+import type { ModuleConfig, ModuleEvent } from "./types.ts";
 
 export default class Module {
-	private readonly id: string;
+	private readonly moduleConfig: ModuleConfig;
 
 	constructor(
-		readonly name: string,
-		readonly config: ModuleConfig,
-		readonly logger: Logger,
-		readonly utils: CommonUtils,
+		protected readonly logger: Logger,
+		protected readonly utils: CommonUtils,
 	) {
-		this.id = [this.config.platform, this.name].join("-");
+		this.moduleConfig = this.config();
 	}
 
-	// biome-ignore lint/suspicious/noExplicitAny: idk
-	async canRun(data: any): Promise<boolean> {
-		return false;
+	initialize() {}
+
+	getConfig() {
+		return this.moduleConfig;
 	}
 
-	// biome-ignore lint/suspicious/noExplicitAny: idk
-	async run(data: any) {}
-
-	getId() {
-		return this.id;
+	name() {
+		return this.moduleConfig.name;
 	}
 
-	async enable() {}
-
-	async disable() {}
-
-	getElementId() {
-		return `#${this.getRawElementId()}`;
+	/**
+	 * Returns id of module with combined enhancer word
+	 * @example
+	 * enhancer-chatters
+	 */
+	id() {
+		return `enhancer-${this.moduleConfig.name}`;
 	}
 
-	getRawElementId() {
-		return `enhancer-${this.name}`;
+	/**
+	 * Returns selector of module, based on id() function
+	 * @example
+	 * #enhancer-chatters / .enhancer-chatters
+	 *
+	 * @param [type="id"] Use id or class for returning selector
+	 */
+	selector(type: "id" | "class" = "id") {
+		const prefix = type === "id" ? "#" : ".";
+		return `${prefix}${this.id()}`;
+	}
+
+	// Wrapper for run(), so it will be below config()
+	async _run(event: ModuleEvent) {
+		return this.run(event);
+	}
+
+	protected async run(event: ModuleEvent): Promise<void> {
+		throw new Error("Missing run function");
+	}
+
+	protected config(): ModuleConfig {
+		throw new Error("Missing module config");
 	}
 }

@@ -1,7 +1,8 @@
+import TwitchUtils from "utils/twitch/twitch-utils.ts";
+
 export default class CommonUtils {
-	getCurrentChannel() {
-		throw new Error("Not implemented");
-	}
+	//TODO Have seperated twitch utils
+	readonly twitch = new TwitchUtils();
 
 	createElementByParentSelector(
 		id: string,
@@ -14,14 +15,24 @@ export default class CommonUtils {
 	}
 
 	createElementByParent(
-		id: string,
+		name: string,
 		tag: keyof HTMLElementTagNameMap,
 		parent: Element,
 	) {
 		const element = document.createElement(tag);
-		element.id = id;
+		element.classList.add(name);
 		parent.appendChild(element);
 		return element;
+	}
+
+	createEmptyElements(
+		name: string,
+		elements: Element[],
+		tag: keyof HTMLElementTagNameMap = "div",
+	) {
+		return elements.map((parent) =>
+			this.createElementByParent(name, tag, parent),
+		);
 	}
 
 	getElementParent(selector: string) {
@@ -46,5 +57,6 @@ export default class CommonUtils {
 
 	markElementAsUsed(element: Element) {
 		element.setAttribute("enhanced", "true");
+		element.setAttribute("enhancedAt", `${Date.now()}`);
 	}
 }

@@ -16,6 +16,12 @@
 		"allowSyntheticDefaultImports": true,
 		"forceConsistentCasingInFileNames": true,
 		"allowJs": true,
-		"types": ["bun-types", "chrome"]
+		"types": ["bun-types", "chrome"],
+		"paths": {
+			"module/*": ["./src/module/*"],
+			"utils/*": ["./src/utils/*"],
+			"logger": ["./src/logger/logger.ts"],
+			"modules/*": ["./src/impl/*"]
+		}
 	}
 }

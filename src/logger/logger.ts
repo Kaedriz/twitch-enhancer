@@ -1,43 +1,46 @@
-import ansicolor from "ansicolor";
-import type { LogType } from "./types.ts";
-
-const LOG_TYPES_STRINGS: Record<LogType, string> = {
-	debug: ansicolor.yellow("DEBUG"),
-	info: ansicolor.green("INFO"),
-	warn: ansicolor.lightYellow("WARN"),
-	error: ansicolor.red("ERROR"),
-} as const;
+import type { ExtensionMode } from "../types.ts";
 
 export default class Logger {
-	// biome-ignore lint/suspicious/noExplicitAny: Allow to send anything we want as message
+	private development = false;
+	private readonly PREFIX = "\x1B[1;38;2;145;71;255m[Enhancer]";
+	private readonly LOGS: Record<LogType, string> = {
+		debug: "\x1B[38;2;102;204;255mDEBUG\x1B[0m",
+		info: "\x1B[38;2;102;255;178mINFO\x1B[0m",
+		warn: "\x1B[38;2;255;215;102mWARN\x1B[0m",
+		error: "\x1B[38;2;255;99;99mERROR\x1B[0m",
+	};
+
+	constructor(mode: ExtensionMode) {
+		this.development = mode === "development";
+	}
+
+	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	debug(...data: any) {
-		//TODO Check if debug mode is enabled
-		this._log("debug", ...data);
+		if (this.development) this.send("debug", ...data);
 	}
 
 	// biome-ignore lint/suspicious/noExplicitAny: Allow to send anything we want as message
 	info(...data: any) {
-		console.info(...data);
-		this._log("info", ...data);
+		this.send("info", ...data);
 	}
 
 	// biome-ignore lint/suspicious/noExplicitAny: Allow to send anything we want as message
 	warn(...data: any) {
-		this._log("warn", ...data);
+		this.send("warn", ...data);
 	}
 
 	// biome-ignore lint/suspicious/noExplicitAny: Allow to send anything we want as message
 	error(...data: any) {
-		this._log("error", ...data);
+		this.send("error", ...data);
 	}
 
 	// biome-ignore lint/suspicious/noExplicitAny: Allow to send anything we want as message
-	private _log(logType: LogType, ...data: any[]) {
-		console[logType](
-			...ansicolor.parse(
-				`${ansicolor.lightMagenta("[Enhancer]")} ${LOG_TYPES_STRINGS[logType]}`,
-			).asChromeConsoleLogArguments,
+	private send(logType: LogType, ...data: any[]) {
+		const xd = console[logType](
+			`${this.PREFIX} ${this.LOGS[logType]}`,
 			...data,
 		);
 	}
 }
+
+export type LogType = "info" | "warn" | "error" | "debug";
