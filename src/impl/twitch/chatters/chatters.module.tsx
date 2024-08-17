@@ -75,7 +75,11 @@ export default class ChattersModule extends Module {
 
 	private async update() {
 		try {
-			const channel = "h2p_gucio";
+			const channel = this.utils.twitch.getCurrentChannelByUrl();
+			if (!channel)
+				throw new Error(
+					"Cannot request chatters, because channel is undefined",
+				);
 			const { data } = await this.utils.twitch.gql<ChattersResponse>(
 				ChattersQuery,
 				{
