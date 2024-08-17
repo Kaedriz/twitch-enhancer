@@ -2,6 +2,10 @@ import Module from "module/module.ts";
 import type { ElementModuleEvent, ModuleConfig } from "module/types.ts";
 import { type Accessor, type Setter, createSignal } from "solid-js";
 import { render } from "solid-js/web";
+import {
+	ChattersQuery,
+	type ChattersResponse,
+} from "utils/twitch/gql/chatters.ts";
 import { ChattersComponent } from "./component/chatters.component.tsx";
 
 export default class ChattersModule extends Module {
@@ -12,7 +16,9 @@ export default class ChattersModule extends Module {
 	private setCount: Setter<number> = {} as Setter<number>;
 
 	protected config(): ModuleConfig {
-		//TODO Filter when on clips page
+		const urlConfig = this.utils.createSimpleUrlConfig("exclude", [
+			"clips.twitch.tv",
+		]);
 		return {
 			name: "chatters",
 			type: "element",
@@ -21,15 +27,18 @@ export default class ChattersModule extends Module {
 					selector: 'p[data-a-target="animated-channel-viewers-count"]',
 					useParent: true,
 					once: true,
+					urlConfig,
 				},
 				{
 					selector: 'div[data-a-target="channel-viewers-count"]',
 					once: true,
+					urlConfig,
 				},
 				{
 					selector:
 						'p[data-test-selector="stream-info-card-component__description"]',
 					once: true,
+					urlConfig,
 				},
 			],
 			platform: "twitch",
@@ -37,16 +46,22 @@ export default class ChattersModule extends Module {
 	}
 
 	protected async run(event: ElementModuleEvent) {
-		const elements = this.utils.createEmptyElements(this.id(), event.elements);
-		this.createCounter();
-		await this.update(this.setCount);
-		if (this.chattersUpdater) clearInterval(this.chattersUpdater);
-		this.chattersUpdater = setInterval(
-			async () => await this.update(this.setCount),
-			5000,
+		const elements = this.utils.createEmptyElements(
+			this.id(),
+			event.elements,
+			"span",
 		);
+		this.createCounter();
+		await this.update();
+		if (this.chattersUpdater) clearInterval(this.chattersUpdater);
+		this.chattersUpdater = setInterval(async () => await this.update(), 60000);
 		elements.forEach((element) =>
-			render(() => <ChattersComponent count={this.count()} />, element),
+			render(
+				() => (
+					<ChattersComponent count={this.count()} click={() => this.update()} />
+				),
+				element,
+			),
 		);
 	}
 
@@ -58,20 +73,20 @@ export default class ChattersModule extends Module {
 		this.setCount = setCount;
 	}
 
-	private async update(setCount: Setter<number>) {
+	private async update() {
 		try {
 			const channel = "h2p_gucio";
-			// const { data } = await this.utils.twitch.gql<ChattersResponse>(
-			// 	ChattersQuery,
-			// 	{
-			// 		name: channel,
-			// 	},
-			// );
-			const chatters = Number.parseInt(String(Math.random() * 1000));
+			const { data } = await this.utils.twitch.gql<ChattersResponse>(
+				ChattersQuery,
+				{
+					name: channel,
+				},
+			);
+			const chatters = data.channel.chatters.count;
 			this.logger.debug(
 				`Refreshing chatters count on ${channel} to ${chatters}`,
 			);
-			setCount(chatters);
+			this.setCount(chatters);
 		} catch (error) {
 			this.logger.warn("Could not fetch chatters count", error);
 		}

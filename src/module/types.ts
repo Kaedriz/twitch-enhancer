@@ -22,6 +22,15 @@ export type ModuleElement = {
 	selector: string;
 	useParent?: boolean;
 	once?: boolean;
+	urlConfig?: ModuleElementUrlConfig;
+};
+
+export type ModuleElementUrlType = "include" | "exclude";
+
+export type ModuleElementUrlConfig = {
+	type: ModuleElementUrlType;
+	regex?: RegExp;
+	check?: (url: string) => boolean;
 };
 
 export interface EventModuleConfig extends DefaultModuleConfig {

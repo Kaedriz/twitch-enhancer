@@ -1,3 +1,7 @@
+import type {
+	ModuleElementUrlConfig,
+	ModuleElementUrlType,
+} from "module/types.ts";
 import TwitchUtils from "utils/twitch/twitch-utils.ts";
 
 export default class CommonUtils {
@@ -58,5 +62,15 @@ export default class CommonUtils {
 	markElementAsUsed(element: Element) {
 		element.setAttribute("enhanced", "true");
 		element.setAttribute("enhancedAt", `${Date.now()}`);
+	}
+
+	createSimpleUrlConfig(
+		type: ModuleElementUrlType,
+		urls: string[],
+	): ModuleElementUrlConfig {
+		return {
+			type,
+			check: (url: string) => urls.some((_url) => url.includes(_url)),
+		};
 	}
 }
