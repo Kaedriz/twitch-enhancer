@@ -1,4 +1,5 @@
 import type {
+	ChatControllerComponent,
 	PersistentPlayerComponent,
 	ReactComponent,
 } from "utils/twitch/react/types.ts";
@@ -65,5 +66,46 @@ export default class ReactUtils {
 			this.getReactInstance(document.querySelector(".persistent-player")),
 			(n) => !!n.stateNode?.props?.content.channelLogin,
 		)?.stateNode.props;
+	}
+
+	getChatCommandStore() {
+		const node = this.findReactParents(
+			this.getReactInstance(document.querySelector(".stream-chat")),
+			(n) => n.pendingProps?.value?.getCommands != null,
+			25,
+		);
+		return node?.pendingProps.value;
+	}
+
+	getChatController() {
+		const node = this.findReactParents<ChatControllerComponent>(
+			this.getReactInstance(
+				document.querySelector(
+					'section[data-test-selector="chat-room-component-layout"]',
+				),
+			),
+			(n) => n.stateNode?.props?.chatConnectionAPI,
+			25,
+		);
+		return node?.stateNode;
+	}
+
+	sendSimpleMessage(message: string) {
+		const chatController = this.getChatController();
+		if (!chatController) return;
+		const id = Date.now();
+		chatController.pushMessage({
+			id,
+			msgid: id,
+			type: 28,
+			message,
+			channel: `#${chatController.props.channelLogin}`,
+		});
+	}
+
+	private generateChatMessage() {
+		const uuid = crypto.randomUUID();
+		this.sendSimpleMessage(uuid);
+		return uuid;
 	}
 }

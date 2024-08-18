@@ -48,6 +48,6 @@ export default class BundlerServer {
 	}
 
 	private log(...message: string[]) {
-		console.info(chalk.greenBright.bold("Server >"), chalk.white(...message));
+		console.info(chalk.greenBright.bold("Server: "), chalk.white(...message));
 	}
 }

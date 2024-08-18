@@ -1,7 +1,23 @@
 export type ReactComponent<T> = {
-	stateNode: { props: T };
+	stateNode: T;
+	pendingProps: any;
 };
 
 export type PersistentPlayerComponent = {
-	content: { type: "live"; channelLogin: string };
+	props: { content: { type: "live"; channelLogin: string } };
+};
+
+export type ChatControllerMessage = {
+	id: number;
+	type: number;
+	msgid: number;
+	message: string;
+	channel: string;
+};
+
+export type ChatControllerComponent = {
+	pushMessage: (message: ChatControllerMessage) => void;
+	props: {
+		channelLogin: string;
+	};
 };
