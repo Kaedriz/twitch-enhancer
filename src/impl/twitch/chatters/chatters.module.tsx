@@ -75,7 +75,11 @@ export default class ChattersModule extends Module {
 
 	private async update() {
 		try {
-			const channel = this.utils.twitch.getCurrentChannelByUrl();
+			const channel =
+				this.utils.twitch
+					.getPersistentPlayer()
+					?.content.channelLogin?.toLowerCase() ??
+				this.utils.twitch.getCurrentChannelByUrl();
 			if (!channel)
 				throw new Error(
 					"Cannot request chatters, because channel is undefined",

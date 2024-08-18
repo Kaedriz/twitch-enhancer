@@ -1,7 +1,7 @@
 import type Logger from "logger";
 import type ModuleRepository from "module/module.repository.ts";
 import type { ElementModuleEvent, ModuleElement } from "module/types.ts";
-import type CommonUtils from "utils/common-utils.ts";
+import type CommonUtils from "utils/common.utils.ts";
 
 export default class ModuleRunner {
 	private elementsTimer: Timer | undefined;

@@ -2,7 +2,7 @@ import Logger from "logger";
 import ModuleRepository from "module/module.repository.ts";
 import ModuleRunner from "module/module.runner.ts";
 import TwitchLoader from "modules/twitch/twitch.loader.ts";
-import CommonUtils from "utils/common-utils.ts";
+import CommonUtils from "utils/common.utils.ts";
 import type { ExtensionMode, Platform } from "./types.ts";
 
 export default class Extension {

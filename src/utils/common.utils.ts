@@ -2,7 +2,7 @@ import type {
 	ModuleElementUrlConfig,
 	ModuleElementUrlType,
 } from "module/types.ts";
-import TwitchUtils from "utils/twitch/twitch-utils.ts";
+import TwitchUtils from "utils/twitch/twitch.utils.ts";
 
 export default class CommonUtils {
 	//TODO Have seperated twitch utils

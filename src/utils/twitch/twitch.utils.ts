@@ -1,6 +1,7 @@
+import ReactUtils from "utils/twitch/react/react.utils.ts";
 import type { GQLResponse } from "utils/twitch/types.ts";
 
-export default class TwitchUtils {
+export default class TwitchUtils extends ReactUtils {
 	private readonly TWITCH_GQL_ENDPOINT = "https://gql.twitch.tv/gql";
 	private readonly TWITCH_CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
 

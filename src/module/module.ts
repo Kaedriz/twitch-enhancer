@@ -1,5 +1,5 @@
 import type Logger from "logger";
-import type CommonUtils from "utils/common-utils.ts";
+import type CommonUtils from "utils/common.utils.ts";
 import type { ModuleConfig, ModuleEvent } from "./types.ts";
 
 export default class Module {
