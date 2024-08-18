@@ -14,32 +14,24 @@ export default class Logger {
 		this.development = mode === "development";
 	}
 
-	// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 	debug(...data: any) {
 		if (this.development) this.send("debug", ...data);
 	}
 
-	// biome-ignore lint/suspicious/noExplicitAny: Allow to send anything we want as message
 	info(...data: any) {
 		this.send("info", ...data);
 	}
 
-	// biome-ignore lint/suspicious/noExplicitAny: Allow to send anything we want as message
 	warn(...data: any) {
 		this.send("warn", ...data);
 	}
 
-	// biome-ignore lint/suspicious/noExplicitAny: Allow to send anything we want as message
 	error(...data: any) {
 		this.send("error", ...data);
 	}
 
-	// biome-ignore lint/suspicious/noExplicitAny: Allow to send anything we want as message
 	private send(logType: LogType, ...data: any[]) {
-		const xd = console[logType](
-			`${this.PREFIX} ${this.LOGS[logType]}`,
-			...data,
-		);
+		console[logType](`${this.PREFIX} ${this.LOGS[logType]}`, ...data);
 	}
 }
 
