@@ -1,7 +1,6 @@
 import Logger from "logger";
 import ModuleRepository from "module/module.repository.ts";
 import ModuleRunner from "module/module.runner.ts";
-import TwitchLoader from "modules/twitch/twitch.loader.ts";
 import CommonUtils from "utils/common.utils.ts";
 import type { ExtensionMode, Platform } from "./types.ts";
 
@@ -28,28 +27,16 @@ export default class Extension {
 		);
 	}
 
-	initializeModules() {
-		this.logger.info("Initializing modules...");
-		const loader = new TwitchLoader();
-		this.moduleRepository.addModule(
-			...loader.get(this.logger, this.utils).map((module) => {
-				module.initialize();
-				return module;
-			}),
-		);
-		this.logger.info(`Initialized ${this.moduleRepository.size()} modules!`);
-	}
-
 	start() {
 		if (this.started) {
 			this.logger.warn("Extension is already started!");
 			return;
 		}
 		this.started = true;
-		this.initializeModules();
 		this.logger.info(
 			`Started ${this.mode} v${this.version} @ ${this.platform}`,
 		);
+		this.moduleRunner.initializeModules();
 		this.moduleRunner.start();
 	}
 }
