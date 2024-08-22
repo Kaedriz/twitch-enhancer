@@ -1,0 +1,24 @@
+.wrapper {
+    color: #ea8a5d;
+    font-weight: 600 !important;
+    justify-content: center;
+    text-transform: capitalize;
+}
+
+.latencyContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.seconds {
+    text-transform: lowercase;
+    color: #ea8a5d;
+    font-weight: 600 !important;
+    justify-content: center;
+}
+
+.wrapper:hover {
+    opacity: 0.75;
+    cursor: pointer;
+}
