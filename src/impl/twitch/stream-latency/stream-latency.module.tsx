@@ -1,6 +1,6 @@
 import Module from "module/module.ts";
 import type { ElementModuleEvent, ModuleConfig } from "module/types.ts";
-import { StreamLatencyComponent } from "modules/twitch/stream-latency/component/stram-latency.component.tsx";
+import { StreamLatencyComponent } from "modules/twitch/stream-latency/component/stream-latency.component.tsx";
 import { type Accessor, type Setter, createSignal } from "solid-js";
 import { render } from "solid-js/web";
 import type { MediaPlayer } from "utils/twitch/types.ts";
@@ -90,8 +90,7 @@ export default class StreamLatencyModule extends Module {
 		if (this.mediaPlayer === undefined) return -1;
 		const liveLatency = this.mediaPlayer.core.state.liveLatency;
 		const ingestLatency = this.mediaPlayer.core.state.ingestLatency;
-		const latency = liveLatency + ingestLatency;
-		return latency;
+		return liveLatency + ingestLatency;
 	}
 
 	private getBufferedTime() {

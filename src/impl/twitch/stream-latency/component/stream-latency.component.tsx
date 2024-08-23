@@ -19,7 +19,6 @@ export const StreamLatencyComponent: Component<StreamLatencyComponentProps> = (
 };
 
 const formatLatency = (latency: number) => {
-	if (!latency) return "Loading...";
-	console.log(latency);
+	if (!latency || latency < 0) return "Loading...";
 	return `${latency.toFixed(2)}s`;
 };
