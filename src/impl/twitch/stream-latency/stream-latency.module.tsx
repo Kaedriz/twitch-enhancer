@@ -38,6 +38,7 @@ export default class StreamLatencyModule extends Module {
 			event.elements,
 			"span",
 		);
+		this.updateMediaPlayer();
 		this.createLatencyCounter();
 		await this.update();
 		if (this.latencyUpdater) clearInterval(this.latencyUpdater);
@@ -60,6 +61,10 @@ export default class StreamLatencyModule extends Module {
 		});
 	}
 
+	private updateMediaPlayer() {
+		this.mediaPlayer = this.utils.twitch.getMediaPlayerInstance();
+	}
+
 	private createLatencyCounter() {
 		if (!this.counterInitialized) {
 			this.counterInitialized = true;
@@ -76,25 +81,15 @@ export default class StreamLatencyModule extends Module {
 	private async resetPlayer() {
 		if (this.mediaPlayer === undefined) return;
 		const currentPosition = this.mediaPlayer.getPosition();
-		const latency = this.getBufferedTime();
-
+		const latency = this.getLatency();
 		if (latency === -1) return;
-
-		const position = currentPosition + latency;
-
-		this.mediaPlayer.seekTo(position);
+		this.mediaPlayer.seekTo(currentPosition + latency + 1);
 	}
 
 	private getLatency(): number {
-		this.mediaPlayer = this.utils.twitch.getMediaPlayerInstance();
-		if (this.mediaPlayer === undefined) return -1;
+		if (!this.mediaPlayer) return -1;
 		const liveLatency = this.mediaPlayer.core.state.liveLatency;
 		const ingestLatency = this.mediaPlayer.core.state.ingestLatency;
 		return liveLatency + ingestLatency;
-	}
-
-	private getBufferedTime() {
-		if (this.mediaPlayer === undefined) return -1;
-		return this.mediaPlayer.core.state.ingestLatency;
 	}
 }
