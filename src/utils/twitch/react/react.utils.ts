@@ -2,6 +2,7 @@ import type {
 	ChatControllerComponent,
 	PersistentPlayerComponent,
 	ReactComponent,
+	TwitchRawChatMessage,
 } from "utils/twitch/react/types.ts";
 
 export default class ReactUtils {
@@ -50,7 +51,7 @@ export default class ReactUtils {
 		return null;
 	}
 
-	getReactInstance(element: Element | null) {
+	getReactInstance(element: Element | Node | null) {
 		for (const k in element) {
 			if (
 				k.startsWith("__reactFiber$") ||
@@ -101,6 +102,12 @@ export default class ReactUtils {
 			message,
 			channel: `#${chatController.props.channelLogin}`,
 		});
+	}
+
+	getChatMessage(message: Node) {
+		const instance = this.getReactInstance(message)?.return
+			?.stateNode as TwitchRawChatMessage;
+		return instance?.props.message ? instance : undefined;
 	}
 
 	private generateChatMessage() {

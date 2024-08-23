@@ -1,8 +1,10 @@
 import type Logger from "logger";
 import type ModuleRepository from "module/module.repository.ts";
-import type { ElementModuleEvent, ModuleElement } from "module/types.ts";
+import type { ModuleElement, ModuleEvent } from "module/types.ts";
 import TwitchLoader from "modules/twitch/twitch.loader.ts";
+import type { Emitter } from "nanoevents";
 import type CommonUtils from "utils/common.utils.ts";
+import type { TwitchEvents } from "../events/twitch/events.ts";
 
 export default class ModuleRunner {
 	private elementsTimer: Timer | undefined;
@@ -11,65 +13,62 @@ export default class ModuleRunner {
 		private readonly logger: Logger,
 		private readonly moduleRepository: ModuleRepository,
 		private readonly utils: CommonUtils,
+		private readonly emitter: Emitter<TwitchEvents>,
 	) {}
 
 	start() {
-		this.initializeElements();
+		this.initializeModules();
+		this.initialize();
 		this.logger.info("Module runner started");
 	}
 
-	initializeModules() {
+	private initializeModules() {
 		this.logger.info("Initializing modules...");
 		const loader = new TwitchLoader();
 		this.moduleRepository.addModule(
-			...loader.get(this.logger, this.utils).map((module) => {
-				module.initialize();
+			...loader.get(this.logger, this.utils, this.emitter).map((module) => {
+				module._initialize();
+				this.logger.debug(`Initialized ${module.id()} module`);
 				return module;
 			}),
 		);
-		this.logger.info(`Initialized ${this.moduleRepository.size()} modules!`);
+		this.logger.info(`Initialized ${this.moduleRepository.size()} modules`);
 	}
 
-	private initializeEvents() {}
-
-	private runEvents() {}
-
-	private initializeElements() {
-		this.runElements();
+	private initialize() {
+		this.run();
 		if (this.elementsTimer) {
-			this.logger.warn("Elements timer is already running");
+			this.logger.warn("Timer is already running");
 			return;
 		}
-		this.elementsTimer = setInterval(() => this.runElements(), 1000);
+		this.elementsTimer = setInterval(() => this.run(), 1000);
 	}
 
-	private runElements() {
-		const modules = this.moduleRepository.getModuleByType("element");
+	private run() {
+		const modules = this.moduleRepository.getModules();
 		modules.forEach(async (module) => {
 			try {
 				const config = module.getConfig();
-				if (config.type === "element") {
-					const elements: Element[] = config.elements
-						.map((moduleElement) => this.checkElement(moduleElement))
-						.filter((element): element is Element => element !== undefined);
-					if (elements.length < 1) return;
-					const event: ElementModuleEvent = {
-						elements,
-						createdAt: Date.now(),
-					};
-					this.logger.info(`Running ${module.id()} module`);
-					await module._run(event);
-				}
+				const elements: Element[] = config.elements
+					.map((moduleElement) => this.checkElement(moduleElement, module.id()))
+					.filter((element): element is Element => element !== undefined);
+				if (elements.length < 1) return;
+				const event: ModuleEvent = {
+					elements,
+					createdAt: Date.now(),
+				};
+				this.logger.info(`Running ${module.id()} module`);
+				await module._run(event);
 			} catch (error) {
 				this.logger.error(
-					`Error when running ${module.name()} module, error:`,
+					`Error when running ${module.id()} module, error:`,
 					error,
 				);
 			}
 		});
 	}
 
-	private checkElement(moduleElement: ModuleElement) {
+	private checkElement(moduleElement: ModuleElement, id: string) {
 		let element = document.querySelector(moduleElement.selector);
 		if (element && moduleElement.useParent) element = element.parentElement;
 		if (!element) return;
@@ -86,8 +85,9 @@ export default class ModuleRunner {
 			}
 		}
 
-		if (this.utils.isElementAlreadyUsed(element) && moduleElement.once) return;
-		this.utils.markElementAsUsed(element);
+		if (this.utils.isElementAlreadyUsed(element, id) && moduleElement.once)
+			return;
+		this.utils.markElementAsUsed(element, id);
 
 		return element;
 	}

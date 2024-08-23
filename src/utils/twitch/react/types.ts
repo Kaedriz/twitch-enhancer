@@ -1,3 +1,5 @@
+import type { RawChatMessage } from "modules/twitch/chat-listener/formatter/chat-message-formatter.ts";
+
 export type ReactComponent<T> = {
 	stateNode: T;
 	pendingProps: any;
@@ -21,3 +23,21 @@ export type ChatControllerComponent = {
 		channelLogin: string;
 	};
 };
+
+export interface TwitchRawChatMessage extends RawChatMessage {
+	props: {
+		channelLogin: string;
+		channelID: string;
+		message: {
+			badges: Record<string, string>;
+			id: string;
+			message: string;
+			user: {
+				color: string;
+				id: string;
+				displayName: string;
+				login: string;
+			};
+		};
+	};
+}

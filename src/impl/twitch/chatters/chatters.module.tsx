@@ -1,5 +1,5 @@
 import Module from "module/module.ts";
-import type { ElementModuleEvent, ModuleConfig } from "module/types.ts";
+import type { ModuleConfig, ModuleEvent } from "module/types.ts";
 import { type Accessor, type Setter, createSignal } from "solid-js";
 import { render } from "solid-js/web";
 import {
@@ -21,7 +21,6 @@ export default class ChattersModule extends Module {
 		]);
 		return {
 			name: "chatters",
-			type: "element",
 			elements: [
 				{
 					selector: 'p[data-a-target="animated-channel-viewers-count"]',
@@ -45,7 +44,7 @@ export default class ChattersModule extends Module {
 		};
 	}
 
-	protected async run(event: ElementModuleEvent) {
+	protected async run(event: ModuleEvent) {
 		const elements = this.utils.createEmptyElements(
 			this.id(),
 			event.elements,

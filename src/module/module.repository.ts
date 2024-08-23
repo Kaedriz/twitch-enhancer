@@ -1,5 +1,4 @@
 import type Module from "module/module.ts";
-import type { ModuleType } from "module/types.ts";
 
 export default class ModuleRepository {
 	private modules: Module[] = [];
@@ -14,9 +13,5 @@ export default class ModuleRepository {
 
 	size() {
 		return this.modules.length;
-	}
-
-	getModuleByType(type: ModuleType) {
-		return this.modules.filter((module) => module.getConfig().type === type);
 	}
 }
