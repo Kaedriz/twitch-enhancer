@@ -42,7 +42,7 @@ export default class StreamLatencyModule extends Module {
 		this.createLatencyCounter();
 		await this.update();
 		if (this.latencyUpdater) clearInterval(this.latencyUpdater);
-		this.latencyUpdater = setInterval(async () => await this.update(), 2000);
+		this.latencyUpdater = setInterval(async () => await this.update(), 1000);
 		elements.forEach((element) => {
 			const header = document.querySelector(
 				"#chat-room-header-label",
