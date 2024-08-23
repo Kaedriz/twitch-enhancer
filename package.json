@@ -27,7 +27,7 @@
 	},
 	"scripts": {
 		"build": "bun run biome && bun run scripts/build.ts",
-		"dev": "bun run biome && bun run scripts/build.ts --server",
+		"dev": "bun run scripts/build.ts --server",
 		"biome": "npx @biomejs/biome check --write .",
 		"prepare": "husky"
 	}
