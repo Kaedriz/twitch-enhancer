@@ -23,7 +23,7 @@ export default class StreamLatencyModule extends Module {
 			type: "element",
 			elements: [
 				{
-					selector: 'h4[data-test-selector="chat-room-header-label"]',
+					selector: ".stream-chat-header",
 					once: true,
 					urlConfig,
 				},
@@ -38,12 +38,17 @@ export default class StreamLatencyModule extends Module {
 			event.elements,
 			"span",
 		);
-		this.createLatency();
+		this.createLatencyCounter();
 		await this.update();
 		if (this.latencyUpdater) clearInterval(this.latencyUpdater);
 		this.latencyUpdater = setInterval(async () => await this.update(), 2000);
-		elements.forEach((element) =>
-			render(
+		elements.forEach((element) => {
+			const header = document.querySelector(
+				"#chat-room-header-label",
+			) as HTMLElement | null;
+			if (header) header.style.display = "none";
+			//TODO Add utils function to hide elements
+			return render(
 				() => (
 					<StreamLatencyComponent
 						latency={this.latency()}
@@ -51,11 +56,11 @@ export default class StreamLatencyModule extends Module {
 					/>
 				),
 				element,
-			),
-		);
+			);
+		});
 	}
 
-	private createLatency() {
+	private createLatencyCounter() {
 		if (!this.counterInitialized) {
 			this.counterInitialized = true;
 			const [latency, setLatency] = createSignal(0);
@@ -86,7 +91,7 @@ export default class StreamLatencyModule extends Module {
 		const liveLatency = this.mediaPlayer.core.state.liveLatency;
 		const ingestLatency = this.mediaPlayer.core.state.ingestLatency;
 		const latency = liveLatency + ingestLatency;
-		return Math.round(latency * 100) / 100;
+		return latency;
 	}
 
 	private getBufferedTime() {

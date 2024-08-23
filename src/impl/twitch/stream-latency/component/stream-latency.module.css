@@ -1,21 +1,11 @@
 .wrapper {
-    color: #ea8a5d;
+    color: #dedee3;
     font-weight: 600 !important;
     justify-content: center;
     text-transform: capitalize;
-}
-
-.latencyContainer {
     display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.seconds {
-    text-transform: lowercase;
-    color: #ea8a5d;
-    font-weight: 600 !important;
-    justify-content: center;
+    flex: 1;
+    
 }
 
 .wrapper:hover {

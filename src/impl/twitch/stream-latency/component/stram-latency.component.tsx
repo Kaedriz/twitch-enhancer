@@ -10,11 +10,16 @@ export const StreamLatencyComponent: Component<StreamLatencyComponentProps> = (
 	props,
 ) => {
 	return (
-		<div class={styles.latencyContainer}>
-			<span onClick={() => props.click()} class={styles.wrapper}>
-				Delay: {props.latency > 0 ? props.latency : "Loading..."}
+		<div class={styles.wrapper}>
+			<span onClick={() => props.click()}>
+				Latency: {formatLatency(props.latency)}
 			</span>
-			<p class={styles.seconds}> s</p>
 		</div>
 	);
+};
+
+const formatLatency = (latency: number) => {
+	if (!latency) return "Loading...";
+	console.log(latency);
+	return `${latency.toFixed(2)}s`;
 };
