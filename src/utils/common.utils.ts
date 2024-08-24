@@ -1,4 +1,6 @@
 import type { ModuleUrlConfig, ModuleUrlType } from "module/types.ts";
+import Queue from "utils/queue/queue.ts";
+import type { QueueConfig, QueueValue } from "utils/queue/types.ts";
 import TwitchUtils from "utils/twitch/twitch.utils.ts";
 
 export default class CommonUtils {
@@ -72,5 +74,9 @@ export default class CommonUtils {
 			type,
 			check: (url: string) => urls.some((_url) => url.includes(_url)),
 		};
+	}
+
+	createQueue<T extends QueueValue>(config: QueueConfig) {
+		return new Queue<T>(config);
 	}
 }

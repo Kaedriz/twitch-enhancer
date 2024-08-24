@@ -1,6 +1,6 @@
-import type { ChatMessage, UserChatMessage } from "./chat.ts";
+import type { TwitchChatMessageEvent } from "events/twitch/chat.ts";
 
 export interface TwitchEvents {
 	start: () => void;
-	chatMessage: (message: UserChatMessage | ChatMessage) => Promise<void>;
+	chatMessage: (message: TwitchChatMessageEvent) => Promise<void>;
 }

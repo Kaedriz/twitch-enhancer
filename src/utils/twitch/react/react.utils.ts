@@ -2,7 +2,7 @@ import type {
 	ChatControllerComponent,
 	PersistentPlayerComponent,
 	ReactComponent,
-	TwitchRawChatMessage,
+	TwitchChatMessageComponent,
 } from "utils/twitch/react/types.ts";
 
 export default class ReactUtils {
@@ -106,7 +106,7 @@ export default class ReactUtils {
 
 	getChatMessage(message: Node) {
 		const instance = this.getReactInstance(message)?.return
-			?.stateNode as TwitchRawChatMessage;
+			?.stateNode as TwitchChatMessageComponent;
 		return instance?.props.message ? instance : undefined;
 	}
 

@@ -1,4 +1,4 @@
-import type { RawChatMessage } from "modules/twitch/chat-listener/formatter/chat-message-formatter.ts";
+import type { TwitchChatMessage } from "events/twitch/chat.ts";
 
 export type ReactComponent<T> = {
 	stateNode: T;
@@ -21,10 +21,15 @@ export type ChatControllerComponent = {
 	pushMessage: (message: ChatControllerMessage) => void;
 	props: {
 		channelLogin: string;
+		messageHandlerAPI: {
+			addMessageHandler: (
+				callback: (message: TwitchChatMessage) => void,
+			) => void;
+		};
 	};
 };
 
-export interface TwitchRawChatMessage extends RawChatMessage {
+export interface TwitchChatMessageComponent {
 	props: {
 		channelLogin: string;
 		channelID: string;
