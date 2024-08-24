@@ -9,12 +9,13 @@ export type TwitchChatMessage = {
 	message: string;
 	timestamp: number;
 	type: number;
+	createdAt: number;
 };
 
 export type TwitchChatMessageUser = {
-	id: string;
-	displayName: string;
-	login: string;
+	userID: string;
+	userDisplayName: string;
+	userLogin: string;
 	color: string;
 	isSubscriber: boolean;
 };
