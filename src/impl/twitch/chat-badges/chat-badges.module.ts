@@ -9,6 +9,10 @@ export default class ChatBadgesModule extends Module {
 			source:
 				"https://utfs.io/f/9ee8b55a-a7e0-4eed-9f17-11e7a4e80619-kpkf64.png",
 		},
+		{
+			username: "h2p_zupaaaa_sigma_rizzler",
+			source: "https://i.imgur.com/FiXTNS2.png",
+		},
 	];
 
 	protected config(): ModuleConfig {
@@ -48,18 +52,7 @@ export default class ChatBadgesModule extends Module {
 		badgeImage.alt = "Test Badge";
 		badgeImage.src = badge.source;
 
-		this.logger.info("test1", Date.now() - message.createdAt);
-
-		badgeImage.onload = () => {
-			if (badgeList.children.length < 1) badgeList.appendChild(badgeWrapper);
-			else badgeList.insertBefore(badgeWrapper, badgeList.firstChild);
-			this.logger.info("test2", Date.now() - message.createdAt);
-		};
-
-		badgeImage.onerror = () => {
-			// TODO remove or return some static icon
-		};
-
-		this.logger.info("xd2");
+		if (badgeList.children.length < 1) badgeList.appendChild(badgeWrapper);
+		else badgeList.insertBefore(badgeWrapper, badgeList.firstChild);
 	}
 }
