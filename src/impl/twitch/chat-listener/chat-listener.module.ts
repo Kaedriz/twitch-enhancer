@@ -108,7 +108,7 @@ export default class ChatListenerModule extends Module {
 			const element = value.element;
 			const seventvId = element.getAttribute("msg-id");
 			if (seventvId && !seventvId.includes("-") && retry < 5) {
-				setTimeout(() => this.callMessages(retry + 1), 10);
+				setTimeout(() => this.callMessages(retry + 1), 5);
 				return;
 			}
 			const id =
