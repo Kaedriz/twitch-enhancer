@@ -45,13 +45,16 @@ export default class ModuleRunner {
 	}
 
 	private run() {
-		const modules = this.moduleRepository.getModules();
-		modules.forEach(async (module) => {
+		this.moduleRepository.getModules().forEach(async (module) => {
 			try {
 				const config = module.getConfig();
-				const elements: Element[] = config.elements
-					.map((moduleElement) => this.checkElement(moduleElement, module.id()))
-					.filter((element): element is Element => element !== undefined);
+				const elements: Element[] =
+					config.elements
+						?.map((moduleElement) =>
+							this.checkElement(moduleElement, module.id()),
+						)
+						.filter((element): element is Element => element !== undefined) ??
+					[];
 				if (elements.length < 1) return;
 				const event: ModuleEvent = {
 					elements,

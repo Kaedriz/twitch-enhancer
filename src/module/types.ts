@@ -1,14 +1,9 @@
 import type { Platform } from "../types.ts";
 
-export type ModuleType = "event" | "element";
-
-export interface DefaultModuleConfig {
+export interface ModuleConfig {
 	platform: Platform;
 	name: string;
-}
-
-export interface ModuleConfig extends DefaultModuleConfig {
-	elements: ModuleElement[];
+	elements?: ModuleElement[];
 }
 
 export type ModuleElement = {
