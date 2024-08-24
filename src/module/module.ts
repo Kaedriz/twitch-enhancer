@@ -1,5 +1,7 @@
 import type Logger from "logger";
+import type { Emitter } from "nanoevents";
 import type CommonUtils from "utils/common.utils.ts";
+import type { TwitchEvents } from "../events/twitch/events.ts";
 import type { ModuleConfig, ModuleEvent } from "./types.ts";
 
 export default class Module {
@@ -8,18 +10,13 @@ export default class Module {
 	constructor(
 		protected readonly logger: Logger,
 		protected readonly utils: CommonUtils,
+		protected readonly emitter: Emitter<TwitchEvents>,
 	) {
 		this.moduleConfig = this.config();
 	}
 
-	initialize() {}
-
 	getConfig() {
 		return this.moduleConfig;
-	}
-
-	name() {
-		return this.moduleConfig.name;
 	}
 
 	/**
@@ -47,6 +44,13 @@ export default class Module {
 	async _run(event: ModuleEvent) {
 		return this.run(event);
 	}
+
+	// Wrapper for initialize(), so it will be below config()
+	_initialize() {
+		return this.initialize();
+	}
+
+	protected initialize() {}
 
 	protected async run(event: ModuleEvent): Promise<void> {
 		throw new Error("Missing run function");

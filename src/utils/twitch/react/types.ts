@@ -1,3 +1,5 @@
+import type { TwitchChatMessage } from "events/twitch/chat.ts";
+
 export type ReactComponent<T> = {
 	stateNode: T;
 	pendingProps: any;
@@ -19,5 +21,28 @@ export type ChatControllerComponent = {
 	pushMessage: (message: ChatControllerMessage) => void;
 	props: {
 		channelLogin: string;
+		messageHandlerAPI: {
+			addMessageHandler: (
+				callback: (message: TwitchChatMessage) => void,
+			) => void;
+		};
 	};
 };
+
+export interface TwitchChatMessageComponent {
+	props: {
+		channelLogin: string;
+		channelID: string;
+		message: {
+			badges: Record<string, string>;
+			id: string;
+			message: string;
+			user: {
+				color: string;
+				id: string;
+				displayName: string;
+				login: string;
+			};
+		};
+	};
+}

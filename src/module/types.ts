@@ -2,19 +2,12 @@ import type { Platform } from "../types.ts";
 
 export type ModuleType = "event" | "element";
 
-export type ModuleConfig = ElementModuleConfig | EventModuleConfig;
-
-export type TODOEventName = "chat";
-//TODO Move it to events directory
-
 export interface DefaultModuleConfig {
 	platform: Platform;
 	name: string;
-	type: ModuleType;
 }
 
-export interface ElementModuleConfig extends DefaultModuleConfig {
-	type: "element";
+export interface ModuleConfig extends DefaultModuleConfig {
 	elements: ModuleElement[];
 }
 
@@ -22,28 +15,18 @@ export type ModuleElement = {
 	selector: string;
 	useParent?: boolean;
 	once?: boolean;
-	urlConfig?: ModuleElementUrlConfig;
+	urlConfig?: ModuleUrlConfig;
 };
 
-export type ModuleElementUrlType = "include" | "exclude";
+export type ModuleUrlType = "include" | "exclude";
 
-export type ModuleElementUrlConfig = {
-	type: ModuleElementUrlType;
+export type ModuleUrlConfig = {
+	type: ModuleUrlType;
 	regex?: RegExp;
 	check?: (url: string) => boolean;
 };
 
-export interface EventModuleConfig extends DefaultModuleConfig {
-	type: "event";
-	eventName: TODOEventName;
-}
-
 export type ModuleEvent = {
+	elements: Element[];
 	createdAt: number;
 };
-
-export interface ElementModuleEvent extends ModuleEvent {
-	elements: Element[];
-}
-
-export interface EventModuleEvent extends ModuleEvent {}

@@ -1,5 +1,5 @@
 import Module from "module/module.ts";
-import type { ElementModuleEvent, ModuleConfig } from "module/types.ts";
+import type { ModuleConfig, ModuleEvent } from "module/types.ts";
 import { StreamLatencyComponent } from "modules/twitch/stream-latency/component/stream-latency.component.tsx";
 import { type Accessor, type Setter, createSignal } from "solid-js";
 import { render } from "solid-js/web";
@@ -15,24 +15,23 @@ export default class StreamLatencyModule extends Module {
 	private setLatency: Setter<number> = {} as Setter<number>;
 
 	protected config(): ModuleConfig {
-		const urlConfig = this.utils.createSimpleUrlConfig("exclude", [
-			"clips.twitch.tv",
-		]);
 		return {
 			name: "stream-latency",
-			type: "element",
 			elements: [
 				{
 					selector: ".stream-chat-header",
 					once: true,
-					urlConfig,
+					urlConfig: {
+						type: "exclude",
+						check: (url) => url.includes("/popout/"),
+					},
 				},
 			],
 			platform: "twitch",
 		};
 	}
 
-	protected async run(event: ElementModuleEvent) {
+	protected async run(event: ModuleEvent) {
 		const elements = this.utils.createEmptyElements(
 			this.id(),
 			event.elements,

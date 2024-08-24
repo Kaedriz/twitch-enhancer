@@ -21,7 +21,8 @@
 			"module/*": ["./src/module/*"],
 			"utils/*": ["./src/utils/*"],
 			"logger": ["./src/logger/logger.ts"],
-			"modules/*": ["./src/impl/*"]
+			"modules/*": ["./src/impl/*"],
+			"events/*": ["./src/events/*"]
 		}
 	}
 }

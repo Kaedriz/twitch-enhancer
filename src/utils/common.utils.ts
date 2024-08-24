@@ -1,7 +1,6 @@
-import type {
-	ModuleElementUrlConfig,
-	ModuleElementUrlType,
-} from "module/types.ts";
+import type { ModuleUrlConfig, ModuleUrlType } from "module/types.ts";
+import Queue from "utils/queue/queue.ts";
+import type { QueueConfig, QueueValue } from "utils/queue/types.ts";
 import TwitchUtils from "utils/twitch/twitch.utils.ts";
 
 export default class CommonUtils {
@@ -55,22 +54,29 @@ export default class CommonUtils {
 		return !!document.querySelector(selector);
 	}
 
-	isElementAlreadyUsed(element: Element) {
-		return element.hasAttribute("enhanced");
+	isElementAlreadyUsed(element: Element, id: string) {
+		const modules = element.getAttribute("enhancedModules")?.split(";") ?? [];
+		return element.hasAttribute("enhanced") && modules.includes(id);
 	}
 
-	markElementAsUsed(element: Element) {
+	markElementAsUsed(element: Element, id: string) {
 		element.setAttribute("enhanced", "true");
 		element.setAttribute("enhancedAt", `${Date.now()}`);
+		const modules = new Set(
+			element.getAttribute("enhancedModules")?.split(";") ?? [],
+		);
+		modules.add(id);
+		element.setAttribute("enhancedModules", [...modules].join(";"));
 	}
 
-	createSimpleUrlConfig(
-		type: ModuleElementUrlType,
-		urls: string[],
-	): ModuleElementUrlConfig {
+	createSimpleUrlConfig(type: ModuleUrlType, urls: string[]): ModuleUrlConfig {
 		return {
 			type,
 			check: (url: string) => urls.some((_url) => url.includes(_url)),
 		};
+	}
+
+	createQueue<T extends QueueValue>(config: QueueConfig) {
+		return new Queue<T>(config);
 	}
 }

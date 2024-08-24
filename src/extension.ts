@@ -1,12 +1,15 @@
 import Logger from "logger";
 import ModuleRepository from "module/module.repository.ts";
 import ModuleRunner from "module/module.runner.ts";
+import { createNanoEvents } from "nanoevents";
 import CommonUtils from "utils/common.utils.ts";
+import type { TwitchEvents } from "./events/twitch/events.ts";
 import type { ExtensionMode, Platform } from "./types.ts";
 
 export default class Extension {
 	private readonly moduleRepository;
 	private readonly moduleRunner;
+	private readonly emitter = createNanoEvents<TwitchEvents>(); // TODO Create generic type and TwitchExtensions which extends Extension
 	private readonly logger: Logger;
 	private readonly utils;
 
@@ -24,6 +27,7 @@ export default class Extension {
 			this.logger,
 			this.moduleRepository,
 			this.utils,
+			this.emitter,
 		);
 	}
 
@@ -36,7 +40,7 @@ export default class Extension {
 		this.logger.info(
 			`Started ${this.mode} v${this.version} @ ${this.platform}`,
 		);
-		this.moduleRunner.initializeModules();
 		this.moduleRunner.start();
+		this.emitter.emit("start");
 	}
 }
