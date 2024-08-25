@@ -80,15 +80,15 @@ export default class StreamLatencyModule extends Module {
 	private async resetPlayer() {
 		if (this.mediaPlayer === undefined) return;
 		const currentPosition = this.mediaPlayer.getPosition();
-		const latency = this.getLatency();
+		const latency = this.getLatency(false);
 		if (latency === -1) return;
 		this.mediaPlayer.seekTo(currentPosition + latency + 1);
 	}
 
-	private getLatency(): number {
+	private getLatency(includeStreamersLatency = true): number {
 		if (!this.mediaPlayer) return -1;
 		const liveLatency = this.mediaPlayer.core.state.liveLatency;
 		const ingestLatency = this.mediaPlayer.core.state.ingestLatency;
-		return liveLatency + ingestLatency;
+		return (includeStreamersLatency ? liveLatency : 0) + ingestLatency;
 	}
 }
