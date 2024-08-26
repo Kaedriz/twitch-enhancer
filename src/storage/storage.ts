@@ -1,6 +1,4 @@
 export default class Storage<Map> {
-	async load() {}
-
 	async get<K extends keyof Map>(key: K): Promise<Map[K] | undefined> {
 		throw new Error("Not implemented");
 	}

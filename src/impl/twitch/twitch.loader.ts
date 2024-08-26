@@ -7,17 +7,19 @@ import ChattersModule from "modules/twitch/chatters/chatters.module.tsx";
 import StreamLatencyModule from "modules/twitch/stream-latency/stream-latency.module.tsx";
 import type { Emitter } from "nanoevents";
 import type CommonUtils from "utils/common.utils.ts";
+import type StorageRepository from "../../storage/storage-repository.ts";
 
 export default class TwitchLoader extends ModuleLoader {
 	get(
 		logger: Logger,
 		utils: CommonUtils,
 		emitter: Emitter<TwitchEvents>,
+		storage: StorageRepository,
 	): Module[] {
 		return [
-			new ChattersModule(logger, utils, emitter),
-			new ChatListenerModule(logger, utils, emitter),
-			new StreamLatencyModule(logger, utils, emitter),
+			new ChattersModule(logger, utils, emitter, storage),
+			new ChatListenerModule(logger, utils, emitter, storage),
+			new StreamLatencyModule(logger, utils, emitter, storage),
 		];
 	}
 }

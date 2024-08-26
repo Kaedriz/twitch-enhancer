@@ -4,11 +4,13 @@ import ModuleRunner from "module/module.runner.ts";
 import { createNanoEvents } from "nanoevents";
 import CommonUtils from "utils/common.utils.ts";
 import type { TwitchEvents } from "./events/twitch/events.ts";
+import StorageRepository from "./storage/storage-repository.ts";
 import type { ExtensionMode, Platform } from "./types.ts";
 
 export default class Extension {
 	private readonly moduleRepository;
 	private readonly moduleRunner;
+	private readonly storage = new StorageRepository("enhancer");
 	private readonly emitter = createNanoEvents<TwitchEvents>(); // TODO Create generic type and TwitchExtensions which extends Extension
 	private readonly logger: Logger;
 	private readonly utils;
@@ -28,6 +30,7 @@ export default class Extension {
 			this.moduleRepository,
 			this.utils,
 			this.emitter,
+			this.storage,
 		);
 	}
 
