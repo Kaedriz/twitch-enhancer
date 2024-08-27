@@ -1,9 +1,7 @@
 export type TwitchLocalStorageMap = {
-	test: TestStorage;
-	dupa: TestStorage;
-	xd: TestStorage;
+	pinnedStreamers: PinnedStreamers;
 };
 
-export type TestStorage = {
+type PinnedStreamers = {
 	test: string;
 };
