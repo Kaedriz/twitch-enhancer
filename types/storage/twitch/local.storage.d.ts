@@ -3,5 +3,5 @@ export type TwitchLocalStorageMap = {
 };
 
 type PinnedStreamers = {
-	test: string;
+	ids: string[];
 };

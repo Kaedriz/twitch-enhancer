@@ -10,6 +10,6 @@ export default abstract class ModuleLoader {
 		logger: Logger,
 		utils: CommonUtils,
 		emitter: Emitter<TwitchEvents>,
-		storage: StorageRepository,
-	): Module[];
+		storage: StorageRepository<any>,
+	): Module<any, any>[];
 }
