@@ -18,6 +18,7 @@
 		"allowJs": true,
 		"types": ["bun-types", "chrome"],
 		"paths": {
+			"types/*": ["./types/*"],
 			"module/*": ["./src/module/*"],
 			"utils/*": ["./src/utils/*"],
 			"logger": ["./src/logger/logger.ts"],

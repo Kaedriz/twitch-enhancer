@@ -5,11 +5,3 @@ export const ChattersQuery = `query GetChannelChattersCount($name: String!) {
             }
         }
     }`;
-
-export type ChattersResponse = {
-	channel: {
-		chatters: {
-			count: number;
-		};
-	};
-};

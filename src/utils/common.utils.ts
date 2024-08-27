@@ -1,6 +1,6 @@
-import type { ModuleUrlConfig, ModuleUrlType } from "module/types.ts";
+import type { ModuleUrlConfig, ModuleUrlType } from "types/module/module.d.ts";
+import type { QueueConfig, QueueValue } from "types/utils/queue.d.ts";
 import Queue from "utils/queue/queue.ts";
-import type { QueueConfig, QueueValue } from "utils/queue/types.ts";
 import TwitchUtils from "utils/twitch/twitch.utils.ts";
 
 export default class CommonUtils {

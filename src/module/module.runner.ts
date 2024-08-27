@@ -1,10 +1,10 @@
 import type Logger from "logger";
 import type ModuleRepository from "module/module.repository.ts";
-import type { ModuleElement, ModuleEvent } from "module/types.ts";
 import TwitchLoader from "modules/twitch/twitch.loader.ts";
 import type { Emitter } from "nanoevents";
+import type { TwitchEvents } from "types/events/twitch/events.d.ts";
+import type { ModuleElement, ModuleEvent } from "types/module/module.d.ts";
 import type CommonUtils from "utils/common.utils.ts";
-import type { TwitchEvents } from "../events/twitch/events.ts";
 import type StorageRepository from "../storage/storage-repository.ts";
 
 export default class ModuleRunner {
@@ -15,7 +15,7 @@ export default class ModuleRunner {
 		private readonly moduleRepository: ModuleRepository,
 		private readonly utils: CommonUtils,
 		private readonly emitter: Emitter<TwitchEvents>,
-		private readonly storage: StorageRepository,
+		private readonly storage: StorageRepository<never>,
 	) {}
 
 	start() {

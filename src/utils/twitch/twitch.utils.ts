@@ -1,5 +1,5 @@
+import type { GQLResponse, MediaPlayer } from "types/utils/react.d.ts";
 import ReactUtils from "utils/twitch/react/react.utils.ts";
-import type { GQLResponse, MediaPlayer } from "utils/twitch/types.ts";
 
 export default class TwitchUtils extends ReactUtils {
 	private readonly TWITCH_GQL_ENDPOINT = "https://gql.twitch.tv/gql";

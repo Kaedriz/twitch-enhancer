@@ -1,4 +1,4 @@
-import type { Platform } from "../types.ts";
+import type { Platform } from "../twitch-react.d.ts";
 
 export interface ModuleConfig {
 	platform: Platform;

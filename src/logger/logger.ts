@@ -1,4 +1,5 @@
-import type { ExtensionMode } from "../types.ts";
+import type { ExtensionMode } from "types/extension";
+import type { LogType } from "types/logger/logger";
 
 export default class Logger {
 	private development = false;
@@ -34,5 +35,3 @@ export default class Logger {
 		console[logType](`${this.PREFIX} ${this.LOGS[logType]}`, ...data);
 	}
 }
-
-export type LogType = "info" | "warn" | "error" | "debug";

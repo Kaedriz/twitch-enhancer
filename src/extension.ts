@@ -2,11 +2,11 @@ import Logger from "logger";
 import ModuleRepository from "module/module.repository.ts";
 import ModuleRunner from "module/module.runner.ts";
 import { createNanoEvents } from "nanoevents";
+import type { TwitchEvents } from "types/events/twitch/events.d.ts";
+import type { ExtensionMode, Platform } from "types/extension";
+import type { TwitchLocalStorageMap } from "types/storage/twitch/local.storage.d.ts";
 import CommonUtils from "utils/common.utils.ts";
-import type { TwitchEvents } from "./events/twitch/events.ts";
 import StorageRepository from "./storage/storage-repository.ts";
-import type { TwitchLocalStorageMap } from "./storage/twitch/local.storage.types.ts";
-import type { ExtensionMode, Platform } from "./types.ts";
 
 export default class Extension {
 	private readonly moduleRepository;
