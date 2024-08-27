@@ -1,11 +1,11 @@
-import type { TwitchEvents } from "events/twitch/events.ts";
 import Module from "module/module.ts";
-import type { ModuleConfig, ModuleEvent } from "module/types.ts";
 import { StreamLatencyComponent } from "modules/twitch/stream-latency/component/stream-latency.component.tsx";
 import { type Accessor, type Setter, createSignal } from "solid-js";
 import { render } from "solid-js/web";
-import type { MediaPlayer } from "utils/twitch/types.ts";
-import type { TwitchLocalStorageMap } from "../../../storage/twitch/local.storage.types.ts";
+import type { TwitchEvents } from "types/events/twitch/events.d.ts";
+import type { ModuleConfig, ModuleEvent } from "types/module/module.d.ts";
+import type { TwitchLocalStorageMap } from "types/storage/twitch/local.storage.d.ts";
+import type { MediaPlayer } from "types/utils/react.d.ts";
 
 export default class StreamLatencyModule extends Module<
 	TwitchEvents,

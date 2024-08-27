@@ -1,4 +1,4 @@
-import type { QueueConfig, QueueValue } from "utils/queue/types.ts";
+import type { QueueConfig, QueueValue } from "types/utils/queue.d.ts";
 
 export default class Queue<Value extends QueueValue> {
 	private queue = new Map<string, Value>();

@@ -1,5 +1,5 @@
 import Extension from "./extension.ts";
-import type { ExtensionMode } from "./types.ts";
+import type { ExtensionMode } from "./twitch-react.d.ts";
 
 (() => {
 	if (window.enhancer) return;

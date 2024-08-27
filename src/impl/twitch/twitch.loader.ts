@@ -1,4 +1,3 @@
-import type { TwitchEvents } from "events/twitch/events.ts";
 import type Logger from "logger";
 import ModuleLoader from "module/module.loader.ts";
 import type Module from "module/module.ts";
@@ -6,6 +5,7 @@ import ChatListenerModule from "modules/twitch/chat-listener/chat-listener.modul
 import ChattersModule from "modules/twitch/chatters/chatters.module.tsx";
 import StreamLatencyModule from "modules/twitch/stream-latency/stream-latency.module.tsx";
 import type { Emitter } from "nanoevents";
+import type { TwitchEvents } from "types/events/twitch/events.d.ts";
 import type CommonUtils from "utils/common.utils.ts";
 import type StorageRepository from "../../storage/storage-repository.ts";
 

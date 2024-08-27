@@ -1,8 +1,8 @@
 import type Logger from "logger";
 import type { Emitter, EventsMap } from "nanoevents";
+import type { ModuleConfig, ModuleEvent } from "types/module/module.d.ts";
 import type CommonUtils from "utils/common.utils.ts";
 import type StorageRepository from "../storage/storage-repository.ts";
-import type { ModuleConfig, ModuleEvent } from "./types.ts";
 
 export default class Module<EmitterEvents extends EventsMap, StorageMap> {
 	private readonly moduleConfig: ModuleConfig;

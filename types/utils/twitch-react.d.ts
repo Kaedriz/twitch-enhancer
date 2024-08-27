@@ -1,4 +1,4 @@
-import type { TwitchChatMessage } from "events/twitch/chat.ts";
+import type { TwitchChatMessage } from "types/events/twitch/chat.events.d.ts";
 
 export type ReactComponent<T> = {
 	stateNode: T;
