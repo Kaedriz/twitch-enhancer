@@ -1,3 +1,4 @@
+import type { TwitchEvents } from "events/twitch/events.ts";
 import Module from "module/module.ts";
 import type { ModuleConfig, ModuleEvent } from "module/types.ts";
 import { type Accessor, type Setter, createSignal } from "solid-js";
@@ -6,9 +7,13 @@ import {
 	ChattersQuery,
 	type ChattersResponse,
 } from "utils/twitch/gql/chatters.ts";
+import type { TwitchLocalStorageMap } from "../../../storage/twitch/local.storage.types.ts";
 import { ChattersComponent } from "./component/chatters.component.tsx";
 
-export default class ChattersModule extends Module {
+export default class ChattersModule extends Module<
+	TwitchEvents,
+	TwitchLocalStorageMap
+> {
 	private chattersUpdater: Timer | undefined;
 
 	private counterInitialized = false;

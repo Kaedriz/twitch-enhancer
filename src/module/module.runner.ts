@@ -5,6 +5,7 @@ import TwitchLoader from "modules/twitch/twitch.loader.ts";
 import type { Emitter } from "nanoevents";
 import type CommonUtils from "utils/common.utils.ts";
 import type { TwitchEvents } from "../events/twitch/events.ts";
+import type StorageRepository from "../storage/storage-repository.ts";
 
 export default class ModuleRunner {
 	private elementsTimer: Timer | undefined;
@@ -14,6 +15,7 @@ export default class ModuleRunner {
 		private readonly moduleRepository: ModuleRepository,
 		private readonly utils: CommonUtils,
 		private readonly emitter: Emitter<TwitchEvents>,
+		private readonly storage: StorageRepository,
 	) {}
 
 	start() {
@@ -26,11 +28,13 @@ export default class ModuleRunner {
 		this.logger.info("Initializing modules...");
 		const loader = new TwitchLoader();
 		this.moduleRepository.addModule(
-			...loader.get(this.logger, this.utils, this.emitter).map((module) => {
-				module._initialize();
-				this.logger.debug(`Initialized ${module.id()} module`);
-				return module;
-			}),
+			...loader
+				.get(this.logger, this.utils, this.emitter, this.storage)
+				.map((module) => {
+					module._initialize();
+					this.logger.debug(`Initialized ${module.id()} module`);
+					return module;
+				}),
 		);
 		this.logger.info(`Initialized ${this.moduleRepository.size()} modules`);
 	}
