@@ -54,7 +54,7 @@ export default class ModuleRunner {
 				const config = module.getConfig();
 				const elements: Element[] =
 					config.elements
-						?.map((moduleElement) =>
+						?.flatMap((moduleElement) =>
 							this.checkElement(moduleElement, module.id()),
 						)
 						.filter((element): element is Element => element !== undefined) ??
@@ -76,26 +76,29 @@ export default class ModuleRunner {
 	}
 
 	private checkElement(moduleElement: ModuleElement, id: string) {
-		let element = document.querySelector(moduleElement.selector);
-		if (element && moduleElement.useParent) element = element.parentElement;
-		if (!element) return;
+		const elements = [...document.querySelectorAll(moduleElement.selector)];
 
-		if (moduleElement.urlConfig !== undefined) {
-			const url = window.location.href;
-			const { type, check, regex } = moduleElement.urlConfig;
-			const contains = (check?.(url) ?? false) || (regex?.test(url) ?? false);
-			if (
-				(contains && type === "exclude") ||
-				(!contains && type === "include")
-			) {
-				return;
+		return elements.map((_element) => {
+			let element: Element | null = _element;
+			if (element && moduleElement.useParent) element = element.parentElement;
+			if (!element) return;
+
+			if (moduleElement.urlConfig !== undefined) {
+				const url = window.location.href;
+				const { type, check, regex } = moduleElement.urlConfig;
+				const contains = (check?.(url) ?? false) || (regex?.test(url) ?? false);
+				if (
+					(contains && type === "exclude") ||
+					(!contains && type === "include")
+				) {
+					return;
+				}
 			}
-		}
 
-		if (this.utils.isElementAlreadyUsed(element, id) && moduleElement.once)
-			return;
-		this.utils.markElementAsUsed(element, id);
-
-		return element;
+			if (this.utils.isElementAlreadyUsed(element, id) && moduleElement.once)
+				return;
+			this.utils.markElementAsUsed(element, id);
+			return element;
+		});
 	}
 }

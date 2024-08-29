@@ -2,10 +2,10 @@ import Module from "module/module.ts";
 import { StreamLatencyComponent } from "modules/twitch/stream-latency/component/stream-latency.component.tsx";
 import { type Accessor, type Setter, createSignal } from "solid-js";
 import { render } from "solid-js/web";
-import type { TwitchEvents } from "types/events/twitch/events.d.ts";
-import type { ModuleConfig, ModuleEvent } from "types/module/module.d.ts";
-import type { TwitchLocalStorageMap } from "types/storage/twitch/local.storage.d.ts";
-import type { MediaPlayer } from "types/utils/react.d.ts";
+import type { TwitchEvents } from "types/events/twitch/events";
+import type { ModuleConfig, ModuleEvent } from "types/module/module";
+import type { TwitchLocalStorageMap } from "types/storage/twitch/local.storage";
+import type { MediaPlayerInstance } from "types/utils/twitch-react";
 
 export default class StreamLatencyModule extends Module<
 	TwitchEvents,
@@ -13,7 +13,7 @@ export default class StreamLatencyModule extends Module<
 > {
 	private latencyUpdater: Timer | undefined;
 
-	private mediaPlayer: MediaPlayer | undefined;
+	private mediaPlayer: MediaPlayerInstance | undefined;
 
 	private counterInitialized = false;
 	private latency: Accessor<number> = {} as Accessor<number>;
@@ -85,15 +85,15 @@ export default class StreamLatencyModule extends Module<
 	private async resetPlayer() {
 		if (this.mediaPlayer === undefined) return;
 		const currentPosition = this.mediaPlayer.getPosition();
-		const latency = this.getLatency(false);
+		const latency = this.getLatency();
 		if (latency === -1) return;
 		this.mediaPlayer.seekTo(currentPosition + latency + 1);
 	}
 
-	private getLatency(includeStreamersLatency = true): number {
+	private getLatency(): number {
 		if (!this.mediaPlayer) return -1;
 		const liveLatency = this.mediaPlayer.core.state.liveLatency;
 		const ingestLatency = this.mediaPlayer.core.state.ingestLatency;
-		return (includeStreamersLatency ? liveLatency : 0) + ingestLatency;
+		return liveLatency + ingestLatency;
 	}
 }

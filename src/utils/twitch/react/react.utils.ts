@@ -1,9 +1,12 @@
 import type {
 	ChatControllerComponent,
+	FollowedSection,
+	MediaPlayerComponent,
 	PersistentPlayerComponent,
 	ReactComponent,
 	TwitchChatMessageComponent,
-} from "types/utils/twitch-react.d.ts";
+	UserID,
+} from "types/utils/twitch-react";
 
 export default class ReactUtils {
 	findReactParents<T>(
@@ -114,5 +117,50 @@ export default class ReactUtils {
 		const uuid = crypto.randomUUID();
 		this.sendSimpleMessage(uuid);
 		return uuid;
+	}
+
+	getUserIdBySideElement(element: Element): UserID | undefined {
+		return this.findReactChildren<number>(
+			this.getReactInstance(element),
+			(n) => !!n.pendingProps?.userID,
+			20,
+		)?.pendingProps?.userID;
+	}
+
+	getMediaPlayerInstance() {
+		return this.findReactChildren<MediaPlayerComponent>(
+			this.getReactInstance(document.querySelector(".persistent-player")),
+			(n) => !!n.stateNode?.props?.mediaPlayerInstance,
+			20,
+		)?.stateNode.props.mediaPlayerInstance;
+	}
+
+	getPersonalSections() {
+		const sideNavSection = document.querySelector(".side-nav-section");
+		if (!sideNavSection) {
+			return null;
+		}
+
+		const reactInstance = this.getReactInstance(sideNavSection);
+		if (!reactInstance) {
+			return null;
+		}
+
+		const followedSection = this.findReactParents<FollowedSection>(
+			reactInstance,
+			(n) => !!n.stateNode?.props?.section,
+			1000,
+		);
+
+		if (!followedSection || !followedSection.stateNode) {
+			return null;
+		}
+
+		return followedSection;
+	}
+
+	getFollowersHeader() {
+		return this.getReactInstance(document.querySelector(".tw-interactable"))
+			.pendingProps.onClick;
 	}
 }

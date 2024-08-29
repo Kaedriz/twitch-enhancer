@@ -1,4 +1,4 @@
-import type { GQLResponse, MediaPlayer } from "types/utils/react.d.ts";
+import type { GQLResponse } from "types/utils/react";
 import ReactUtils from "utils/twitch/react/react.utils.ts";
 
 export default class TwitchUtils extends ReactUtils {
@@ -30,13 +30,5 @@ export default class TwitchUtils extends ReactUtils {
 			name = elements[2];
 		if (name.includes("?")) name = name.substring(0, name.indexOf("?"));
 		return name.toLowerCase();
-	}
-
-	getMediaPlayerInstance() {
-		return this.findReactChildren<MediaPlayer>(
-			this.getReactInstance(document.querySelector(".persistent-player")),
-			(n) => !!n.stateNode?.props?.mediaPlayerInstance,
-			20,
-		)?.stateNode.props?.mediaPlayerInstance;
 	}
 }
