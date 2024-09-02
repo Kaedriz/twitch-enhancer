@@ -148,6 +148,7 @@ export default class FavouriteStreamersModule extends Module<
 			this.originalFollow = this.getPersonalSectionStreams();
 			this.originalOfflineFollow = this.getPersonalSectionVideoConnections();
 			await this.updateFollows();
+			await this.refreshFollows();
 		} else {
 			await this.refreshFollows();
 		}
