@@ -3,7 +3,6 @@ import styles from "./pin-streamers.module.css";
 
 interface FavouriteStreamersComponentProps {
 	isActivated: boolean;
-	//channelID: number | undefined;
 }
 
 export const PinStreamersComponent: Component<
@@ -12,7 +11,7 @@ export const PinStreamersComponent: Component<
 	return (
 		<div class={styles.container}>
 			<button type="button" class={styles.favouriteStreamerButton}>
-				{props.isActivated ? "⭐" : "🧞"}
+				{props.isActivated ? "★" : "☆"}
 			</button>
 		</div>
 	);

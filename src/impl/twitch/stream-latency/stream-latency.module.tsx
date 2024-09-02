@@ -74,26 +74,27 @@ export default class StreamLatencyModule extends Module<
 			this.counterInitialized = true;
 			const [latency, setLatency] = createSignal(0);
 			this.latency = latency;
+			3;
 			this.setLatency = setLatency;
 		}
 	}
 
 	private async update() {
-		this.setLatency(this.getLatency());
+		this.setLatency(this.getLatency(false));
 	}
 
 	private async resetPlayer() {
 		if (this.mediaPlayer === undefined) return;
 		const currentPosition = this.mediaPlayer.getPosition();
-		const latency = this.getLatency();
+		const latency = this.getLatency(true);
 		if (latency === -1) return;
-		this.mediaPlayer.seekTo(currentPosition + latency + 1);
+		this.mediaPlayer.seekTo(currentPosition + latency);
 	}
 
-	private getLatency(): number {
+	private getLatency(bufferOnly: boolean): number {
 		if (!this.mediaPlayer) return -1;
 		const liveLatency = this.mediaPlayer.core.state.liveLatency;
 		const ingestLatency = this.mediaPlayer.core.state.ingestLatency;
-		return liveLatency + ingestLatency;
+		return bufferOnly ? ingestLatency : liveLatency + ingestLatency;
 	}
 }

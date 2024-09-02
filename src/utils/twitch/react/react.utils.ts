@@ -136,31 +136,10 @@ export default class ReactUtils {
 	}
 
 	getPersonalSections() {
-		const sideNavSection = document.querySelector(".side-nav-section");
-		if (!sideNavSection) {
-			return null;
-		}
-
-		const reactInstance = this.getReactInstance(sideNavSection);
-		if (!reactInstance) {
-			return null;
-		}
-
-		const followedSection = this.findReactParents<FollowedSection>(
-			reactInstance,
+		return this.findReactParents<FollowedSection>(
+			this.getReactInstance(document.querySelector(".side-nav-section")),
 			(n) => !!n.stateNode?.props?.section,
 			1000,
 		);
-
-		if (!followedSection || !followedSection.stateNode) {
-			return null;
-		}
-
-		return followedSection;
-	}
-
-	getFollowersHeader() {
-		return this.getReactInstance(document.querySelector(".tw-interactable"))
-			.pendingProps.onClick;
 	}
 }

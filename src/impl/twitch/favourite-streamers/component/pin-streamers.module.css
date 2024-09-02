@@ -6,10 +6,6 @@
     z-index: 999;
 }
 
-.favouriteStreamerButton {
-
-}
-
 .favouriteStreamerButton:hover {
     background-color: #ffb900;
 }

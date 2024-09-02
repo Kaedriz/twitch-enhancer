@@ -16,6 +16,7 @@ export default class FavouriteStreamersModule extends Module<
 
 	private previousFollowListState: StreamData[] = [];
 	private originalFollow: StreamData[] = [];
+	private originalOfflineFollow: StreamData[] = [];
 
 	protected config(): ModuleConfig {
 		return {
@@ -39,7 +40,7 @@ export default class FavouriteStreamersModule extends Module<
 		if (this.followsUpdater) clearInterval(this.followsUpdater);
 		this.followsUpdater = setInterval(
 			async () => await this.followsObserver(),
-			100,
+			1000,
 		);
 
 		for (const element of elements) {
@@ -55,11 +56,10 @@ export default class FavouriteStreamersModule extends Module<
 			button.onclick = async (event) => {
 				event.preventDefault();
 				event.stopPropagation();
-				const isPinned = await this.pinStreamer(channelID);
-				setActive(isPinned);
+				setActive(await this.pinStreamer(channelID));
 			};
 
-			await this.refleshFollows();
+			await this.refreshFollows();
 
 			if (channelID !== undefined) {
 				setActive((await this.getPinnedStreamers()).includes(channelID));
@@ -72,21 +72,21 @@ export default class FavouriteStreamersModule extends Module<
 		}
 	}
 
-	private async sortStreamsByPinned(): Promise<StreamData[]> {
-		const streams = this.originalFollow;
+	private async sortStreamsByPinned(
+		streamFollowList: StreamData[],
+	): Promise<StreamData[]> {
 		const favouriteStreamers = await this.getPinnedStreamers();
 
-		const [pinnedStreamers, regularStreamers] = streams.reduce<
-			[StreamData[], StreamData[]]
-		>(
-			([pinned, regular], stream) => {
-				favouriteStreamers.includes(stream.user.id)
-					? pinned.push(stream)
-					: regular.push(stream);
-				return [pinned, regular];
-			},
-			[[], []],
-		);
+		const pinnedStreamers: StreamData[] = [];
+		const regularStreamers: StreamData[] = [];
+
+		streamFollowList.forEach((stream) => {
+			if (favouriteStreamers.includes(stream.user.id)) {
+				pinnedStreamers.push(stream);
+			} else {
+				regularStreamers.push(stream);
+			}
+		});
 
 		this.previousFollowListState = [...pinnedStreamers, ...regularStreamers];
 		return this.previousFollowListState;
@@ -94,7 +94,6 @@ export default class FavouriteStreamersModule extends Module<
 
 	private async pinStreamer(channelID: string | undefined): Promise<boolean> {
 		if (!channelID) {
-			console.log("ChannelID is undefined, cannot modify favourites.");
 			return false;
 		}
 
@@ -109,9 +108,10 @@ export default class FavouriteStreamersModule extends Module<
 			ids: favouriteStreamers,
 		});
 
-		await Promise.all([this.updateFollows(), this.refleshFollows()]);
+		await this.followsObserver();
+		await this.updateFollows();
+		await this.refreshFollows();
 
-		console.log(`Toggle favourite streamer with channelID: ${channelID}`);
 		return isFavourite;
 	}
 
@@ -123,22 +123,33 @@ export default class FavouriteStreamersModule extends Module<
 		const section = this.utils.twitch.getPersonalSections();
 
 		// @ts-ignore
-		section.stateNode.props.section.streams = await this.sortStreamsByPinned();
+		section.stateNode.props.section.streams = await this.sortStreamsByPinned(
+			this.originalFollow,
+		);
+
+		if (this.originalOfflineFollow.length > 0) {
+			// @ts-ignore
+			section.stateNode.props.section.videoConnections =
+				await this.sortStreamsByPinned(this.originalOfflineFollow);
+		}
 	}
 
-	private async refleshFollows() {
-		const reflesh = this.utils.twitch.getFollowersHeader();
-		reflesh();
-		reflesh();
+	private async refreshFollows() {
+		const refresh = this.utils.twitch.getReactInstance(
+			document.querySelector(".tw-interactable"),
+		).pendingProps.onClick;
+		refresh();
+		refresh();
 	}
 
 	private async followsObserver() {
 		const section = this.getPersonalSectionStreams();
 		if (section !== this.previousFollowListState) {
 			this.originalFollow = this.getPersonalSectionStreams();
+			this.originalOfflineFollow = this.getPersonalSectionVideoConnections();
 			await this.updateFollows();
 		} else {
-			await this.refleshFollows();
+			await this.refreshFollows();
 		}
 	}
 
@@ -146,6 +157,12 @@ export default class FavouriteStreamersModule extends Module<
 		return (
 			this.utils.twitch.getPersonalSections()?.stateNode.props.section
 				.streams ?? []
+		);
+	}
+	private getPersonalSectionVideoConnections() {
+		return (
+			this.utils.twitch.getPersonalSections()?.stateNode.props.section
+				.videoConnections ?? []
 		);
 	}
 }
