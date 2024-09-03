@@ -3,7 +3,7 @@ import ModuleLoader from "module/module.loader.ts";
 import type Module from "module/module.ts";
 import ChatListenerModule from "modules/twitch/chat-listener/chat-listener.module.ts";
 import ChattersModule from "modules/twitch/chatters/chatters.module.tsx";
-import FavouriteStreamersModule from "modules/twitch/favourite-streamers/favourite-streamers.module.tsx";
+import PinStreamerModule from "modules/twitch/favourite-streamers/pin-streamer.module.tsx";
 import StreamLatencyModule from "modules/twitch/stream-latency/stream-latency.module.tsx";
 import type { Emitter } from "nanoevents";
 import type { TwitchEvents } from "types/events/twitch/events.d.ts";
@@ -16,13 +16,13 @@ export default class TwitchLoader extends ModuleLoader {
 		logger: Logger,
 		utils: CommonUtils,
 		emitter: Emitter<TwitchEvents>,
-		storage: StorageRepository<never>,
+		storage: StorageRepository<TwitchLocalStorageMap>,
 	): Module<TwitchEvents, TwitchLocalStorageMap>[] {
 		return [
 			new ChattersModule(logger, utils, emitter, storage),
 			new ChatListenerModule(logger, utils, emitter, storage),
 			new StreamLatencyModule(logger, utils, emitter, storage),
-			new FavouriteStreamersModule(logger, utils, emitter, storage),
+			new PinStreamerModule(logger, utils, emitter, storage),
 		];
 	}
 }

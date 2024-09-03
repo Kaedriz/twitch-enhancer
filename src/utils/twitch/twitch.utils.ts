@@ -1,5 +1,10 @@
 import type { GQLResponse } from "types/utils/react";
-import ReactUtils from "utils/twitch/react/react.utils.ts";
+import type {
+	FollowedSection,
+	MediaPlayerComponent,
+	UserID,
+} from "types/utils/twitch-react";
+import ReactUtils from "utils/react/react.utils.ts";
 
 export default class TwitchUtils extends ReactUtils {
 	private readonly TWITCH_GQL_ENDPOINT = "https://gql.twitch.tv/gql";
@@ -30,5 +35,29 @@ export default class TwitchUtils extends ReactUtils {
 			name = elements[2];
 		if (name.includes("?")) name = name.substring(0, name.indexOf("?"));
 		return name.toLowerCase();
+	}
+
+	getUserIdBySideElement(element: Element): UserID | undefined {
+		return this.findReactChildren<number>(
+			this.getReactInstance(element),
+			(n) => !!n.pendingProps?.userID,
+			20,
+		)?.pendingProps?.userID;
+	}
+
+	getMediaPlayerInstance() {
+		return this.findReactChildren<MediaPlayerComponent>(
+			this.getReactInstance(document.querySelector(".persistent-player")),
+			(n) => !!n.stateNode?.props?.mediaPlayerInstance,
+			20,
+		)?.stateNode.props.mediaPlayerInstance;
+	}
+
+	getPersonalSections() {
+		return this.findReactParents<FollowedSection>(
+			this.getReactInstance(document.querySelector(".side-nav-section")),
+			(n) => !!n.stateNode?.props?.section,
+			1000,
+		);
 	}
 }

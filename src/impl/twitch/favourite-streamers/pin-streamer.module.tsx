@@ -1,6 +1,6 @@
 import Module from "module/module";
 
-import { PinStreamersComponent } from "modules/twitch/favourite-streamers/component/pin-streamers.component.tsx";
+import { PinStreamerComponent } from "modules/twitch/favourite-streamers/component/pin-streamer.component.tsx";
 import { createSignal } from "solid-js";
 import { render } from "solid-js/web";
 import type { TwitchEvents } from "types/events/twitch/events";
@@ -8,7 +8,7 @@ import type { ModuleConfig, ModuleEvent } from "types/module/module";
 import type { TwitchLocalStorageMap } from "types/storage/twitch/local.storage";
 import type { StreamData } from "types/utils/twitch-react";
 
-export default class FavouriteStreamersModule extends Module<
+export default class PinStreamerModule extends Module<
 	TwitchEvents,
 	TwitchLocalStorageMap
 > {
@@ -64,10 +64,7 @@ export default class FavouriteStreamersModule extends Module<
 			if (channelID !== undefined) {
 				setActive((await this.getPinnedStreamers()).includes(channelID));
 
-				render(
-					() => <PinStreamersComponent isActivated={isActive()} />,
-					button,
-				);
+				render(() => <PinStreamerComponent isActivated={isActive()} />, button);
 			}
 		}
 	}
