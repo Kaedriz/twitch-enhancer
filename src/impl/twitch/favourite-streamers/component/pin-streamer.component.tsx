@@ -2,7 +2,7 @@ import type { Component } from "solid-js";
 import styles from "./pin-streamer.module.css";
 
 interface PinStreamerComponentProps {
-	isActivated: boolean;
+	isPinned: boolean;
 }
 
 export const PinStreamerComponent: Component<PinStreamerComponentProps> = (
@@ -11,7 +11,7 @@ export const PinStreamerComponent: Component<PinStreamerComponentProps> = (
 	return (
 		<div class={styles.wrapper}>
 			<button type="button" class={styles.button}>
-				{props.isActivated ? "★" : "☆"}
+				{props.isPinned ? "★" : "☆"}
 			</button>
 		</div>
 	);
