@@ -134,20 +134,21 @@ export default class PinStreamerModule extends Module<
 	private async updateFollows() {
 		const section = this.utils.twitch.getPersonalSections();
 
-		// @ts-ignore
-		section.stateNode.props.section.streams = await this.sortStreamsByPinned(
-			this.originalFollow,
-			this.utils.twitch.getPersonalSections()?.stateNode.props.sort.type ===
-				"viewers_desc",
-		);
+		if (
+			this.originalOfflineFollow.length > 0 &&
+			this.originalFollow.length > 0
+		) {
+			// @ts-ignore
+			section.stateNode.props.section.streams = await this.sortStreamsByPinned(
+				this.originalFollow,
+				this.utils.twitch.getPersonalSections()?.stateNode.props.sort.type ===
+					"viewers_desc",
+			);
 
-		if (this.originalOfflineFollow.length > 0) {
 			// @ts-ignore
 			section.stateNode.props.section.videoConnections =
 				await this.sortStreamsByPinned(this.originalOfflineFollow, true);
 		}
-
-		//section?.stateNode.props.sort.setSortType("ser");
 	}
 
 	private async refreshFollows() {
