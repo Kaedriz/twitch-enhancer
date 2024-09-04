@@ -44,34 +44,42 @@ export default class PinStreamerModule extends Module<
 		);
 
 		for (const element of elements) {
-			const [isActive, setActive] = createSignal(false);
-
+			const [isPinned, setPinned] = createSignal(false);
 			const button = this.utils.createElementByParent(
 				"pin-streamer-button",
 				"button",
 				element,
 			);
-
 			const channelID = this.utils.twitch.getUserIdBySideElement(element);
 			button.onclick = async (event) => {
 				event.preventDefault();
 				event.stopPropagation();
-				setActive(await this.pinStreamer(channelID));
+				setPinned(await this.pinStreamer(channelID));
+				if (isPinned()) button.style.display = "inline-block";
 			};
 
+			button.style.display = "none";
+			element.addEventListener("mouseover", () => {
+				if (isPinned()) return;
+				button.style.display = "inline-block";
+			});
+			element.addEventListener("mouseleave", () => {
+				if (isPinned()) return;
+				button.style.display = "none";
+			});
+
 			await this.refreshFollows();
-
 			if (channelID !== undefined) {
-				setActive((await this.getPinnedStreamers()).includes(channelID));
-
-				render(() => <PinStreamerComponent isActivated={isActive()} />, button);
+				setPinned((await this.getPinnedStreamers()).includes(channelID));
+				if (isPinned()) button.style.display = "inline-block";
+				render(() => <PinStreamerComponent isPinned={isPinned()} />, button);
 			}
 		}
 	}
 
 	private async sortStreamsByPinned(
 		streamFollowList: StreamData[],
-		sortOnline: boolean,
+		isSortAvailable: boolean,
 	): Promise<StreamData[]> {
 		const favouriteStreamers = await this.getPinnedStreamers();
 
@@ -86,10 +94,9 @@ export default class PinStreamerModule extends Module<
 			}
 		});
 
-		if (sortOnline) {
+		if (isSortAvailable) {
 			const sortedRegularStreamers =
 				this.sortStreamDataByViewersCount(regularStreamers);
-
 			const sortedPinnedStreamers =
 				this.sortStreamDataByViewersCount(pinnedStreamers);
 
@@ -133,26 +140,23 @@ export default class PinStreamerModule extends Module<
 
 	private async updateFollows() {
 		const section = this.utils.twitch.getPersonalSections();
+		if (!section) return;
 
-		if (
-			this.originalOfflineFollow.length > 0 &&
-			this.originalFollow.length > 0
-		) {
-			// @ts-ignore
-			section.stateNode.props.section.streams = await this.sortStreamsByPinned(
-				this.originalFollow,
-				this.utils.twitch.getPersonalSections()?.stateNode.props.sort.type ===
-					"viewers_desc",
+		section.section.streams = await this.sortStreamsByPinned(
+			this.originalFollow,
+			this.utils.twitch.getPersonalSections()?.sort.type === "viewers_desc",
+		);
+
+		if (this.originalOfflineFollow.length > 0) {
+			section.section.videoConnections = await this.sortStreamsByPinned(
+				this.originalOfflineFollow,
+				true,
 			);
-
-			// @ts-ignore
-			section.stateNode.props.section.videoConnections =
-				await this.sortStreamsByPinned(this.originalOfflineFollow, true);
 		}
 	}
 
 	private async refreshFollows() {
-		if (!this.utils.twitch.getPersonalSections()?.stateNode.props.collapsed) {
+		if (!this.utils.twitch.getPersonalSections()?.collapsed) {
 			const refresh = this.utils.twitch.getReactInstance(
 				document.querySelector(".tw-interactable"),
 			).pendingProps.onClick;
@@ -172,15 +176,11 @@ export default class PinStreamerModule extends Module<
 	}
 
 	private getPersonalSectionStreams() {
-		return (
-			this.utils.twitch.getPersonalSections()?.stateNode.props.section
-				.streams ?? []
-		);
+		return this.utils.twitch.getPersonalSections()?.section.streams ?? [];
 	}
 	private getPersonalSectionVideoConnections() {
 		return (
-			this.utils.twitch.getPersonalSections()?.stateNode.props.section
-				.videoConnections ?? []
+			this.utils.twitch.getPersonalSections()?.section.videoConnections ?? []
 		);
 	}
 	private sortStreamDataByViewersCount(
