@@ -71,6 +71,7 @@ export type UserID = string;
 
 export type FollowedSection = {
 	props: {
+		collapsed: boolean;
 		section: {
 			streams: StreamData[];
 			videoConnections: StreamData[];
@@ -116,7 +117,7 @@ export type StreamData = {
 	modelTrackingID: string;
 	promotionsCampaignID: string;
 	user: User;
-	//content: Stream;
+	content: Stream;
 	sectionType: string;
 	channelLabel: string;
 };

@@ -71,6 +71,7 @@ export default class PinStreamerModule extends Module<
 
 	private async sortStreamsByPinned(
 		streamFollowList: StreamData[],
+		sortOnline: boolean,
 	): Promise<StreamData[]> {
 		const favouriteStreamers = await this.getPinnedStreamers();
 
@@ -85,7 +86,21 @@ export default class PinStreamerModule extends Module<
 			}
 		});
 
-		this.previousFollowListState = [...pinnedStreamers, ...regularStreamers];
+		if (sortOnline) {
+			const sortedRegularStreamers =
+				this.sortStreamDataByViewersCount(regularStreamers);
+
+			const sortedPinnedStreamers =
+				this.sortStreamDataByViewersCount(pinnedStreamers);
+
+			this.previousFollowListState = [
+				...sortedPinnedStreamers,
+				...sortedRegularStreamers,
+			];
+		} else {
+			this.previousFollowListState = [...pinnedStreamers, ...regularStreamers];
+		}
+
 		return this.previousFollowListState;
 	}
 
@@ -122,21 +137,27 @@ export default class PinStreamerModule extends Module<
 		// @ts-ignore
 		section.stateNode.props.section.streams = await this.sortStreamsByPinned(
 			this.originalFollow,
+			this.utils.twitch.getPersonalSections()?.stateNode.props.sort.type ===
+				"viewers_desc",
 		);
 
 		if (this.originalOfflineFollow.length > 0) {
 			// @ts-ignore
 			section.stateNode.props.section.videoConnections =
-				await this.sortStreamsByPinned(this.originalOfflineFollow);
+				await this.sortStreamsByPinned(this.originalOfflineFollow, true);
 		}
+
+		//section?.stateNode.props.sort.setSortType("ser");
 	}
 
 	private async refreshFollows() {
-		const refresh = this.utils.twitch.getReactInstance(
-			document.querySelector(".tw-interactable"),
-		).pendingProps.onClick;
-		refresh();
-		refresh();
+		if (!this.utils.twitch.getPersonalSections()?.stateNode.props.collapsed) {
+			const refresh = this.utils.twitch.getReactInstance(
+				document.querySelector(".tw-interactable"),
+			).pendingProps.onClick;
+			refresh();
+			refresh();
+		}
 	}
 
 	private async followsObserver() {
@@ -160,5 +181,15 @@ export default class PinStreamerModule extends Module<
 			this.utils.twitch.getPersonalSections()?.stateNode.props.section
 				.videoConnections ?? []
 		);
+	}
+	private sortStreamDataByViewersCount(
+		streamDataArray: StreamData[],
+	): StreamData[] {
+		return streamDataArray.sort((a, b) => {
+			const viewersCountA = a.content?.viewersCount ?? 0;
+			const viewersCountB = b.content?.viewersCount ?? 0;
+
+			return viewersCountB - viewersCountA;
+		});
 	}
 }
