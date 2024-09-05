@@ -23,8 +23,8 @@ export default class TwitchLoader extends ModuleLoader {
 			new ChattersModule(logger, utils, emitter, storage),
 			new ChatListenerModule(logger, utils, emitter, storage),
 			new StreamLatencyModule(logger, utils, emitter, storage),
-            new ChatBadgesModule(logger, utils, emitter, storage),
-            new PinStreamerModule(logger, utils, emitter, storage),
+			new ChatBadgesModule(logger, utils, emitter, storage),
+			new PinStreamerModule(logger, utils, emitter, storage),
 		];
 	}
 }

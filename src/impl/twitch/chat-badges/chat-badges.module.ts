@@ -1,8 +1,13 @@
-import type { TwitchChatMessageEvent } from "events/twitch/chat.ts";
 import Module from "module/module.ts";
-import type { ModuleConfig } from "module/types.ts";
+import type { TwitchChatMessageEvent } from "types/events/twitch/chat.events";
+import type { TwitchEvents } from "types/events/twitch/events";
+import type { ModuleConfig } from "types/module/module";
+import type { TwitchLocalStorageMap } from "types/storage/twitch/local.storage";
 
-export default class ChatBadgesModule extends Module {
+export default class ChatBadgesModule extends Module<
+	TwitchEvents,
+	TwitchLocalStorageMap
+> {
 	private TEST_BADGES = [
 		{
 			username: "igor_ovh",
@@ -10,8 +15,9 @@ export default class ChatBadgesModule extends Module {
 				"https://utfs.io/f/9ee8b55a-a7e0-4eed-9f17-11e7a4e80619-kpkf64.png",
 		},
 		{
-			username: "h2p_zupaaaa_sigma_rizzler",
-			source: "https://i.imgur.com/FiXTNS2.png",
+			username: "czestereq1669",
+			source:
+				"https://utfs.io/f/9ee8b55a-a7e0-4eed-9f17-11e7a4e80619-kpkf64.png",
 		},
 	];
 
