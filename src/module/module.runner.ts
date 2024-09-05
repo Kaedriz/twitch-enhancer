@@ -1,10 +1,11 @@
 import type Logger from "logger";
 import type ModuleRepository from "module/module.repository.ts";
-import type { ModuleElement, ModuleEvent } from "module/types.ts";
 import TwitchLoader from "modules/twitch/twitch.loader.ts";
 import type { Emitter } from "nanoevents";
+import type { TwitchEvents } from "types/events/twitch/events.d.ts";
+import type { ModuleElement, ModuleEvent } from "types/module/module.d.ts";
 import type CommonUtils from "utils/common.utils.ts";
-import type { TwitchEvents } from "../events/twitch/events.ts";
+import type StorageRepository from "../storage/storage-repository.ts";
 
 export default class ModuleRunner {
 	private elementsTimer: Timer | undefined;
@@ -14,6 +15,7 @@ export default class ModuleRunner {
 		private readonly moduleRepository: ModuleRepository,
 		private readonly utils: CommonUtils,
 		private readonly emitter: Emitter<TwitchEvents>,
+		private readonly storage: StorageRepository<never>,
 	) {}
 
 	start() {
@@ -26,11 +28,13 @@ export default class ModuleRunner {
 		this.logger.info("Initializing modules...");
 		const loader = new TwitchLoader();
 		this.moduleRepository.addModule(
-			...loader.get(this.logger, this.utils, this.emitter).map((module) => {
-				module._initialize();
-				this.logger.debug(`Initialized ${module.id()} module`);
-				return module;
-			}),
+			...loader
+				.get(this.logger, this.utils, this.emitter, this.storage)
+				.map((module) => {
+					module._initialize();
+					this.logger.debug(`Initialized ${module.id()} module`);
+					return module;
+				}),
 		);
 		this.logger.info(`Initialized ${this.moduleRepository.size()} modules`);
 	}
@@ -50,7 +54,7 @@ export default class ModuleRunner {
 				const config = module.getConfig();
 				const elements: Element[] =
 					config.elements
-						?.map((moduleElement) =>
+						?.flatMap((moduleElement) =>
 							this.checkElement(moduleElement, module.id()),
 						)
 						.filter((element): element is Element => element !== undefined) ??
@@ -72,26 +76,29 @@ export default class ModuleRunner {
 	}
 
 	private checkElement(moduleElement: ModuleElement, id: string) {
-		let element = document.querySelector(moduleElement.selector);
-		if (element && moduleElement.useParent) element = element.parentElement;
-		if (!element) return;
+		const elements = [...document.querySelectorAll(moduleElement.selector)];
 
-		if (moduleElement.urlConfig !== undefined) {
-			const url = window.location.href;
-			const { type, check, regex } = moduleElement.urlConfig;
-			const contains = (check?.(url) ?? false) || (regex?.test(url) ?? false);
-			if (
-				(contains && type === "exclude") ||
-				(!contains && type === "include")
-			) {
-				return;
+		return elements.map((_element) => {
+			let element: Element | null = _element;
+			if (element && moduleElement.useParent) element = element.parentElement;
+			if (!element) return;
+
+			if (moduleElement.urlConfig !== undefined) {
+				const url = window.location.href;
+				const { type, check, regex } = moduleElement.urlConfig;
+				const contains = (check?.(url) ?? false) || (regex?.test(url) ?? false);
+				if (
+					(contains && type === "exclude") ||
+					(!contains && type === "include")
+				) {
+					return;
+				}
 			}
-		}
 
-		if (this.utils.isElementAlreadyUsed(element, id) && moduleElement.once)
-			return;
-		this.utils.markElementAsUsed(element, id);
-
-		return element;
+			if (this.utils.isElementAlreadyUsed(element, id) && moduleElement.once)
+				return;
+			this.utils.markElementAsUsed(element, id);
+			return element;
+		});
 	}
 }

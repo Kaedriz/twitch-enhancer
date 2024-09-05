@@ -1,5 +1,5 @@
+import type { ExtensionMode } from "types/extension";
 import Extension from "./extension.ts";
-import type { ExtensionMode } from "./types.ts";
 
 (() => {
 	if (window.enhancer) return;

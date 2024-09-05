@@ -1,7 +1,12 @@
 import Module from "module/module.ts";
-import type { ModuleConfig, ModuleEvent } from "module/types.ts";
+import type { TwitchEvents } from "types/events/twitch/events.d.ts";
+import type { ModuleConfig, ModuleEvent } from "types/module/module.d.ts";
+import type { TwitchLocalStorageMap } from "types/storage/twitch/local.storage.d.ts";
 
-export default class ExampleModule extends Module {
+export default class ExampleModule extends Module<
+	TwitchEvents,
+	TwitchLocalStorageMap
+> {
 	protected config(): ModuleConfig {
 		return {
 			name: "example",

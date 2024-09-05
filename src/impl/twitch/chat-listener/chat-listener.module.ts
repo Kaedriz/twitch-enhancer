@@ -1,6 +1,4 @@
-import type { ChatType, TwitchChatMessage } from "events/twitch/chat.ts";
 import Module from "module/module.ts";
-import type { ModuleConfig, ModuleEvent } from "module/types.ts";
 import {
 	SEVENTV_CHAT_SELECTOR,
 	TWITCHTV_CHAT_SELECTOR,
@@ -8,9 +6,19 @@ import {
 import type ChatMessageListener from "modules/twitch/chat-listener/listener/chat-message-listener.ts";
 import SevenTVChatMessageListener from "modules/twitch/chat-listener/listener/seventv.chat-message-listener.ts";
 import TwitchChatMessageListener from "modules/twitch/chat-listener/listener/twitch.chat-message-listener.ts";
-import type { QueueValue } from "utils/queue/types.ts";
+import type {
+	ChatType,
+	TwitchChatMessage,
+} from "types/events/twitch/chat.events.d.ts";
+import type { TwitchEvents } from "types/events/twitch/events.d.ts";
+import type { ModuleConfig, ModuleEvent } from "types/module/module.d.ts";
+import type { TwitchLocalStorageMap } from "types/storage/twitch/local.storage.d.ts";
+import type { QueueValue } from "types/utils/queue.d.ts";
 
-export default class ChatListenerModule extends Module {
+export default class ChatListenerModule extends Module<
+	TwitchEvents,
+	TwitchLocalStorageMap
+> {
 	private listener = {} as ChatMessageListener;
 	private observer: MutationObserver | undefined;
 	private queue = this.utils.createQueue<TwitchChatMessage & QueueValue>({

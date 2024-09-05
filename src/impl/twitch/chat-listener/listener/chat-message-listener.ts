@@ -1,6 +1,6 @@
-import type { TwitchChatMessage } from "events/twitch/chat.ts";
 import type Logger from "logger";
 import { createNanoEvents } from "nanoevents";
+import type { TwitchChatMessage } from "types/events/twitch/chat.events.d.ts";
 import type CommonUtils from "utils/common.utils.ts";
 
 export default abstract class ChatMessageListener {

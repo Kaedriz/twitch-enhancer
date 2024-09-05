@@ -1,5 +1,5 @@
 {
-	"name": "bun-chrome-extension-boilerplate",
+	"name": "enhancer",
 	"module": "src/index.ts",
 	"type": "module",
 	"devDependencies": {

@@ -1,4 +1,4 @@
-import type { TwitchChatMessageEvent } from "events/twitch/chat.ts";
+import type { TwitchChatMessageEvent } from "types/events/twitch/chat.events.d.ts";
 
 export interface TwitchEvents {
 	start: () => void;
