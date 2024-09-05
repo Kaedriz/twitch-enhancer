@@ -46,3 +46,78 @@ export interface TwitchChatMessageComponent {
 		};
 	};
 }
+
+export type MediaPlayerComponent = {
+	props: {
+		mediaPlayerInstance: MediaPlayerInstance;
+	};
+};
+
+export type PersonalSections = {
+	props: {
+		data: {
+			personalSections: object[];
+		};
+	};
+};
+
+export type MediaPlayerInstance = {
+	core: { state: { liveLatency: number; ingestLatency: number } };
+	seekTo: (time: number) => void;
+	getPosition(): number;
+};
+
+export type UserID = string;
+
+export type FollowedSection = {
+	props: {
+		collapsed: boolean;
+		section: {
+			streams: StreamData[];
+			videoConnections: StreamData[];
+		};
+		sort: {
+			setSortType: (type: string) => void;
+			type: string;
+		};
+	};
+};
+
+export type Stream = {
+	__typename: string;
+	id: string;
+	broadcaster: User;
+	viewersCount: number;
+	game: {
+		__typename: string;
+		id: string;
+		slug: string;
+		displayName: string;
+		name: string;
+	};
+	type: string;
+	hasHypeTrain: boolean;
+};
+
+export type User = {
+	__typename: string;
+	id: string;
+	login: number;
+	displayName: string;
+	profileImageURL: string;
+	primaryColorHex: string | null;
+	broadcastSettings: {
+		__typename: string;
+		id: string;
+		title: string;
+	};
+};
+
+export type StreamData = {
+	modelTrackingID: string;
+	promotionsCampaignID: string;
+	user: User;
+	content: Stream;
+	sectionType: string;
+	channelLabel: string;
+};

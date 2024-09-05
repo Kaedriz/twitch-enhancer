@@ -3,7 +3,7 @@ import type {
 	PersistentPlayerComponent,
 	ReactComponent,
 	TwitchChatMessageComponent,
-} from "types/utils/twitch-react.d.ts";
+} from "types/utils/twitch-react";
 
 export default class ReactUtils {
 	findReactParents<T>(
