@@ -148,7 +148,7 @@ export default class PinStreamerModule extends Module<
 		) {
 			section.section.streams = await this.sortStreamsByPinned(
 				this.originalFollow,
-				this.utils.twitch.getPersonalSections()?.sort.type === "viewers_desc",
+				section.sort.type === "viewers_desc",
 			);
 
 			section.section.videoConnections = await this.sortStreamsByPinned(
@@ -181,18 +181,19 @@ export default class PinStreamerModule extends Module<
 	private getPersonalSectionStreams() {
 		return this.utils.twitch.getPersonalSections()?.section.streams ?? [];
 	}
+
 	private getPersonalSectionVideoConnections() {
 		return (
 			this.utils.twitch.getPersonalSections()?.section.videoConnections ?? []
 		);
 	}
+
 	private sortStreamDataByViewersCount(
 		streamDataArray: StreamData[],
 	): StreamData[] {
 		return streamDataArray.sort((a, b) => {
 			const viewersCountA = a.content?.viewersCount ?? 0;
 			const viewersCountB = b.content?.viewersCount ?? 0;
-
 			return viewersCountB - viewersCountA;
 		});
 	}
