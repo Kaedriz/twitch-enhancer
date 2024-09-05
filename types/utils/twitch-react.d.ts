@@ -81,6 +81,7 @@ export type FollowedSection = {
 			type: string;
 		};
 	};
+	forceUpdate: () => void;
 };
 
 export type Stream = {

@@ -58,6 +58,6 @@ export default class TwitchUtils extends ReactUtils {
 			this.getReactInstance(document.querySelector(".side-nav-section")),
 			(n) => !!n.stateNode?.props?.section,
 			1000,
-		)?.stateNode.props;
+		)?.stateNode;
 	}
 }

@@ -139,7 +139,7 @@ export default class PinStreamerModule extends Module<
 	}
 
 	private async updateFollows() {
-		const section = this.utils.twitch.getPersonalSections();
+		const section = this.utils.twitch.getPersonalSections()?.props;
 		if (!section) return;
 
 		if (
@@ -159,13 +159,9 @@ export default class PinStreamerModule extends Module<
 	}
 
 	private async refreshFollows() {
-		if (!this.utils.twitch.getPersonalSections()?.collapsed) {
-			const refresh = this.utils.twitch.getReactInstance(
-				document.querySelector(".tw-interactable"),
-			).pendingProps.onClick;
-			refresh();
-			refresh();
-		}
+		const section = this.utils.twitch.getPersonalSections();
+		if (!section) return;
+		section.forceUpdate();
 	}
 
 	private async followsObserver() {
@@ -179,12 +175,15 @@ export default class PinStreamerModule extends Module<
 	}
 
 	private getPersonalSectionStreams() {
-		return this.utils.twitch.getPersonalSections()?.section.streams ?? [];
+		return (
+			this.utils.twitch.getPersonalSections()?.props?.section.streams ?? []
+		);
 	}
 
 	private getPersonalSectionVideoConnections() {
 		return (
-			this.utils.twitch.getPersonalSections()?.section.videoConnections ?? []
+			this.utils.twitch.getPersonalSections()?.props?.section
+				.videoConnections ?? []
 		);
 	}
 
