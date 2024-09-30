@@ -24,11 +24,6 @@ export default class ChatListenerModule extends Module<
 	private queue = this.utils.createQueue<TwitchChatMessage & QueueValue>({
 		expire: 300,
 	});
-	private elementsQueue = this.utils.createQueue<
-		{ element: Element } & QueueValue
-	>({
-		expire: 10,
-	});
 	private type: ChatType = "TWITCH";
 	private readonly validMessagesTypes = [0, 51];
 
@@ -76,14 +71,21 @@ export default class ChatListenerModule extends Module<
 			for (const mutation of list) {
 				if (mutation.type === "childList" && mutation.addedNodes) {
 					for (const node of mutation.addedNodes) {
-						const uuid = crypto.randomUUID();
 						const element = node as Element;
-						this.elementsQueue.addByValue({
+
+						const seventvId = element.getAttribute("msg-id");
+						const id =
+							seventvId ??
+							this.utils.twitch.getChatMessage(element)?.props.message.id;
+						if (!id) return;
+
+						const message = this.queue.getAndRemove(id);
+						if (!message) return;
+						this.emitter.emit("chatMessage", {
 							element,
-							queueKey: uuid,
-							createdAt: Date.now(),
+							message,
+							type: this.type,
 						});
-						this.callMessages();
 					}
 				}
 			}
@@ -95,42 +97,9 @@ export default class ChatListenerModule extends Module<
 
 	private async handleMessage(message: TwitchChatMessage) {
 		if (!this.validMessagesTypes.includes(message.type)) return;
-		let queueMessage = message;
-		const isIdUuid = message.id.includes("-");
-		const key = isIdUuid ? message.id : message.nonce;
-		if (isIdUuid && this.queue.contains(message.nonce)) {
-			// biome-ignore lint/style/noNonNullAssertion: Checking it above
-			queueMessage = { ...this.queue.getAndRemove(message.nonce)!, id: key };
-		}
 		this.queue.addByValue({
-			...queueMessage,
-			queueKey: key,
-			createdAt: Date.now(),
+			...message,
+			queueKey: message.id,
 		});
-
-		if (isIdUuid) this.callMessages();
-	}
-
-	private callMessages(retry = 0) {
-		for (const value of this.elementsQueue.values()) {
-			const element = value.element;
-			const seventvId = element.getAttribute("msg-id");
-			if (seventvId && !seventvId.includes("-") && retry < 5) {
-				setTimeout(() => this.callMessages(retry + 1), 5);
-				return;
-			}
-			const id =
-				seventvId ??
-				this.utils.twitch.getChatMessage(element)?.props.message.id;
-			if (id && this.queue.contains(id)) {
-				this.emitter.emit("chatMessage", {
-					element,
-					// biome-ignore lint/style/noNonNullAssertion: Checking it above
-					message: this.queue.getAndRemove(id)!,
-					type: this.type,
-				});
-				this.elementsQueue.remove(value.queueKey);
-			}
-		}
 	}
 }

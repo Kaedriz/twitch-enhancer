@@ -16,7 +16,7 @@ export default class SevenTVChatMessageListener extends ChatMessageListener {
 		}
 		const callbackWrapper = (messages: TwitchChatMessage[]) =>
 			messages.forEach((message) => {
-				this.emitter.emit("message", message);
+				this.emitter.emit("message", { ...message, createdAt: Date.now() });
 			});
 		Object.defineProperty(messageHandlerAPI, "handleMessage", {
 			get() {
