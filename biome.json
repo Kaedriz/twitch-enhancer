@@ -19,6 +19,6 @@
 		}
 	},
 	"files": {
-		"ignore": ["node_modules", "build/**", "README.md"]
+		"ignore": ["node_modules", "dist/**", "README.md"]
 	}
 }

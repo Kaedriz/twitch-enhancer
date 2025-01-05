@@ -1,10 +1,10 @@
 .wrapper {
-    margin-left: 4px;
-    color: #ff8280;
-    font-weight: 600 !important;
+	margin-left: 4px;
+	color: #ff8280;
+	font-weight: 600 !important;
 }
 
 .wrapper:hover {
-    opacity: 0.75;
-    cursor: pointer;
+	opacity: 0.75;
+	cursor: pointer;
 }

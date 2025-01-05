@@ -1,11 +1,11 @@
 .wrapper {
-    color: #dedee3;
-    font-weight: 600 !important;
-    justify-content: center;
-    text-transform: capitalize;
+	color: #dedee3;
+	font-weight: 600 !important;
+	justify-content: center;
+	text-transform: capitalize;
 }
 
 .wrapper:hover {
-    opacity: 0.75;
-    cursor: pointer;
+	opacity: 0.75;
+	cursor: pointer;
 }

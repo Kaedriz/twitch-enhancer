@@ -3,7 +3,7 @@
 	"module": "src/index.ts",
 	"type": "module",
 	"devDependencies": {
-		"@biomejs/biome": "1.8.1",
+		"@biomejs/biome": "1.9.4",
 		"@types/chrome": "^0.0.262",
 		"bun-lightningcss": "^0.2.0",
 		"bun-plugin-solid": "^1.0.0",
@@ -26,9 +26,10 @@
 		"tiny-typed-emitter": "^2.1.0"
 	},
 	"scripts": {
-		"build": "bun run biome && bun run scripts/build.ts",
-		"dev": "bun run scripts/build.ts --server",
+		"build": "bun run biome && bun run build/main.ts",
+		"dev": "bun run build/main.ts --server",
 		"biome": "npx @biomejs/biome check --write .",
 		"prepare": "husky"
-	}
+	},
+	"trustedDependencies": ["@biomejs/biome"]
 }
