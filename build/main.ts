@@ -1,6 +1,6 @@
 import config from "../config.json";
 import Bundler from "./bundler";
-import Server from './server'
+import Server from "./server";
 
 const bundler = new Bundler(config);
 if (Bun.argv.includes("--server")) {

@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import { rimraf } from "rimraf";
 import SimpleLogger from "./simple-logger";
-import { BundlerConfig, BuildType } from './types'
+import type { BuildType, BundlerConfig } from "./types";
 
 export default class Bundler {
 	private readonly logger = new SimpleLogger("Bundler");
