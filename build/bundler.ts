@@ -1,9 +1,9 @@
 import fs from "node:fs";
+import lightningcss from "bun-lightningcss";
+import { SolidPlugin } from "bun-plugin-solid";
 import { rimraf } from "rimraf";
 import SimpleLogger from "./simple-logger";
 import type { BuildType, BundlerConfig } from "./types";
-import lightningcss from "bun-lightningcss";
-import { SolidPlugin } from "bun-plugin-solid";
 
 export default class Bundler {
 	private readonly logger = new SimpleLogger("Bundler");
@@ -25,6 +25,7 @@ export default class Bundler {
 			entrypoints: build.entryPointsPath,
 			outdir: build.distributionPath,
 			sourcemap: type === "production" ? "none" : "inline",
+			minify: type === "production",
 			plugins: [SolidPlugin(), lightningcss()],
 			define: {
 				__mode__: JSON.stringify(type),
