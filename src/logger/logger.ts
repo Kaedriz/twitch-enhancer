@@ -2,7 +2,6 @@ import type { ExtensionMode } from "types/extension";
 import type { LogType } from "types/logger/logger";
 
 export default class Logger {
-
 	private readonly PREFIX = "\x1B[1;38;2;145;71;255m[Enhancer]";
 	private readonly LOGS: Record<LogType, string> = {
 		debug: "\x1B[38;2;102;204;255mDEBUG\x1B[0m",

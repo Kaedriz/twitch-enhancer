@@ -30,20 +30,20 @@ export default class Queue<Value extends QueueValue> {
 
 	replaceKey(oldKey: string, newKey: string) {
 		const value = this.getAndRemove(oldKey);
-		if(!value) return;
+		if (!value) return;
 		this.add(newKey, value);
 	}
 
 	findAndRemove(predicate: (value: Value) => boolean) {
-		for(const key in this.queue.keys()) {
+		for (const key in this.queue.keys()) {
 			const value = this.queue.get(key);
-			console.info('gowno', key, value)
+			console.info("gowno", key, value);
 
-			if(!value) return;
+			if (!value) return;
 
 			// @ts-ignore
-			console.info('looking into', value.nonce)
-			if(predicate(value)) {
+			console.info("looking into", value.nonce);
+			if (predicate(value)) {
 				this.queue.delete(key);
 				return value;
 			}

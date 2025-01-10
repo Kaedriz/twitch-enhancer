@@ -1,6 +1,6 @@
 import type Logger from "logger";
 import type { Emitter, EventsMap } from "nanoevents";
-import type {TwitchEvents} from "types/events/twitch/events";
+import type { TwitchEvents } from "types/events/twitch/events";
 import type { ModuleConfig, ModuleEvent } from "types/module/module.d.ts";
 import type CommonUtils from "utils/common.utils.ts";
 import type StorageRepository from "../storage/storage-repository.ts";
@@ -53,9 +53,10 @@ export default class Module<EmitterEvents extends EventsMap, StorageMap> {
 	}
 
 	private listenForEvents() {
-		this.getConfig().listener?.forEach((listener) => this.emitter.on(listener.name, listener.handler));
+		this.getConfig().listener?.forEach((listener) =>
+			this.emitter.on(listener.name, listener.handler),
+		);
 	}
-
 
 	protected initialize() {}
 

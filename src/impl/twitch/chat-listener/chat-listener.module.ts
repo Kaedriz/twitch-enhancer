@@ -84,7 +84,8 @@ export default class ChatListenerModule extends Module<
 						if (!id) return;
 
 						let message = this.queue.getAndRemove(id);
-						if(messageProps?.message.nonce && !message) message = this.queue.getAndRemove(messageProps?.message.nonce); // Handling rerenderig messages
+						if (messageProps?.message.nonce && !message)
+							message = this.queue.getAndRemove(messageProps?.message.nonce); // Handling rerenderig messages
 
 						if (!message) return;
 						this.emitter.emit("chatMessage", {
@@ -108,13 +109,15 @@ export default class ChatListenerModule extends Module<
 			...message,
 			queueKey: id,
 		});
-		if (!this.utils.isUUID(id) && this.type === 'TWITCH') {
-			this.logger.debug('Recieved self message, adding backup message as nonce:', message.nonce)
+		if (!this.utils.isUUID(id) && this.type === "TWITCH") {
+			this.logger.debug(
+				"Recieved self message, adding backup message as nonce:",
+				message.nonce,
+			);
 			this.queue.addByValue({
 				...message,
 				queueKey: message.nonce,
 			});
 		}
 	}
-
 }
