@@ -27,13 +27,20 @@ jobs:
 
       - name: Get last version
         id: get_last_tag
-        run: echo "LAST_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 || echo "v0.0.0")
+          echo "LAST_TAG=$LAST_TAG" >> $GITHUB_ENV
 
       - name: Get commits
         id: get_commits
         run: |
-          COMMITS=$(git log ${LAST_TAG}..HEAD --oneline)
-          echo "COMMITS=$COMMITS" >> $GITHUB_ENV
+          if [ "$LAST_TAG" != "v0.0.0" ]; then
+            COMMITS=$(git log ${LAST_TAG}..HEAD --oneline)
+            echo "COMMITS=$COMMITS" >> $GITHUB_ENV
+          else
+            echo "No previous tag found, skipping commit list." >> $GITHUB_ENV
+            echo "COMMITS=No previous tag found" >> $GITHUB_ENV
+          fi
 
       - name: Zip distribution directory
         run: |
