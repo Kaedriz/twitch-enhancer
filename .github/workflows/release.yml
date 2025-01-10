@@ -31,15 +31,7 @@ jobs:
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "Version is $VERSION"
 
-      - name: Check if version is set correctly
-        run: |
-          echo "VERSION=${{ env.VERSION }}"
-          if [ "${{ env.VERSION }}" == "null" ]; then
-            echo "Error: VERSION not found. Please check package.json."
-            exit 1
-          fi
-
-      - name: Get last version (Git tag)
+      - name: Get last version
         id: get_last_tag
         run: |
           LAST_TAG=$(git describe --tags --abbrev=0 || echo "0.0.0")
