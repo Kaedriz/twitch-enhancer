@@ -38,7 +38,7 @@ jobs:
             COMMITS=$(git log ${LAST_TAG}..HEAD --oneline)
             echo "COMMITS=$COMMITS" >> $GITHUB_ENV
           else
-            echo "No previous tag found, skipping commit list." >> $GITHUB_ENV
+            echo "No previous tag found, skipping commit list." 
             echo "COMMITS=No previous tag found" >> $GITHUB_ENV
           fi
 
