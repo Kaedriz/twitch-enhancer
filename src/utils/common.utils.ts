@@ -1,11 +1,13 @@
-import type { ModuleUrlConfig, ModuleUrlType } from "types/module/module.d.ts";
-import type { QueueConfig, QueueValue } from "types/utils/queue.d.ts";
+import type {ModuleUrlConfig, ModuleUrlType} from "types/module/module.d.ts";
+import type {QueueConfig, QueueValue} from "types/utils/queue.d.ts";
 import Queue from "utils/queue/queue.ts";
 import TwitchUtils from "utils/twitch/twitch.utils.ts";
 
 export default class CommonUtils {
 	//TODO Have seperated twitch utils
 	readonly twitch = new TwitchUtils();
+
+	static readonly UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 	createElementByParentSelector(
 		id: string,
@@ -79,4 +81,17 @@ export default class CommonUtils {
 	createQueue<T extends QueueValue>(config: QueueConfig) {
 		return new Queue<T>(config);
 	}
+
+	isUUID(text: string) {
+		return CommonUtils.UUID_REGEX.test(text);
+	}
+
+	async hashSHA256(text: string) {
+		const encoder = new TextEncoder();
+		const data = encoder.encode(text);
+		const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+		const hashArray = Array.from(new Uint8Array(hashBuffer));
+		return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+	}
+
 }

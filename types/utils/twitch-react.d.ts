@@ -43,6 +43,7 @@ export interface TwitchChatMessageComponent {
 				displayName: string;
 				login: string;
 			};
+			nonce: string;
 		};
 	};
 }

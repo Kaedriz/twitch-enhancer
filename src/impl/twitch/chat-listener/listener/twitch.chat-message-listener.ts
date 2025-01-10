@@ -4,7 +4,8 @@ export default class TwitchChatMessageListener extends ChatMessageListener {
 	inject() {
 		const messageHandlerAPI =
 			this.utils.twitch.getChatController()?.props.messageHandlerAPI;
-		messageHandlerAPI?.addMessageHandler((message) => {
+		if (!messageHandlerAPI) throw new Error("Missing chat message handler");
+		messageHandlerAPI.addMessageHandler((message) => {
 			this.emitter.emit("message", { ...message, createdAt: Date.now() });
 		});
 		this.emitter.emit("inject");

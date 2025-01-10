@@ -1,10 +1,17 @@
+import type { TwitchEvents } from "types/events/twitch/events";
 import type { Platform } from "../twitch-react.d.ts";
 
 export interface ModuleConfig {
 	platform: Platform;
 	name: string;
 	elements?: ModuleElement[];
+	listener?: ModuleEventListener[];
 }
+
+export type ModuleEventListener<T extends keyof TwitchEvents> = {
+	name: T;
+	handler: TwitchEvents[T];
+};
 
 export type ModuleElement = {
 	selector: string;

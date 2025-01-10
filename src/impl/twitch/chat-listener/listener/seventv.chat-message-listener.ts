@@ -5,15 +5,13 @@ export default class SevenTVChatMessageListener extends ChatMessageListener {
 	inject() {
 		const messageHandlerAPI =
 			this.utils.twitch.getChatController()?.props.messageHandlerAPI;
+		if (!messageHandlerAPI) throw new Error("Missing chat message handler");
 		this.logger.debug("Injected 7TV message handler");
 		const descriptor = Object.getOwnPropertyDescriptor(
 			messageHandlerAPI,
 			"handleMessage",
 		);
-		if (!descriptor || !descriptor.get || !descriptor.set) {
-			this.logger.warn("Couldn't inject into 7TV chat");
-			return;
-		}
+		if (!descriptor || !descriptor.get || !descriptor.set) throw new Error("Couldn't inject into 7TV chat");
 		const callbackWrapper = (messages: TwitchChatMessage[]) =>
 			messages.forEach((message) => {
 				this.emitter.emit("message", { ...message, createdAt: Date.now() });

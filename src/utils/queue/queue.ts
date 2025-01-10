@@ -28,6 +28,28 @@ export default class Queue<Value extends QueueValue> {
 		return value;
 	}
 
+	replaceKey(oldKey: string, newKey: string) {
+		const value = this.getAndRemove(oldKey);
+		if(!value) return;
+		this.add(newKey, value);
+	}
+
+	findAndRemove(predicate: (value: Value) => boolean) {
+		for(const key in this.queue.keys()) {
+			const value = this.queue.get(key);
+			console.info('gowno', key, value)
+
+			if(!value) return;
+
+			// @ts-ignore
+			console.info('looking into', value.nonce)
+			if(predicate(value)) {
+				this.queue.delete(key);
+				return value;
+			}
+		}
+	}
+
 	remove(key: string) {
 		this.queue.delete(key);
 	}
