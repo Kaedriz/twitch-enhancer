@@ -86,7 +86,7 @@ export default class ReactUtils {
 				),
 			),
 			(n) => n.stateNode?.props?.chatConnectionAPI,
-			25,
+			50,
 		);
 		return node?.stateNode;
 	}

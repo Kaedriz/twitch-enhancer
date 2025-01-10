@@ -23,7 +23,7 @@ export default class Extension {
 		readonly mode: ExtensionMode,
 	) {
 		this.moduleRepository = new ModuleRepository();
-		this.logger = new Logger(this.mode);
+		this.logger = new Logger(this.mode === "development");
 		this.utils = new CommonUtils();
 		this.moduleRunner = new ModuleRunner(
 			this.logger,

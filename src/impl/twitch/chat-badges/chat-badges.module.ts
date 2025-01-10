@@ -19,17 +19,24 @@ export default class ChatBadgesModule extends Module<
 			source:
 				"https://utfs.io/f/9ee8b55a-a7e0-4eed-9f17-11e7a4e80619-kpkf64.png",
 		},
+		{
+			username: "h2p_zupaaaa_sigma_rizzler",
+			source:
+				"https://utfs.io/f/9ee8b55a-a7e0-4eed-9f17-11e7a4e80619-kpkf64.png",
+		},
 	];
 
 	protected config(): ModuleConfig {
 		return {
 			name: "chat-badges",
 			platform: "twitch",
+			listener: [
+				{
+					name: "chatMessage",
+					handler: this.handleMessage.bind(this),
+				},
+			],
 		};
-	}
-
-	protected initialize() {
-		this.emitter.on("chatMessage", (message) => this.handleMessage(message));
 	}
 
 	private handleMessage({ message, element }: TwitchChatMessageEvent) {

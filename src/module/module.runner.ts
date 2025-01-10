@@ -31,7 +31,7 @@ export default class ModuleRunner {
 			...loader
 				.get(this.logger, this.utils, this.emitter, this.storage)
 				.map((module) => {
-					module._initialize();
+					module.setup();
 					this.logger.debug(`Initialized ${module.id()} module`);
 					return module;
 				}),
@@ -76,24 +76,23 @@ export default class ModuleRunner {
 	}
 
 	private checkElement(moduleElement: ModuleElement, id: string) {
-		const elements = [...document.querySelectorAll(moduleElement.selector)];
+		if (moduleElement.urlConfig !== undefined) {
+			const url = window.location.href;
+			const { type, check, regex } = moduleElement.urlConfig;
+			const contains = (check?.(url) ?? false) || (regex?.test(url) ?? false);
+			if (
+				(contains && type === "exclude") ||
+				(!contains && type === "include")
+			) {
+				return;
+			}
+		}
 
+		const elements = [...document.querySelectorAll(moduleElement.selector)];
 		return elements.map((_element) => {
 			let element: Element | null = _element;
 			if (element && moduleElement.useParent) element = element.parentElement;
 			if (!element) return;
-
-			if (moduleElement.urlConfig !== undefined) {
-				const url = window.location.href;
-				const { type, check, regex } = moduleElement.urlConfig;
-				const contains = (check?.(url) ?? false) || (regex?.test(url) ?? false);
-				if (
-					(contains && type === "exclude") ||
-					(!contains && type === "include")
-				) {
-					return;
-				}
-			}
 
 			if (this.utils.isElementAlreadyUsed(element, id) && moduleElement.once)
 				return;

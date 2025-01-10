@@ -7,6 +7,9 @@ export default class CommonUtils {
 	//TODO Have seperated twitch utils
 	readonly twitch = new TwitchUtils();
 
+	static readonly UUID_REGEX =
+		/^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+
 	createElementByParentSelector(
 		id: string,
 		tag: keyof HTMLElementTagNameMap,
@@ -78,5 +81,9 @@ export default class CommonUtils {
 
 	createQueue<T extends QueueValue>(config: QueueConfig) {
 		return new Queue<T>(config);
+	}
+
+	isUUID(text: string) {
+		return CommonUtils.UUID_REGEX.test(text);
 	}
 }

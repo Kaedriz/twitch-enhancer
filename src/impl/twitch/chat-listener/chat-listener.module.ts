@@ -1,8 +1,4 @@
 import Module from "module/module.ts";
-import {
-	SEVENTV_CHAT_SELECTOR,
-	TWITCHTV_CHAT_SELECTOR,
-} from "modules/twitch/chat-listener/chat.constatns.ts";
 import type ChatMessageListener from "modules/twitch/chat-listener/listener/chat-message-listener.ts";
 import SevenTVChatMessageListener from "modules/twitch/chat-listener/listener/seventv.chat-message-listener.ts";
 import TwitchChatMessageListener from "modules/twitch/chat-listener/listener/twitch.chat-message-listener.ts";
@@ -25,18 +21,22 @@ export default class ChatListenerModule extends Module<
 		expire: 300,
 	});
 	private type: ChatType = "TWITCH";
-	private readonly validMessagesTypes = [0, 51];
+
+	static readonly VALID_MESSAGES_TYPES = [0]; // 51 is rerendered self message
+	static readonly TWITCHTV_CHAT_SELECTOR =
+		".chat-scrollable-area__message-container";
+	static readonly SEVENTV_CHAT_SELECTOR = "main.seventv-chat-list";
 
 	protected config(): ModuleConfig {
 		return {
 			name: "chat-listener",
 			elements: [
 				{
-					selector: TWITCHTV_CHAT_SELECTOR,
+					selector: ChatListenerModule.TWITCHTV_CHAT_SELECTOR,
 					once: true,
 				},
 				{
-					selector: SEVENTV_CHAT_SELECTOR,
+					selector: ChatListenerModule.SEVENTV_CHAT_SELECTOR,
 					once: true,
 				},
 			],
@@ -48,7 +48,11 @@ export default class ChatListenerModule extends Module<
 		const elements = event.elements;
 		if (elements.length > 1) this.logger.warn("Found multiple chat element");
 		const element = elements[0];
-		if (element.classList.contains(TWITCHTV_CHAT_SELECTOR.replace(".", ""))) {
+		if (
+			element.classList.contains(
+				ChatListenerModule.TWITCHTV_CHAT_SELECTOR.replace(".", ""),
+			)
+		) {
 			this.type = "TWITCH";
 			this.listener = new TwitchChatMessageListener(this.logger, this.utils);
 		} else if (element.className.includes("seventv")) {
@@ -67,19 +71,22 @@ export default class ChatListenerModule extends Module<
 
 	private createObserver(elements: Element[]) {
 		this.observer?.disconnect();
-		this.observer = new MutationObserver((list) => {
+		this.observer = new MutationObserver(async (list) => {
 			for (const mutation of list) {
 				if (mutation.type === "childList" && mutation.addedNodes) {
 					for (const node of mutation.addedNodes) {
 						const element = node as Element;
-
 						const seventvId = element.getAttribute("msg-id");
-						const id =
-							seventvId ??
-							this.utils.twitch.getChatMessage(element)?.props.message.id;
+						const messageProps = this.utils.twitch.getChatMessage(
+							element.children[0],
+						)?.props;
+						const id = seventvId ?? messageProps?.message.id;
 						if (!id) return;
 
-						const message = this.queue.getAndRemove(id);
+						let message = this.queue.getAndRemove(id);
+						if (messageProps?.message.nonce && !message)
+							message = this.queue.getAndRemove(messageProps?.message.nonce); // Handling rerenderig messages
+
 						if (!message) return;
 						this.emitter.emit("chatMessage", {
 							element,
@@ -96,10 +103,21 @@ export default class ChatListenerModule extends Module<
 	}
 
 	private async handleMessage(message: TwitchChatMessage) {
-		if (!this.validMessagesTypes.includes(message.type)) return;
+		if (!ChatListenerModule.VALID_MESSAGES_TYPES.includes(message.type)) return;
+		const id = message.id;
 		this.queue.addByValue({
 			...message,
-			queueKey: message.id,
+			queueKey: id,
 		});
+		if (!this.utils.isUUID(id) && this.type === "TWITCH") {
+			this.logger.debug(
+				"Recieved self message, adding backup message as nonce:",
+				message.nonce,
+			);
+			this.queue.addByValue({
+				...message,
+				queueKey: message.nonce,
+			});
+		}
 	}
 }
