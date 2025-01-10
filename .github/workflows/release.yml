@@ -1,11 +1,15 @@
-name: Release
+name: Release Build and Publish
 
 on:
-  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
 
 jobs:
   release:
+    name: Build and Publish Release
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -21,27 +25,6 @@ jobs:
       - name: Build project
         run: bun run build
 
-      - name: Get version
-        id: get_version
-        run: echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
-
-      - name: Get last version
-        id: get_last_tag
-        run: |
-          LAST_TAG=$(git describe --tags --abbrev=0 || echo "v0.0.0")
-          echo "LAST_TAG=$LAST_TAG" >> $GITHUB_ENV
-
-      - name: Get commits
-        id: get_commits
-        run: |
-          if [ "$LAST_TAG" != "v0.0.0" ]; then
-            COMMITS=$(git log ${LAST_TAG}..HEAD --oneline)
-            echo "COMMITS=$COMMITS" >> $GITHUB_ENV
-          else
-            echo "No previous tag found, skipping commit list." 
-            echo "COMMITS=No previous tag found" >> $GITHUB_ENV
-          fi
-
       - name: Zip distribution directory
         run: |
           mkdir -p release
@@ -52,9 +35,7 @@ jobs:
         with:
           artifacts: release/dist.zip
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: "v${{ env.VERSION }}"
-          name: "Release v${{ env.VERSION }}"
+          tag: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
           body: |
-            ## Changes since v${{ env.LAST_TAG }}:
-            
-            ${{ env.COMMITS }}
+            New release created from tag: ${{ github.ref_name }}
