@@ -24,24 +24,37 @@ jobs:
       - name: Build project
         run: bun run build
 
-      - name: Get version
+      - name: Get version from package.json
         id: get_version
-        run: echo "VERSION=$(jq -r .version package.json)" >> $GITHUB_ENV
+        run: |
+          VERSION=$(jq -r .version package.json)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "Version is $VERSION"
 
-      - name: Get last version
+      - name: Check if version is set correctly
+        run: |
+          echo "VERSION=${{ env.VERSION }}"
+          if [ "${{ env.VERSION }}" == "null" ]; then
+            echo "Error: VERSION not found. Please check package.json."
+            exit 1
+          fi
+
+      - name: Get last version (Git tag)
         id: get_last_tag
         run: |
-          LAST_TAG=$(git describe --tags --abbrev=0 || echo "v0.0.0")
+          LAST_TAG=$(git describe --tags --abbrev=0 || echo "0.0.0")
           echo "LAST_TAG=$LAST_TAG" >> $GITHUB_ENV
+          echo "Last tag is $LAST_TAG"
 
-      - name: Get commits
+      - name: Get commits between last tag and current commit
         id: get_commits
         run: |
-          if [ "$LAST_TAG" != "v0.0.0" ]; then
+          if [ "$LAST_TAG" != "0.0.0" ]; then
             COMMITS=$(git log ${LAST_TAG}..HEAD --oneline)
             echo "COMMITS=$COMMITS" >> $GITHUB_ENV
+            echo "Commits since $LAST_TAG: $COMMITS"
           else
-            echo "No previous tag found, skipping commit list." 
+            echo "No previous tag found, skipping commit list."
             echo "COMMITS=No previous tag found" >> $GITHUB_ENV
           fi
 
