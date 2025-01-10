@@ -2,7 +2,7 @@
 	"name": "enhancer",
 	"module": "src/index.ts",
 	"type": "module",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
 		"@types/chrome": "^0.0.262",
