@@ -34,7 +34,8 @@ jobs:
       - name: Zip distribution directory
         run: |
           mkdir -p release
-          zip -r release/dist.zip dist
+          cd dist
+          zip -r ../release/dist.zip ./*
 
       - name: Publish GitHub Release
         uses: ncipollo/release-action@v1
