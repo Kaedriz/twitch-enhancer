@@ -24,31 +24,12 @@ jobs:
       - name: Build project
         run: bun run build
 
-      - name: Get version from package.json
+      - name: Get version
         id: get_version
         run: |
           VERSION=$(jq -r .version package.json)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
           echo "Version is $VERSION"
-
-      - name: Get last version
-        id: get_last_tag
-        run: |
-          LAST_TAG=$(git describe --tags --abbrev=0 || echo "0.0.0")
-          echo "LAST_TAG=$LAST_TAG" >> $GITHUB_ENV
-          echo "Last tag is $LAST_TAG"
-
-      - name: Get commits between last tag and current commit
-        id: get_commits
-        run: |
-          if [ "$LAST_TAG" != "0.0.0" ]; then
-            COMMITS=$(git log ${LAST_TAG}..HEAD --oneline)
-            echo "COMMITS=$COMMITS" >> $GITHUB_ENV
-            echo "Commits since $LAST_TAG: $COMMITS"
-          else
-            echo "No previous tag found, skipping commit list."
-            echo "COMMITS=No previous tag found" >> $GITHUB_ENV
-          fi
 
       - name: Zip distribution directory
         run: |
@@ -63,6 +44,4 @@ jobs:
           tag: "v${{ env.VERSION }}"
           name: "Release v${{ env.VERSION }}"
           body: |
-            ## Changes since v${{ env.LAST_TAG }}:
-            
-            ${{ env.COMMITS }}
+            Release for version v${{ env.VERSION }}.
