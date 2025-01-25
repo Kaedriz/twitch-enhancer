@@ -4,7 +4,7 @@ import type { TwitchChatMessage } from "types/events/twitch/chat.events.d.ts";
 export default class SevenTVChatMessageListener extends ChatMessageListener {
 	inject() {
 		const messageHandlerAPI =
-			this.utils.twitch.getChatController()?.props.messageHandlerAPI;
+			this.utils.twitchUtils.getChatController()?.props.messageHandlerAPI;
 		if (!messageHandlerAPI) throw new Error("Missing chat message handler");
 		this.logger.debug("Injected 7TV message handler");
 		const descriptor = Object.getOwnPropertyDescriptor(
