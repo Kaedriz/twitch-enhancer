@@ -1,12 +1,6 @@
 import type { ModuleUrlConfig, ModuleUrlType } from "types/module/module.d.ts";
-import type { QueueConfig, QueueValue } from "types/utils/queue.d.ts";
-import Queue from "utils/queue/queue.ts";
-import TwitchUtils from "utils/twitch/twitch.utils.ts";
 
 export default class CommonUtils {
-	//TODO Have seperated twitch utils
-	readonly twitch = new TwitchUtils();
-
 	static readonly UUID_REGEX =
 		/^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
@@ -77,10 +71,6 @@ export default class CommonUtils {
 			type,
 			check: (url: string) => urls.some((_url) => url.includes(_url)),
 		};
-	}
-
-	createQueue<T extends QueueValue>(config: QueueConfig) {
-		return new Queue<T>(config);
 	}
 
 	isUUID(text: string) {

@@ -10,6 +10,7 @@ import type { TwitchEvents } from "types/events/twitch/events.d.ts";
 import type { ModuleConfig, ModuleEvent } from "types/module/module.d.ts";
 import type { TwitchLocalStorageMap } from "types/storage/twitch/local.storage.d.ts";
 import type { QueueValue } from "types/utils/queue.d.ts";
+import QueueFactory from "../../../queue/queue.factory.ts";
 
 export default class ChatListenerModule extends Module<
 	TwitchEvents,
@@ -17,9 +18,9 @@ export default class ChatListenerModule extends Module<
 > {
 	private listener = {} as ChatMessageListener;
 	private observer: MutationObserver | undefined;
-	private queue = this.utils.createQueue<TwitchChatMessage & QueueValue>({
-		expire: 300,
-	});
+	private readonly queue = new QueueFactory<
+		TwitchChatMessage & QueueValue
+	>().create({ expire: 300 });
 	private type: ChatType = "TWITCH";
 
 	static readonly VALID_MESSAGES_TYPES = [0]; // 51 is rerendered self message
@@ -111,7 +112,7 @@ export default class ChatListenerModule extends Module<
 		});
 		if (!this.utils.isUUID(id) && this.type === "TWITCH") {
 			this.logger.debug(
-				"Recieved self message, adding backup message as nonce:",
+				"Recieved self message, adding backup message with nonce:",
 				message.nonce,
 			);
 			this.queue.addByValue({

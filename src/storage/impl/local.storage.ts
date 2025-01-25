@@ -1,4 +1,4 @@
-import Storage from "./storage.ts";
+import Storage from "../storage.ts";
 
 export default class LocalStorage<Map> extends Storage<Map> {
 	async get<K extends keyof Map>(key: K): Promise<Map[K] | undefined> {

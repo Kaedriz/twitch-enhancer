@@ -14,8 +14,8 @@ export default class Bundler {
 		const now = Date.now();
 		this.logger.log("Bundling extension");
 		await this.clearDistributionDir();
-		await this.build(type);
 		this.copyPublicDir();
+		await this.build(type);
 		this.logger.log(`Successfully built in ${Date.now() - now}ms`);
 	}
 

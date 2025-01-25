@@ -1,4 +1,4 @@
-import LocalStorage from "./local.storage.ts";
+import LocalStorage from "./impl/local.storage.ts";
 
 export default class StorageRepository<LocalStorageMap> {
 	local: LocalStorage<LocalStorageMap>;

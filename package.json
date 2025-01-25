@@ -27,9 +27,9 @@
 		"tiny-typed-emitter": "^2.1.0"
 	},
 	"scripts": {
-		"build": "bun run biome && bun run build/main.ts",
+		"build": "bun run lint && bun run build/main.ts",
 		"dev": "bun run build/main.ts --server",
-		"biome": "npx @biomejs/biome check --write .",
+		"lint": "npx @biomejs/biome check --write .",
 		"prepare": "husky"
 	},
 	"trustedDependencies": ["@biomejs/biome"]
