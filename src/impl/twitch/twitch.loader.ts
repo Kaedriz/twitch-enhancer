@@ -10,13 +10,13 @@ import StreamLatencyModule from "modules/twitch/stream-latency/stream-latency.mo
 import type { Emitter } from "nanoevents";
 import type { TwitchEvents } from "types/events/twitch/events.d.ts";
 import type { TwitchLocalStorageMap } from "types/storage/twitch/local.storage";
-import type CommonUtils from "utils/common.utils.ts";
+import type Utils from "utils/utils.ts";
 import type StorageRepository from "../../storage/storage-repository.ts";
 
 export default class TwitchLoader extends ModuleLoader {
 	get(
 		logger: Logger,
-		utils: CommonUtils,
+		utils: Utils,
 		emitter: Emitter<TwitchEvents>,
 		storage: StorageRepository<TwitchLocalStorageMap>,
 	): Module<TwitchEvents, TwitchLocalStorageMap>[] {

@@ -4,7 +4,7 @@ import TwitchLoader from "modules/twitch/twitch.loader.ts";
 import type { Emitter } from "nanoevents";
 import type { TwitchEvents } from "types/events/twitch/events.d.ts";
 import type { ModuleElement, ModuleEvent } from "types/module/module.d.ts";
-import type CommonUtils from "utils/common.utils.ts";
+import type Utils from "utils/utils.ts";
 import type StorageRepository from "../storage/storage-repository.ts";
 
 export default class ModuleRunner {
@@ -13,7 +13,7 @@ export default class ModuleRunner {
 	constructor(
 		private readonly logger: Logger,
 		private readonly moduleRepository: ModuleRepository,
-		private readonly utils: CommonUtils,
+		private readonly utils: Utils,
 		private readonly emitter: Emitter<TwitchEvents>,
 		private readonly storage: StorageRepository<never>,
 	) {}
@@ -94,9 +94,12 @@ export default class ModuleRunner {
 			if (element && moduleElement.useParent) element = element.parentElement;
 			if (!element) return;
 
-			if (this.utils.isElementAlreadyUsed(element, id) && moduleElement.once)
+			if (
+				this.utils.commonUtils.isElementAlreadyUsed(element, id) &&
+				moduleElement.once
+			)
 				return;
-			this.utils.markElementAsUsed(element, id);
+			this.utils.commonUtils.markElementAsUsed(element, id);
 			return element;
 		});
 	}

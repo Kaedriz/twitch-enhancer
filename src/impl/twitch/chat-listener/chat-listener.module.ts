@@ -78,7 +78,7 @@ export default class ChatListenerModule extends Module<
 					for (const node of mutation.addedNodes) {
 						const element = node as Element;
 						const seventvId = element.getAttribute("msg-id");
-						const messageProps = this.utils.twitch.getChatMessage(
+						const messageProps = this.utils.twitchUtils.getChatMessage(
 							element.children[0],
 						)?.props;
 						const id = seventvId ?? messageProps?.message.id;
@@ -110,7 +110,7 @@ export default class ChatListenerModule extends Module<
 			...message,
 			queueKey: id,
 		});
-		if (!this.utils.isUUID(id) && this.type === "TWITCH") {
+		if (!this.utils.commonUtils.isUUID(id) && this.type === "TWITCH") {
 			this.logger.debug(
 				"Recieved self message, adding backup message with nonce:",
 				message.nonce,

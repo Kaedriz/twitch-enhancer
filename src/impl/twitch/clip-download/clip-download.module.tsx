@@ -10,7 +10,7 @@ export default class ClipDownloadModule extends Module<
 	TwitchLocalStorageMap
 > {
 	protected config(): ModuleConfig {
-		const urlConfig = this.utils.createSimpleUrlConfig("include", [
+		const urlConfig = this.utils.commonUtils.createSimpleUrlConfig("include", [
 			"clips.twitch.tv",
 		]);
 		return {
@@ -31,7 +31,7 @@ export default class ClipDownloadModule extends Module<
 	}
 
 	protected async run(event: ModuleEvent) {
-		const elements = this.utils.createEmptyElements(
+		const elements = this.utils.commonUtils.createEmptyElements(
 			this.id(),
 			event.elements,
 			"div",

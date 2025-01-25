@@ -37,7 +37,7 @@ export default class StreamLatencyModule extends Module<
 	}
 
 	protected async run(event: ModuleEvent) {
-		const elements = this.utils.createEmptyElements(
+		const elements = this.utils.commonUtils.createEmptyElements(
 			this.id(),
 			event.elements,
 			"span",
@@ -66,7 +66,7 @@ export default class StreamLatencyModule extends Module<
 	}
 
 	private updateMediaPlayer() {
-		this.mediaPlayer = this.utils.twitch.getMediaPlayerInstance();
+		this.mediaPlayer = this.utils.twitchUtils.getMediaPlayerInstance();
 	}
 
 	private createLatencyCounter() {

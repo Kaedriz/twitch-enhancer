@@ -1,8 +1,7 @@
 import type Logger from "logger";
 import type { Emitter, EventsMap } from "nanoevents";
-import type { TwitchEvents } from "types/events/twitch/events";
 import type { ModuleConfig, ModuleEvent } from "types/module/module.d.ts";
-import type CommonUtils from "utils/common.utils.ts";
+import type Utils from "utils/utils.ts";
 import type StorageRepository from "../storage/storage-repository.ts";
 
 export default class Module<EmitterEvents extends EventsMap, StorageMap> {
@@ -10,7 +9,7 @@ export default class Module<EmitterEvents extends EventsMap, StorageMap> {
 
 	constructor(
 		protected readonly logger: Logger,
-		protected readonly utils: CommonUtils,
+		protected readonly utils: Utils,
 		protected readonly emitter: Emitter<EmitterEvents>,
 		protected readonly storage: StorageRepository<StorageMap>,
 	) {

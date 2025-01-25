@@ -45,12 +45,12 @@ export default class PinStreamerModule extends Module<
 
 		for (const element of elements) {
 			const [isPinned, setPinned] = createSignal(false);
-			const button = this.utils.createElementByParent(
+			const button = this.utils.commonUtils.createElementByParent(
 				"pin-streamer-button",
 				"button",
 				element,
 			);
-			const channelID = this.utils.twitch.getUserIdBySideElement(element);
+			const channelID = this.utils.twitchUtils.getUserIdBySideElement(element);
 			button.onclick = async (event) => {
 				event.preventDefault();
 				event.stopPropagation();
@@ -139,7 +139,7 @@ export default class PinStreamerModule extends Module<
 	}
 
 	private async updateFollows() {
-		const section = this.utils.twitch.getPersonalSections()?.props;
+		const section = this.utils.twitchUtils.getPersonalSections()?.props;
 		if (!section) return;
 
 		if (
@@ -159,7 +159,7 @@ export default class PinStreamerModule extends Module<
 	}
 
 	private async refreshFollows() {
-		const section = this.utils.twitch.getPersonalSections();
+		const section = this.utils.twitchUtils.getPersonalSections();
 		if (!section) return;
 		section.forceUpdate();
 	}
@@ -176,13 +176,13 @@ export default class PinStreamerModule extends Module<
 
 	private getPersonalSectionStreams() {
 		return (
-			this.utils.twitch.getPersonalSections()?.props?.section.streams ?? []
+			this.utils.twitchUtils.getPersonalSections()?.props?.section.streams ?? []
 		);
 	}
 
 	private getPersonalSectionVideoConnections() {
 		return (
-			this.utils.twitch.getPersonalSections()?.props?.section
+			this.utils.twitchUtils.getPersonalSections()?.props?.section
 				.videoConnections ?? []
 		);
 	}

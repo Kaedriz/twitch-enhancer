@@ -19,7 +19,7 @@ export default class ChattersModule extends Module<
 	private setCount: Setter<number> = {} as Setter<number>;
 
 	protected config(): ModuleConfig {
-		const urlConfig = this.utils.createSimpleUrlConfig("exclude", [
+		const urlConfig = this.utils.commonUtils.createSimpleUrlConfig("exclude", [
 			"clips.twitch.tv",
 		]);
 		return {
@@ -48,7 +48,7 @@ export default class ChattersModule extends Module<
 	}
 
 	protected async run(event: ModuleEvent) {
-		const elements = this.utils.createEmptyElements(
+		const elements = this.utils.commonUtils.createEmptyElements(
 			this.id(),
 			event.elements,
 			"span",
@@ -78,15 +78,15 @@ export default class ChattersModule extends Module<
 	private async update() {
 		try {
 			const channel =
-				this.utils.twitch
+				this.utils.twitchUtils
 					.getPersistentPlayer()
 					?.content.channelLogin?.toLowerCase() ??
-				this.utils.twitch.getCurrentChannelByUrl();
+				this.utils.twitchUtils.getCurrentChannelByUrl();
 			if (!channel)
 				throw new Error(
 					"Cannot request chatters, because channel is undefined",
 				);
-			const { data } = await this.utils.twitch.gql<ChattersResponse>(
+			const { data } = await this.utils.twitchUtils.gql<ChattersResponse>(
 				ChattersQuery,
 				{
 					name: channel,
