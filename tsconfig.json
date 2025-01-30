@@ -22,8 +22,7 @@
 			"module/*": ["./src/module/*"],
 			"utils/*": ["./src/utils/*"],
 			"logger": ["./src/logger/logger.ts"],
-			"modules/*": ["./src/impl/*"],
-			"events/*": ["./src/events/*"]
+			"twitch/*": ["./src/twitch/*"]
 		}
 	}
 }

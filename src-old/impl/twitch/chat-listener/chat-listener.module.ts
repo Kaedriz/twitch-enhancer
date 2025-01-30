@@ -7,7 +7,7 @@ import type {
 	TwitchChatMessage,
 } from "types/events/twitch/chat.events.d.ts";
 import type { TwitchEvents } from "types/events/twitch/events.d.ts";
-import type { ModuleConfig, ModuleEvent } from "types/module/module.d.ts";
+import type { ModuleConfig, ModuleEvent } from "types/module/module.ts";
 import type { TwitchLocalStorageMap } from "types/storage/twitch/local.storage.d.ts";
 import type { QueueValue } from "types/utils/queue.d.ts";
 import QueueFactory from "../../../queue/queue.factory.ts";

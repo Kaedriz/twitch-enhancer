@@ -3,7 +3,7 @@ import { StreamLatencyComponent } from "modules/twitch/stream-latency/component/
 import { type Accessor, type Setter, createSignal } from "solid-js";
 import { render } from "solid-js/web";
 import type { TwitchEvents } from "types/events/twitch/events";
-import type { ModuleConfig, ModuleEvent } from "types/module/module";
+import type { ModuleConfig, ModuleEvent } from "types/module/module.ts";
 import type { TwitchLocalStorageMap } from "types/storage/twitch/local.storage";
 import type { MediaPlayerInstance } from "types/utils/twitch-react";
 

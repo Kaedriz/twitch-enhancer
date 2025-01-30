@@ -1,49 +1,19 @@
 import Logger from "logger";
-import ModuleRepository from "module/module.repository.ts";
-import ModuleRunner from "module/module.runner.ts";
-import { createNanoEvents } from "nanoevents";
-import type { TwitchEvents } from "types/events/twitch/events.d.ts";
-import type { ExtensionMode, Platform } from "types/extension";
-import CommonUtils from "utils/common.utils.ts";
-import StorageRepository from "./storage/storage-repository.ts";
+import type ModuleLoader from "module/module.loader.ts";
+import type { ExtensionConfig } from "types/extension.ts";
 
-export default class Extension {
-	private readonly moduleRepository;
-	private readonly moduleRunner;
-	private readonly storage = new StorageRepository<never>("enhancer");
-	private readonly emitter = createNanoEvents<TwitchEvents>(); // TODO Create generic type and TwitchExtensions which extends Extension
-	private readonly logger: Logger;
-	private readonly utils;
+export default abstract class Extension {
+	protected readonly logger = new Logger(true);
+	protected abstract moduleLoader: ModuleLoader;
 
-	private started = false;
+	constructor(private readonly config: ExtensionConfig) {}
 
-	constructor(
-		private readonly platform: Platform,
-		readonly version: string,
-		readonly mode: ExtensionMode,
-	) {
-		this.moduleRepository = new ModuleRepository();
-		this.logger = new Logger(this.mode === "development");
-		this.utils = new CommonUtils();
-		this.moduleRunner = new ModuleRunner(
-			this.logger,
-			this.moduleRepository,
-			this.utils,
-			this.emitter,
-			this.storage,
-		);
+	async start() {
+		this.logger.info(`Started extension at ${this.config.platform}`);
+		await this.loadModules();
 	}
 
-	start() {
-		if (this.started) {
-			this.logger.warn("Extension is already started!");
-			return;
-		}
-		this.started = true;
-		this.logger.info(
-			`Started ${this.mode} v${this.version} @ ${this.platform}`,
-		);
-		this.moduleRunner.start();
-		this.emitter.emit("start");
+	async loadModules() {
+		await this.moduleLoader.load();
 	}
 }

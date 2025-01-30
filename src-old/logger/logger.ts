@@ -1,18 +1,22 @@
-import type { LogType } from "types/logger";
+import type { ExtensionMode } from "types/extension.ts";
+import type { LogType } from "types/logger/logger.ts";
 
 export default class Logger {
-	static readonly LOGGER_PREFIX = "\x1B[1;38;2;145;71;255m[Enhancer]";
-	static readonly LOG_TYPE_PREFIX: Record<LogType, string> = {
+	private readonly PREFIX = "\x1B[1;38;2;145;71;255m[Enhancer]";
+	private readonly LOGS: Record<LogType, string> = {
 		debug: "\x1B[38;2;102;204;255mDEBUG\x1B[0m",
 		info: "\x1B[38;2;102;255;178mINFO\x1B[0m",
 		warn: "\x1B[38;2;255;215;102mWARN\x1B[0m",
 		error: "\x1B[38;2;255;99;99mERROR\x1B[0m",
 	};
+	private readonly debugLogs: boolean;
 
-	constructor(private readonly enableDebugLogs = false) {}
+	constructor(debugLogs = false) {
+		this.debugLogs = debugLogs;
+	}
 
 	debug(...data: any) {
-		if (this.enableDebugLogs) this.send("debug", ...data);
+		if (this.debugLogs) this.send("debug", ...data);
 	}
 
 	info(...data: any) {
@@ -28,9 +32,6 @@ export default class Logger {
 	}
 
 	private send(logType: LogType, ...data: any[]) {
-		console[logType](
-			`${Logger.LOGGER_PREFIX} ${Logger.LOG_TYPE_PREFIX[logType]}`,
-			...data,
-		);
+		console[logType](`${this.PREFIX} ${this.LOGS[logType]}`, ...data);
 	}
 }

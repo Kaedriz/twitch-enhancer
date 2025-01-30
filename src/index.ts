@@ -1,12 +1,18 @@
-import type { ExtensionMode } from "types/extension";
+import type { ExtensionConfig, ExtensionMode } from "types/extension.ts";
 import Extension from "./extension.ts";
+import TwitchExtension from "./twitch/twitch-extension.ts";
 
 (() => {
 	if (window.enhancer) return;
 	const version = __version__;
 	const mode = __mode__;
-	window.enhancer = { version };
-	const extension = new Extension("twitch", version, mode);
+	const config: ExtensionConfig = {
+		version,
+		mode,
+		platform: "twitch",
+	};
+	window.enhancer = config;
+	const extension = new TwitchExtension(config);
 	extension.start();
 })();
 

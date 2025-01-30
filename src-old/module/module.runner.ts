@@ -3,7 +3,7 @@ import type ModuleRepository from "module/module.repository.ts";
 import TwitchLoader from "modules/twitch/twitch.loader.ts";
 import type { Emitter } from "nanoevents";
 import type { TwitchEvents } from "types/events/twitch/events.d.ts";
-import type { ModuleElement, ModuleEvent } from "types/module/module.d.ts";
+import type { ModuleElement, ModuleEvent } from "types/module/module.ts";
 import type Utils from "utils/utils.ts";
 import type StorageRepository from "../storage/storage-repository.ts";
 

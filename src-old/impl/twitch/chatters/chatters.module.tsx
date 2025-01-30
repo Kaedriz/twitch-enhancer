@@ -2,7 +2,7 @@ import Module from "module/module.ts";
 import { type Accessor, type Setter, createSignal } from "solid-js";
 import { render } from "solid-js/web";
 import type { TwitchEvents } from "types/events/twitch/events.d.ts";
-import type { ModuleConfig, ModuleEvent } from "types/module/module.d.ts";
+import type { ModuleConfig, ModuleEvent } from "types/module/module.ts";
 import type { TwitchLocalStorageMap } from "types/storage/twitch/local.storage.d.ts";
 import type { ChattersResponse } from "types/utils/twitch-gql";
 import { ChattersQuery } from "utils/twitch/gql-queries.ts";

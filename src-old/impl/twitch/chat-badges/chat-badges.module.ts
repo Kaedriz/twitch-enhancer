@@ -1,7 +1,7 @@
 import Module from "module/module.ts";
 import type { TwitchChatMessageEvent } from "types/events/twitch/chat.events";
 import type { TwitchEvents } from "types/events/twitch/events";
-import type { ModuleConfig } from "types/module/module";
+import type { ModuleConfig } from "types/module/module.ts";
 import type { TwitchLocalStorageMap } from "types/storage/twitch/local.storage";
 
 export default class ChatBadgesModule extends Module<

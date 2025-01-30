@@ -1,4 +1,4 @@
-import type { ModuleUrlConfig, ModuleUrlType } from "types/module/module.d.ts";
+import type { ModuleUrlConfig, ModuleUrlType } from "types/module/module.ts";
 
 export default class CommonUtils {
 	static readonly UUID_REGEX =

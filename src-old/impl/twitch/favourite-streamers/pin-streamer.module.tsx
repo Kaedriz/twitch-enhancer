@@ -4,7 +4,7 @@ import { PinStreamerComponent } from "modules/twitch/favourite-streamers/compone
 import { createSignal } from "solid-js";
 import { render } from "solid-js/web";
 import type { TwitchEvents } from "types/events/twitch/events";
-import type { ModuleConfig, ModuleEvent } from "types/module/module";
+import type { ModuleConfig, ModuleEvent } from "types/module/module.ts";
 import type { TwitchLocalStorageMap } from "types/storage/twitch/local.storage";
 import type { StreamData } from "types/utils/twitch-react";
 
