@@ -1,6 +1,4 @@
 import type { ExtensionConfig, ExtensionMode } from "types/extension.ts";
-import Extension from "./extension.ts";
-import TwitchExtension from "./twitch/twitch-extension.ts";
 
 (() => {
 	if (window.enhancer) return;
@@ -12,8 +10,6 @@ import TwitchExtension from "./twitch/twitch-extension.ts";
 		platform: "twitch",
 	};
 	window.enhancer = config;
-	const extension = new TwitchExtension(config);
-	extension.start();
 })();
 
 declare const __version__: string;

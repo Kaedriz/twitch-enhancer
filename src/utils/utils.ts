@@ -1,1 +1,5 @@
-export default class Utils {}
+import type Logger from "logger";
+
+export default class Utils {
+	constructor(protected readonly logger: Logger) {}
+}
