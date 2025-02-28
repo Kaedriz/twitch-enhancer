@@ -8,8 +8,7 @@
 		"rules": {
 			"recommended": true,
 			"complexity": {
-				"noForEach": "off",
-				"noUselessConstructor": "off"
+				"noForEach": "off"
 			},
 			"a11y": {
 				"useKeyWithClickEvents": "off"
@@ -20,6 +19,10 @@
 		}
 	},
 	"files": {
-		"ignore": ["node_modules", "dist/**", "README.md"]
+		"ignore": [
+			"node_modules",
+			"dist/**",
+			"README.md"
+		]
 	}
 }
