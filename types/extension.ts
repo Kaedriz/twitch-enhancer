@@ -1,10 +1,10 @@
 export type ExtensionConfig = {
 	version: string;
-	mode: ExtensionMode;
+	environment: ExtensionEnvironment;
 	platform: Platform;
 };
 
-export type ExtensionMode = "production" | "development";
+export type ExtensionEnvironment = "production" | "development";
 export type Platform = "twitch" | "kick";
 
 declare global {

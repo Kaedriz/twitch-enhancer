@@ -1,10 +1,8 @@
-declare const __mode__: Mode;
+import type { ExtensionEnvironment } from "types/extension.ts";
 
-export type Mode = "production" | "development";
-
-const source: Record<Mode, string> = {
+const source: Record<ExtensionEnvironment, string> = {
 	production: chrome.runtime.getURL("index.js"),
-	development: `http://127.0.0.1:3360/index.js?cache=${Math.random().toString()}`,
+	development: `http://localhost:3360/dist/index.js?cache=${Math.random().toString()}`,
 };
 
 const head =
@@ -13,6 +11,7 @@ const head =
 	document.documentElement;
 
 const script = document.createElement("script");
-script.src = source[__mode__];
+script.type = "module";
+script.src = source[__environment__];
 
 head.appendChild(script);

@@ -7,7 +7,7 @@ export type ModuleApplierConfig =
 export type CommonModuleApplierConfig = {
 	key: string;
 	cooldown?: number;
-	once?: string;
+	once?: boolean;
 };
 
 export type SelectorModuleApplierConfig = {
@@ -15,6 +15,7 @@ export type SelectorModuleApplierConfig = {
 	selectors: string[];
 	callback: (elements: Element[], key: string) => Promise<void> | void;
 	validateUrl?: (url: string) => boolean;
+	useParent?: boolean;
 } & CommonModuleApplierConfig;
 
 export type EventModuleApplierConfig = {

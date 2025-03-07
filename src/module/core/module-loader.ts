@@ -7,6 +7,7 @@ import TwitchModuleRegisterer from "module/twitch/twitch-module-registerer.ts";
 import type { EventEmitter } from "types/event/events.types.ts";
 import type { Platform } from "types/extension.ts";
 import type UtilsRepository from "utils/utils-repository.ts";
+import type ApiRepository from "../../api/api-repository.ts";
 import type StorageRepository from "../../storage/storage-repository.ts";
 
 export default class ModuleLoader {
@@ -22,11 +23,12 @@ export default class ModuleLoader {
 		this.moduleAppliers.push(...moduleAppliers);
 	}
 
-	async registerModules(
+	async loadModules(
 		platform: Platform,
 		eventEmitter: EventEmitter,
 		storageRepository: StorageRepository,
 		utilsRepository: UtilsRepository,
+		apiRepository: ApiRepository,
 	) {
 		this.registerAppliers(eventEmitter);
 		const moduleRegisterer = this.getModuleRegisterer(platform);
@@ -35,11 +37,13 @@ export default class ModuleLoader {
 			eventEmitter,
 			storageRepository,
 			utilsRepository,
+			apiRepository,
 		);
-		await this.loadModules(modules);
+		await this.registerModules(modules);
+		this.logger.info(`Loaded ${modules.length} modules`);
 	}
 
-	private async loadModules(modules: Module[]) {
+	private async registerModules(modules: Module[]) {
 		for (const module of modules) {
 			await module.init();
 			for (const moduleAppliers of this.moduleAppliers) {

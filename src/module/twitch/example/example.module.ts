@@ -8,12 +8,13 @@ export default class ExampleModule extends Module {
 			{
 				type: "selector",
 				key: "test",
-				selectors: ["#test"],
+				selectors: [".tw-title"],
 				callback: this.handleSelector.bind(this),
 				validateUrl: (url) => {
-					return url.includes("dashboard");
+					return !url.includes("dashboard");
 				},
 				cooldown: 3000,
+				once: true,
 			},
 			{
 				type: "event",
@@ -24,7 +25,11 @@ export default class ExampleModule extends Module {
 		],
 	};
 
-	private handleSelector(elements: Element[]) {}
+	private handleSelector(elements: Element[]) {
+		this.logger.info("Found these elements:", elements);
+	}
 
-	private handleEvent() {}
+	private handleEvent() {
+		this.logger.info("Handled extension:start!");
+	}
 }

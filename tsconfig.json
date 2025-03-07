@@ -11,8 +11,8 @@
 		"strict": true,
 		"downlevelIteration": true,
 		"skipLibCheck": true,
-		"jsx": "preserve",
-		"jsxImportSource": "solid-js",
+		"jsx": "react-jsx",
+		"jsxImportSource": "preact",
 		"allowSyntheticDefaultImports": true,
 		"forceConsistentCasingInFileNames": true,
 		"allowJs": true,
@@ -22,7 +22,9 @@
 			"module/*": ["./src/module/*"],
 			"utils/*": ["./src/utils/*"],
 			"logger": ["./src/logger/logger.ts"],
-			"twitch/*": ["./src/twitch/*"]
+			"css": ["./src/css/*"]
 		}
-	}
+	},
+	"include": ["src", "types"],
+	"exclude": ["node_modules"]
 }

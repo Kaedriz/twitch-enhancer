@@ -1,16 +1,20 @@
-import type { ExtensionConfig, ExtensionMode } from "types/extension.ts";
+import type { ExtensionConfig, ExtensionEnvironment } from "types/extension.ts";
+import Extension from "./extension/extension.ts";
 
-(() => {
+(async () => {
 	if (window.enhancer) return;
 	const version = __version__;
-	const mode = __mode__;
+	const environment = __environment__;
 	const config: ExtensionConfig = {
 		version,
-		mode,
+		environment,
 		platform: "twitch",
 	};
 	window.enhancer = config;
+	await new Extension(config).start();
 })();
 
-declare const __version__: string;
-declare const __mode__: ExtensionMode;
+declare global {
+	const __version__: string;
+	const __environment__: ExtensionEnvironment;
+}

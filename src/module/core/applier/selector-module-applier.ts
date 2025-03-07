@@ -13,7 +13,6 @@ export default class SelectorModuleApplier extends ModuleApplier {
 			...selectorAppliers.map((selectorApplier) => ({
 				config: selectorApplier,
 				lastCheckedAt: 0,
-				called: false, // TODO Maybe we will need to rollback to old system with element id/classes
 			})),
 		);
 		this.run();
@@ -23,35 +22,61 @@ export default class SelectorModuleApplier extends ModuleApplier {
 	private run() {
 		for (const applier of this.appliers) {
 			if (this.isApplierOnCooldown(applier)) continue;
-			if (this.isApplierAlreadyCalled(applier)) continue;
+			applier.lastCheckedAt = Date.now();
 			const { config } = applier;
 			if (config.validateUrl && !config.validateUrl(window.location.href))
 				continue;
-			const elements = config.selectors.flatMap((selector) => [
-				...document.querySelectorAll(selector),
-			]);
+			const elements = this.processElements(
+				config.selectors.flatMap((selector) => [
+					...document.querySelectorAll(selector),
+				]),
+				config,
+			);
 			if (elements.length < 1) continue;
 			config.callback(elements, config.key);
-			applier.called = true;
 		}
+	}
+
+	private processElements(
+		elements: Element[],
+		config: SelectorModuleApplierConfig,
+	) {
+		return elements
+			.map((_element) => {
+				let element: Element | null = _element;
+				if (element && config.useParent) element = element.parentElement;
+				if (!element) return;
+				if (this.isElementAlreadyUsed(element, config.key) && config.once)
+					return;
+				this.markElementAsUsed(element, config.key);
+				return element;
+			})
+			.filter((element): element is Element => element !== undefined);
 	}
 
 	private isApplierOnCooldown(applier: SelectorModuleApplierRunner) {
 		const cooldown = applier.config.cooldown;
 		if (cooldown === undefined) return false;
-		const now = Date.now();
-		const result = now - applier.lastCheckedAt < cooldown;
-		applier.lastCheckedAt = now;
-		return result;
+		return Date.now() - applier.lastCheckedAt < cooldown;
 	}
 
-	private isApplierAlreadyCalled(applier: SelectorModuleApplierRunner) {
-		return applier.config.once && applier.called;
+	private markElementAsUsed(element: Element, id: string) {
+		element.setAttribute("enhanced", "true");
+		element.setAttribute("enhancedAt", `${Date.now()}`);
+		const modules = new Set(
+			element.getAttribute("enhanced-modules")?.split(";") ?? [],
+		);
+		modules.add(id);
+		element.setAttribute("enhanced-modules", [...modules].join(";"));
+	}
+
+	private isElementAlreadyUsed(element: Element, id: string) {
+		const modules = element.getAttribute("enhanced-modules")?.split(";") ?? [];
+		return element.hasAttribute("enhanced") && modules.includes(id);
 	}
 }
 
 type SelectorModuleApplierRunner = {
 	config: SelectorModuleApplierConfig;
 	lastCheckedAt: number;
-	called: boolean;
 };
