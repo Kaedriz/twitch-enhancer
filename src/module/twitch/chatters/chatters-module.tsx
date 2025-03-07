@@ -40,7 +40,6 @@ export default class ChattersModule extends Module {
 	private chattersCounter = {} as Signal<number>;
 
 	private run(elements: Element[]) {
-		this.logger.info(this.getId(), "creating elements...");
 		const wrappers = this.utilsRepository.commonUtils.createEmptyElements(
 			this.getId(),
 			elements,
@@ -48,6 +47,7 @@ export default class ChattersModule extends Module {
 		);
 		this.createChattersCounter();
 		this.refreshChatters();
+		setInterval(async () => this.refreshChatters(), 30000);
 		wrappers.forEach((element) => {
 			render(
 				<ChattersComponent

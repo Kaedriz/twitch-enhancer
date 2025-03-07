@@ -1,7 +1,7 @@
 import type Logger from "logger";
 import ModuleRegisterer from "module/core/module-registerer.ts";
 import ChattersModule from "module/twitch/chatters/chatters-module.tsx";
-import ExampleModule from "module/twitch/example/example.module.ts";
+import StreamLatencyModule from "module/twitch/example/stream-latency-module.tsx";
 import type { EventEmitter } from "types/event/events.types.ts";
 import type UtilsRepository from "utils/utils-repository.ts";
 import type ApiRepository from "../../api/api-repository.ts";
@@ -17,6 +17,13 @@ export default class TwitchModuleRegisterer extends ModuleRegisterer {
 	) {
 		return [
 			new ChattersModule(
+				logger,
+				eventEmitter,
+				storageRepository,
+				utilsRepository,
+				apiRepository,
+			),
+			new StreamLatencyModule(
 				logger,
 				eventEmitter,
 				storageRepository,
