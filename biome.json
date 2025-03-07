@@ -18,6 +18,9 @@
 			}
 		}
 	},
+	"formatter": {
+		"lineEnding": "crlf"
+	},
 	"files": {
 		"ignore": ["node_modules", "dist/**", "README.md"]
 	}
