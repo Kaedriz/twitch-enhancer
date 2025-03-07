@@ -19,7 +19,7 @@
 		}
 	},
 	"formatter": {
-		"lineEnding": "crlf"
+		"lineEnding": "lf"
 	},
 	"files": {
 		"ignore": ["node_modules", "dist/**", "README.md"]
