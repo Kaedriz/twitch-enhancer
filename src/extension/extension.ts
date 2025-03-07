@@ -32,6 +32,7 @@ export default class Extension {
 			this.eventsEmitter,
 			this.storageRepository,
 			this.utilsRepository,
+			this.apiRepository,
 		);
 		this.eventsEmitter.emit("extension:start");
 	}

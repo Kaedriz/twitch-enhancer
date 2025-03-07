@@ -2,7 +2,9 @@ import { type Signal, signal } from "@preact/signals";
 import Module from "module/core/module.ts";
 import { render } from "preact";
 import styled from "styled-components";
+import type { ChattersResponse } from "types/api/twitch-api.types.ts";
 import type { ModuleConfig } from "types/module/module.types.ts";
+import { ChattersQuery } from "../../../api/twitch/twitch-queries.ts";
 
 export default class ChattersModule extends Module {
 	private static URL_CONFIG = (url: string) => {
@@ -45,10 +47,11 @@ export default class ChattersModule extends Module {
 			"span",
 		);
 		this.createChattersCounter();
+		this.refreshChatters();
 		wrappers.forEach((element) => {
 			render(
 				<ChattersComponent
-					click={this.updateChatters.bind(this)}
+					click={this.refreshChatters.bind(this)}
 					counter={this.chattersCounter}
 				/>,
 				element,
@@ -56,8 +59,30 @@ export default class ChattersModule extends Module {
 		});
 	}
 
-	private updateChatters() {
-		this.chattersCounter.value = Math.random() * 10;
+	private async refreshChatters() {
+		let channel = undefined;
+		try {
+			channel =
+				this.utilsRepository.twitchUtils
+					.getPersistentPlayer()
+					?.content.channelLogin?.toLowerCase() ??
+				this.utilsRepository.twitchUtils.getCurrentChannelByUrl();
+			const { data } = await this.apiRepository.twitchApi.gql<ChattersResponse>(
+				ChattersQuery,
+				{
+					name: channel,
+				},
+			);
+			const chatters = data.channel.chatters.count;
+			this.logger.debug(
+				`Refreshed chatters count on ${channel} to ${chatters}`,
+			);
+			this.chattersCounter.value = chatters;
+		} catch (error) {
+			this.logger.warn(
+				`Couldn't refresh chatters count on channel ${channel ?? "unknown"}, caught error: ${error}`,
+			);
+		}
 	}
 
 	private createChattersCounter() {

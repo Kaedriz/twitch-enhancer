@@ -1,5 +1,5 @@
 import type Logger from "logger";
-import TwitchApi from "./twitch-api.ts";
+import TwitchApi from "./twitch/twitch-api.ts";
 
 export default class ApiRepository {
 	readonly twitchApi: TwitchApi;
