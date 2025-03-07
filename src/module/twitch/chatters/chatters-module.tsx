@@ -85,7 +85,7 @@ const Wrapper = styled.span`
 function ChattersComponent({ click, counter }: ChattersComponentProps) {
 	return (
 		<Wrapper onClick={click}>
-			{counter.value === -1 ? "Loading..." : counter.value}
+			({counter.value === -1 ? "Loading..." : counter.value})
 		</Wrapper>
 	);
 }
