@@ -36,3 +36,5 @@ export default defineConfig({
 		},
 	},
 });
+
+// TODO Generate manifest.json from js file
