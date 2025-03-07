@@ -28,9 +28,9 @@
 		"vite-tsconfig-paths": "^5.1.4"
 	},
 	"scripts": {
-		"dev": "ENVIRONMENT=development concurrently \"vite build --watch\" \"vite\"",
-		"build": "ENVIRONMENT=production vite build",
-		"lint": "bunx biome check --write .",
+		"dev": "ENVIRONMENT=development concurrently \"bun run lint\" \"vite build --watch\" \"vite\"",
+		"build": "ENVIRONMENT=production concurrently \"bun run lint\" \"vite build\"",
+		"lint": "biome check --write .",
 		"prepare": "husky"
 	},
 	"trustedDependencies": ["@biomejs/biome"]
