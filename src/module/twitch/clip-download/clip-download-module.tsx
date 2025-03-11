@@ -43,7 +43,7 @@ interface DownloadButtonComponentProps {
 	click: () => void;
 }
 
-const Wrapper = styled.div<{ children?: preact.ComponentChildren }>`
+const Wrapper = styled.div`
 	color: #fff;
 	margin: 0 0.25rem;
 	width: 30px;
