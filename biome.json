@@ -1,34 +1,30 @@
 {
-  "$schema": "https://biomejs.dev/schemas/1.8.1/schema.json",
-  "organizeImports": {
-    "enabled": true
-  },
-  "linter": {
-    "enabled": true,
-    "rules": {
-      "recommended": true,
-      "complexity": {
-        "noForEach": "off"
-      },
-      "a11y": {
-        "useKeyWithClickEvents": "off"
-      },
-      "suspicious": {
-        "noExplicitAny": "off"
-      },
-      "correctness": {
-        "noUndeclaredVariables": "off"
-      }
-    }
-  },
-  "formatter": {
-    "lineEnding": "lf"
-  },
-  "files": {
-    "ignore": [
-      "node_modules",
-      "dist/**",
-      "README.md"
-    ]
-  }
+	"$schema": "https://biomejs.dev/schemas/1.8.1/schema.json",
+	"organizeImports": {
+		"enabled": true
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"complexity": {
+				"noForEach": "off"
+			},
+			"a11y": {
+				"useKeyWithClickEvents": "off"
+			},
+			"suspicious": {
+				"noExplicitAny": "off"
+			},
+			"correctness": {
+				"noUndeclaredVariables": "off"
+			}
+		}
+	},
+	"formatter": {
+		"lineEnding": "lf"
+	},
+	"files": {
+		"ignore": ["node_modules", "dist/**", "README.md"]
+	}
 }
