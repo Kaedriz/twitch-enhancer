@@ -16,7 +16,7 @@
 		"allowSyntheticDefaultImports": true,
 		"forceConsistentCasingInFileNames": true,
 		"allowJs": true,
-		"types": ["bun-types", "chrome"],
+		"types": ["bun-types", "chrome", "preact"],
 		"paths": {
 			"types/*": ["./types/*"],
 			"module/*": ["./src/module/*"],
