@@ -4,9 +4,9 @@ import Storage from "./storage.ts";
 export default class LocalStorage extends Storage<CoreStorageMap> {
 	private cache: CoreStorageMap | undefined;
 
-	async save(
-		key: keyof CoreStorageMap,
-		value: CoreStorageMap[keyof CoreStorageMap],
+	async save<K extends keyof CoreStorageMap>(
+		key: K,
+		value: CoreStorageMap[K],
 	): Promise<void> {
 		const storage = this.getStorage();
 		storage[key] = value;
@@ -14,11 +14,13 @@ export default class LocalStorage extends Storage<CoreStorageMap> {
 		localStorage.setItem(this.getId(), JSON.stringify(storage));
 	}
 
-	async get(key: keyof CoreStorageMap) {
-		return this.getStorage()[key];
+	async get<K extends keyof CoreStorageMap>(
+		key: K,
+	): Promise<CoreStorageMap[K]> {
+		return this.getStorage()[key] as CoreStorageMap[K];
 	}
 
-	private getStorage() {
+	private getStorage(): CoreStorageMap {
 		if (this.cache) return this.cache;
 		const rawStorage = localStorage.getItem(this.getId());
 		if (rawStorage) {
@@ -29,7 +31,7 @@ export default class LocalStorage extends Storage<CoreStorageMap> {
 		return this.cache;
 	}
 
-	private getId() {
+	private getId(): string {
 		return `enhancer:${this.storagePrefix}`;
 	}
 }

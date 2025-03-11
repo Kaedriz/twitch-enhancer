@@ -109,3 +109,33 @@ export type FollowedSectionUser = {
 		title: string;
 	};
 };
+
+export type Chat = {
+	props: {
+		onSendMessage: (message: string) => void;
+	};
+};
+
+export type Command = {
+	name: string;
+	description: string;
+	helpText: string;
+	permissionLevel: number;
+	handler: (song: string) => void;
+	commandArgs: {
+		name: string;
+		isRequired: boolean;
+	}[];
+};
+
+export type ChatInput = {
+	pendingProps: {
+		setInputValue: (message: string, sendIt: boolean) => void;
+	};
+	stateNode: {
+		state: {
+			value: string;
+		};
+		forceUpdate: () => void;
+	};
+};
