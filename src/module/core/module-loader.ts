@@ -45,11 +45,17 @@ export default class ModuleLoader {
 
 	private async registerModules(modules: Module[]) {
 		for (const module of modules) {
-			await module.init();
-			for (const moduleAppliers of this.moduleAppliers) {
-				await moduleAppliers.apply(module);
+			try {
+				await module.init();
+				for (const moduleAppliers of this.moduleAppliers) {
+					await moduleAppliers.apply(module);
+				}
+				this.logger.debug(`${module.config.name} module has been loaded`);
+			} catch (error) {
+				this.logger.warn(
+					`Failed to load ${module.config.name} module: ${error}`,
+				);
 			}
-			this.logger.debug(`${module.config.name} module has been loaded`);
 		}
 	}
 
