@@ -65,7 +65,8 @@ export default class PinStreamerModule extends Module {
 
 			await this.refreshFollows();
 			if (channelID !== undefined) {
-				isPinned.value = await this.pinStreamer(channelID);
+				const pinnedStreamers = await this.getPinnedStreamers();
+				isPinned.value = pinnedStreamers.ids.includes(channelID);
 				if (isPinned.valueOf()) button.style.display = "inline-block";
 				render(<PinStreamerComponent isPinned={isPinned} />, button);
 			}

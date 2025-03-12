@@ -1,8 +1,6 @@
-import { useSignal } from "@preact/signals";
 import Module from "module/core/module.ts";
+import { SoundboardComponent } from "module/twitch/soundboard/SoundboardComponent.tsx";
 import { render } from "preact";
-import { useCallback, useEffect, useRef, useState } from "preact/hooks";
-import styled from "styled-components";
 import type { ModuleConfig } from "types/module/module.types.ts";
 
 interface Sound {
@@ -38,11 +36,55 @@ export default class SoundboardModule extends Module {
 			elements,
 			"div",
 		);
-		this.monitorChatInput(el);
-		if (!this.soundboardData) {
-			this.soundboardData = await this.fetchSoundEffectsByTwitchId(
-				this.utilsRepository.twitchUtils.getCurrentChannelByUrl(),
-			);
+		try {
+			if (!this.soundboardData) {
+				this.soundboardData = await this.fetchSoundEffectsByTwitchId();
+
+				if (this.soundboardData === undefined) {
+					this.soundboardData = {
+						sounds: [
+							{
+								name: "wiktorek",
+								sourceUrl:
+									"https://cdn.streamelements.com/uploads/177f5046-88e8-49dc-ae8d-c838c6bd9ef9.mp3",
+							},
+							{
+								name: "kosa",
+								sourceUrl:
+									"https://cdn.streamelements.com/uploads/86195762-289d-421f-84b9-03b7daa8cd1d.mp3",
+							},
+							{
+								name: "defuse",
+								sourceUrl:
+									"https://cdn.streamelements.com/uploads/b28a55e8-cdc6-4a45-b08c-bbf5d5458e98.mp3",
+							},
+						],
+						command: "!playsound",
+					};
+				}
+			}
+		} catch (error) {
+			console.error("Error fetching sound effects:", error);
+			this.soundboardData = {
+				sounds: [
+					{
+						name: "wiktorek",
+						sourceUrl:
+							"https://cdn.streamelements.com/uploads/177f5046-88e8-49dc-ae8d-c838c6bd9ef9.mp3",
+					},
+					{
+						name: "kosa",
+						sourceUrl:
+							"https://cdn.streamelements.com/uploads/86195762-289d-421f-84b9-03b7daa8cd1d.mp3",
+					},
+					{
+						name: "defuse",
+						sourceUrl:
+							"https://cdn.streamelements.com/uploads/b28a55e8-cdc6-4a45-b08c-bbf5d5458e98.mp3",
+					},
+				],
+				command: "!playsound",
+			};
 		}
 		this.utilsRepository.twitchUtils.addCommandToChat({
 			name: "playsound",
@@ -50,7 +92,6 @@ export default class SoundboardModule extends Module {
 			helpText: "Plays sound from streamer binds",
 			permissionLevel: 0,
 			handler: (song) => {
-				console.log(song);
 				this.utilsRepository.twitchUtils
 					.getChat()
 					.props.onSendMessage(`${this.soundboardData?.command} ${song}`);
@@ -62,6 +103,8 @@ export default class SoundboardModule extends Module {
 				},
 			],
 		});
+
+		await this.monitorChatInput(el);
 	}
 
 	private async monitorChatInput(elements: HTMLElement[]) {
@@ -94,21 +137,22 @@ export default class SoundboardModule extends Module {
 			elements.forEach((element) => {
 				element.innerHTML = "";
 				render(
-					() => (
-						<SoundboardComponent
-							onTab={(name: string) =>
-								this.utilsRepository.twitchUtils.sendChatMessage(name)
-							}
-							sounds={matchingSounds || []}
-						/>
-					),
+					<SoundboardComponent
+						onTab={(name: string) =>
+							this.utilsRepository.twitchUtils.sendChatMessage(name)
+						}
+						sounds={matchingSounds || []}
+					/>,
 					element,
 				);
 			});
 		}, 300);
 	}
 
-	protected async fetchSoundEffectsByTwitchId(channelId: string) {
+	protected async fetchSoundEffectsByTwitchId() {
+		const channelId =
+			this.utilsRepository.twitchUtils.getChat().props.channelID;
+
 		const endpoint = `http://localhost:8080/playsounds/${channelId}`;
 		try {
 			const response = await fetch(endpoint, {
@@ -124,123 +168,6 @@ export default class SoundboardModule extends Module {
 			return data;
 		} catch (error) {
 			console.error("Error fetching sound effects:", error);
-			throw error;
 		}
 	}
 }
-
-interface Sound {
-	name: string;
-	sourceUrl: string;
-}
-
-interface SoundboardComponentProps {
-	sounds: Sound[] | undefined;
-	onTab: (name: string) => void;
-}
-
-const SoundboardComponent = ({ sounds, onTab }: SoundboardComponentProps) => {
-	const [playingSound, setPlayingSound] = useState<string | null>(null);
-	const selectedIndex = useSignal(0);
-	const audioRef = useRef<HTMLAudioElement | null>(null);
-
-	const playSound = (sourceUrl: string) => {
-		if (audioRef.current) {
-			audioRef.current.pause();
-			audioRef.current = null;
-		}
-		const audio = new Audio(sourceUrl);
-		audio.play();
-		setPlayingSound(sourceUrl);
-		audioRef.current = audio;
-
-		audio.addEventListener("ended", () => {
-			setPlayingSound(null);
-			audioRef.current = null;
-		});
-	};
-
-	const stopSound = () => {
-		if (audioRef.current) {
-			audioRef.current.pause();
-			audioRef.current = null;
-		}
-		setPlayingSound(null);
-	};
-
-	const handleKeyDown = useCallback(
-		(e: KeyboardEvent) => {
-			if (!sounds?.length) return;
-
-			switch (e.key) {
-				case "ArrowUp": {
-					e.preventDefault();
-					selectedIndex.value =
-						selectedIndex.value - 1 < 0
-							? sounds.length - 1
-							: selectedIndex.value - 1;
-					break;
-				}
-				case "ArrowDown": {
-					e.preventDefault();
-					selectedIndex.value =
-						selectedIndex.value + 1 >= sounds.length
-							? 0
-							: selectedIndex.value + 1;
-					break;
-				}
-				case "Tab": {
-					e.preventDefault();
-					const currentSound = sounds[selectedIndex.value];
-					onTab(currentSound.name);
-					break;
-				}
-			}
-		},
-		[sounds, selectedIndex, onTab],
-	);
-
-	useEffect(() => {
-		document.addEventListener("keydown", handleKeyDown);
-		return () => {
-			document.removeEventListener("keydown", handleKeyDown);
-		};
-	}, [handleKeyDown]);
-
-	return (
-		<div>
-			{sounds?.map((sound, index) => (
-				<div
-					key={sound.name}
-					onClick={() => {
-						selectedIndex.value = index;
-						onTab(sound.name);
-					}}
-				>
-					<span>{sound.name}</span>
-					{playingSound === sound.sourceUrl ? (
-						<button
-							type="button"
-							onClick={(e) => {
-								e.stopPropagation();
-								stopSound();
-							}}
-						>
-							Stop
-						</button>
-					) : (
-						<button
-							type="button"
-							onClick={(e) => {
-								e.stopPropagation();
-								playSound(sound.sourceUrl);
-							}}
-						>
-							Play
-						</button>
-					)}
-				</div>
-			))}
-		</div>
-	);
-};

@@ -23,6 +23,7 @@
 		"chokidar": "^3.6.0",
 		"nanoevents": "^9.1.0",
 		"preact": "^10.26.4",
+		"preact-hooks": "^0.0.0-0.0.0",
 		"styled-components": "^6.1.15",
 		"vite": "^6.2.0",
 		"vite-tsconfig-paths": "^5.1.4"

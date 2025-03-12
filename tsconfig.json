@@ -17,12 +17,15 @@
 		"forceConsistentCasingInFileNames": true,
 		"allowJs": true,
 		"types": ["bun-types", "chrome", "preact"],
+		"baseUrl": ".",
 		"paths": {
 			"types/*": ["./types/*"],
 			"module/*": ["./src/module/*"],
 			"utils/*": ["./src/utils/*"],
 			"logger": ["./src/logger/logger.ts"],
-			"css": ["./src/css/*"]
+			"css": ["./src/css/*"],
+			"react": ["node_modules/preact/compat"],
+			"react-dom": ["node_modules/preact/compat"]
 		}
 	},
 	"include": ["src", "types"],

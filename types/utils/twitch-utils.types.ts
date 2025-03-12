@@ -113,6 +113,7 @@ export type FollowedSectionUser = {
 export type Chat = {
 	props: {
 		onSendMessage: (message: string) => void;
+		channelID: string;
 	};
 };
 
