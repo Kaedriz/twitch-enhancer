@@ -52,7 +52,7 @@ export default class ModuleLoader {
 				}
 				this.logger.debug(`${module.config.name} module has been loaded`);
 			} catch (error) {
-				this.logger.warn(
+				this.logger.error(
 					`Failed to load ${module.config.name} module: ${error}`,
 				);
 			}

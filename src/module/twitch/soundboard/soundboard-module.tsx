@@ -6,10 +6,11 @@ import type { ModuleConfig } from "types/module/module.types.ts";
 interface Sound {
 	name: string;
 	sourceUrl: string;
+	channelId: string;
 }
 
 interface SoundboardData {
-	sounds: Sound[];
+	playSounds: Sound[];
 	command: string;
 }
 
@@ -36,56 +37,6 @@ export default class SoundboardModule extends Module {
 			elements,
 			"div",
 		);
-		try {
-			if (!this.soundboardData) {
-				this.soundboardData = await this.fetchSoundEffectsByTwitchId();
-
-				if (this.soundboardData === undefined) {
-					this.soundboardData = {
-						sounds: [
-							{
-								name: "wiktorek",
-								sourceUrl:
-									"https://cdn.streamelements.com/uploads/177f5046-88e8-49dc-ae8d-c838c6bd9ef9.mp3",
-							},
-							{
-								name: "kosa",
-								sourceUrl:
-									"https://cdn.streamelements.com/uploads/86195762-289d-421f-84b9-03b7daa8cd1d.mp3",
-							},
-							{
-								name: "defuse",
-								sourceUrl:
-									"https://cdn.streamelements.com/uploads/b28a55e8-cdc6-4a45-b08c-bbf5d5458e98.mp3",
-							},
-						],
-						command: "!playsound",
-					};
-				}
-			}
-		} catch (error) {
-			console.error("Error fetching sound effects:", error);
-			this.soundboardData = {
-				sounds: [
-					{
-						name: "wiktorek",
-						sourceUrl:
-							"https://cdn.streamelements.com/uploads/177f5046-88e8-49dc-ae8d-c838c6bd9ef9.mp3",
-					},
-					{
-						name: "kosa",
-						sourceUrl:
-							"https://cdn.streamelements.com/uploads/86195762-289d-421f-84b9-03b7daa8cd1d.mp3",
-					},
-					{
-						name: "defuse",
-						sourceUrl:
-							"https://cdn.streamelements.com/uploads/b28a55e8-cdc6-4a45-b08c-bbf5d5458e98.mp3",
-					},
-				],
-				command: "!playsound",
-			};
-		}
 		this.utilsRepository.twitchUtils.addCommandToChat({
 			name: "playsound",
 			description: "Play soundbind",
@@ -108,6 +59,17 @@ export default class SoundboardModule extends Module {
 	}
 
 	private async monitorChatInput(elements: HTMLElement[]) {
+		if (!this.soundboardData) {
+			this.soundboardData = await this.fetchSoundEffectsByTwitchId();
+
+			if (this.soundboardData === undefined) {
+				this.soundboardData = {
+					playSounds: [],
+					command: "",
+				};
+			}
+		}
+
 		setInterval(async () => {
 			const chatInputContent =
 				this.utilsRepository.twitchUtils.getChatInputContent();
@@ -129,17 +91,18 @@ export default class SoundboardModule extends Module {
 			if (partialSoundName === "[sound]") partialSoundName = "";
 
 			const matchingSounds = partialSoundName
-				? this.soundboardData?.sounds.filter((sound) =>
+				? this.soundboardData?.playSounds.filter((sound) =>
 						sound.name.toLowerCase().includes(partialSoundName),
 					)
-				: this.soundboardData?.sounds;
+				: this.soundboardData?.playSounds;
 
 			elements.forEach((element) => {
 				element.innerHTML = "";
 				render(
 					<SoundboardComponent
+						key={matchingSounds?.map((sound) => sound.name).join(",")}
 						onTab={(name: string) =>
-							this.utilsRepository.twitchUtils.sendChatMessage(name)
+							this.utilsRepository.twitchUtils.setChatMessage(name)
 						}
 						sounds={matchingSounds || []}
 					/>,
@@ -150,8 +113,7 @@ export default class SoundboardModule extends Module {
 	}
 
 	protected async fetchSoundEffectsByTwitchId() {
-		const channelId =
-			this.utilsRepository.twitchUtils.getChat().props.channelID;
+		const channelId = this.utilsRepository.twitchUtils.getChannelId();
 
 		const endpoint = `http://localhost:8080/playsounds/${channelId}`;
 		try {

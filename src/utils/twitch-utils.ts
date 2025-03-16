@@ -121,7 +121,17 @@ export default class TwitchUtils extends Utils {
 		);
 	}
 
-	sendChatMessage(message: string) {
+	getChannelId(): string {
+		return this.reactUtils.findReactChildren(
+			this.reactUtils.getReactInstance(
+				document.querySelector(".channel-info-content"),
+			),
+			(n) => n.stateNode?.props?.channelID,
+			1000,
+		)?.pendingProps.channelID;
+	}
+
+	setChatMessage(message: string) {
 		const chatInput = this.getChatInput() as ChatInput;
 		chatInput.stateNode.state.value = `/playsound ${message}`;
 		chatInput.stateNode.forceUpdate();

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "preact/hooks";
+import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import styled from "styled-components";
 
 interface Sound {
@@ -79,9 +79,17 @@ export function SoundboardComponent({
 		setPlayingSound(null);
 	};
 
+	const getChatInputContent = useCallback(() => {
+		const chatInputElement = document.querySelector(
+			'span[data-a-target="chat-input-text"]',
+		) as HTMLTextAreaElement | null;
+		return chatInputElement?.textContent || "";
+	}, []);
+
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
-			if (!sounds?.length) return;
+			const chatInputContent = getChatInputContent();
+			if (!chatInputContent.startsWith("/playsound") || !sounds?.length) return;
 
 			switch (e.key) {
 				case "ArrowUp":
@@ -109,7 +117,7 @@ export function SoundboardComponent({
 		return () => {
 			document.removeEventListener("keydown", handleKeyDown);
 		};
-	}, [sounds, selectedIndex, onTab]);
+	}, [sounds, selectedIndex, onTab, getChatInputContent]);
 
 	return (
 		<Wrapper>
