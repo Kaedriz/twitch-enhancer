@@ -1,6 +1,9 @@
 import type Logger from "logger";
 import type {
+	Chat,
 	ChatControllerComponent,
+	ChatInput,
+	Command,
 	FollowedSection,
 	MediaPlayerComponent,
 	PersistentPlayerComponent,
@@ -73,6 +76,15 @@ export default class TwitchUtils extends Utils {
 		return node?.pendingProps.value;
 	}
 
+	getChat(): Chat {
+		const node = this.reactUtils.findReactChildren(
+			this.reactUtils.getReactInstance(document.querySelector(".stream-chat")),
+			(n) => n.stateNode?.props?.onSendMessage,
+			1000,
+		);
+		return <Chat>node?.stateNode;
+	}
+
 	getChatController() {
 		const node = this.reactUtils.findReactParents<ChatControllerComponent>(
 			this.reactUtils.getReactInstance(
@@ -84,5 +96,44 @@ export default class TwitchUtils extends Utils {
 			50,
 		);
 		return node?.stateNode;
+	}
+
+	addCommandToChat(command: Command) {
+		this.getChatCommandStore().addCommand(command);
+	}
+
+	getChatInputContent(): string | null {
+		const chatInputElement = document.querySelector(
+			'span[data-a-target="chat-input-text"]',
+		) as HTMLTextAreaElement | null;
+
+		if (chatInputElement) {
+			return chatInputElement.textContent;
+		}
+		return null;
+	}
+
+	getChatInput() {
+		return this.reactUtils.findReactChildren(
+			this.reactUtils.getReactInstance(document.querySelector(".chat-input")),
+			(n) => n.stateNode?.state?.value,
+			1000,
+		);
+	}
+
+	getChannelId(): string {
+		return this.reactUtils.findReactChildren(
+			this.reactUtils.getReactInstance(
+				document.querySelector(".channel-info-content"),
+			),
+			(n) => n.stateNode?.props?.channelID,
+			1000,
+		)?.pendingProps.channelID;
+	}
+
+	setChatMessage(message: string) {
+		const chatInput = this.getChatInput() as ChatInput;
+		chatInput.stateNode.state.value = `/playsound ${message}`;
+		chatInput.stateNode.forceUpdate();
 	}
 }
