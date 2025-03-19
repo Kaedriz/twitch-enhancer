@@ -19,41 +19,11 @@ export default class TwitchModuleRegisterer extends ModuleRegisterer {
 		apiRepository: ApiRepository,
 	) {
 		return [
-			new PinStreamerModule(
-				logger,
-				eventEmitter,
-				storageRepository,
-				utilsRepository,
-				apiRepository,
-			),
-			new SoundboardModule(
-				logger,
-				eventEmitter,
-				storageRepository,
-				utilsRepository,
-				apiRepository,
-			),
-			new ClipDownloadModule(
-				logger,
-				eventEmitter,
-				storageRepository,
-				utilsRepository,
-				apiRepository,
-			),
-			new ChattersModule(
-				logger,
-				eventEmitter,
-				storageRepository,
-				utilsRepository,
-				apiRepository,
-			),
-			new StreamLatencyModule(
-				logger,
-				eventEmitter,
-				storageRepository,
-				utilsRepository,
-				apiRepository,
-			),
+			new PinStreamerModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
+			new SoundboardModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
+			new ClipDownloadModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
+			new ChattersModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
+			new StreamLatencyModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
 		];
 	}
 }

@@ -24,12 +24,9 @@ export default class SelectorModuleApplier extends ModuleApplier {
 			if (this.isApplierOnCooldown(applier)) continue;
 			applier.lastCheckedAt = Date.now();
 			const { config } = applier;
-			if (config.validateUrl && !config.validateUrl(window.location.href))
-				continue;
+			if (config.validateUrl && !config.validateUrl(window.location.href)) continue;
 			const elements = this.processElements(
-				config.selectors.flatMap((selector) => [
-					...document.querySelectorAll(selector),
-				]),
+				config.selectors.flatMap((selector) => [...document.querySelectorAll(selector)]),
 				config,
 			);
 			if (elements.length < 1) continue;
@@ -37,17 +34,13 @@ export default class SelectorModuleApplier extends ModuleApplier {
 		}
 	}
 
-	private processElements(
-		elements: Element[],
-		config: SelectorModuleApplierConfig,
-	) {
+	private processElements(elements: Element[], config: SelectorModuleApplierConfig) {
 		return elements
 			.map((_element) => {
 				let element: Element | null = _element;
 				if (element && config.useParent) element = element.parentElement;
 				if (!element) return;
-				if (this.isElementAlreadyUsed(element, config.key) && config.once)
-					return;
+				if (this.isElementAlreadyUsed(element, config.key) && config.once) return;
 				this.markElementAsUsed(element, config.key);
 				return element;
 			})
@@ -63,9 +56,7 @@ export default class SelectorModuleApplier extends ModuleApplier {
 	private markElementAsUsed(element: Element, id: string) {
 		element.setAttribute("enhanced", "true");
 		element.setAttribute("enhancedAt", `${Date.now()}`);
-		const modules = new Set(
-			element.getAttribute("enhanced-modules")?.split(";") ?? [],
-		);
+		const modules = new Set(element.getAttribute("enhanced-modules")?.split(";") ?? []);
 		modules.add(id);
 		element.setAttribute("enhanced-modules", [...modules].join(";"));
 	}

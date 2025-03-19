@@ -15,9 +15,7 @@ export type ChatControllerComponent = {
 	props: {
 		channelLogin: string;
 		messageHandlerAPI: {
-			addMessageHandler: (
-				callback: (message: TwitchChatMessage) => void,
-			) => void;
+			addMessageHandler: (callback: (message: TwitchChatMessage) => void) => void;
 		};
 	};
 };
@@ -140,3 +138,22 @@ export type ChatInput = {
 		forceUpdate: () => void;
 	};
 };
+
+export interface TwitchChatMessageComponent {
+	props: {
+		channelLogin: string;
+		channelID: string;
+		message: {
+			badges: Record<string, string>;
+			id: string;
+			message: string;
+			user: {
+				color: string;
+				id: string;
+				displayName: string;
+				login: string;
+			};
+			nonce: string;
+		};
+	};
+}

@@ -22,7 +22,8 @@
 		}
 	},
 	"formatter": {
-		"lineEnding": "lf"
+		"lineEnding": "lf",
+		"lineWidth": 120
 	},
 	"files": {
 		"ignore": ["node_modules", "dist/**", "README.md"]

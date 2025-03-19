@@ -16,10 +16,7 @@ export default class ModuleLoader {
 	constructor(protected readonly logger: Logger) {}
 
 	private registerAppliers(eventEmitter: EventEmitter) {
-		const moduleAppliers = [
-			new SelectorModuleApplier(this.logger),
-			new EventModuleApplier(this.logger, eventEmitter),
-		];
+		const moduleAppliers = [new SelectorModuleApplier(this.logger), new EventModuleApplier(this.logger, eventEmitter)];
 		this.moduleAppliers.push(...moduleAppliers);
 	}
 
@@ -52,9 +49,7 @@ export default class ModuleLoader {
 				}
 				this.logger.debug(`${module.config.name} module has been loaded`);
 			} catch (error) {
-				this.logger.error(
-					`Failed to load ${module.config.name} module: ${error}`,
-				);
+				this.logger.error(`Failed to load ${module.config.name} module: ${error}`);
 			}
 		}
 	}

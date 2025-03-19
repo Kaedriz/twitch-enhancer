@@ -48,10 +48,7 @@ const ControlButton = styled.button<{ isSelected: boolean }>`
 	border-color: ${(props) => (props.isSelected ? "white" : "currentColor")};
 `;
 
-export function SoundboardComponent({
-	sounds,
-	onTab,
-}: SoundboardComponentProps) {
+export function SoundboardComponent({ sounds, onTab }: SoundboardComponentProps) {
 	const [playingSound, setPlayingSound] = useState<string | null>(null);
 	const [selectedIndex, setSelectedIndex] = useState(0);
 	const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -94,15 +91,11 @@ export function SoundboardComponent({
 			switch (e.key) {
 				case "ArrowUp":
 					e.preventDefault();
-					setSelectedIndex((prev) =>
-						prev - 1 < 0 ? sounds?.length - 1 : prev - 1,
-					);
+					setSelectedIndex((prev) => (prev - 1 < 0 ? sounds?.length - 1 : prev - 1));
 					break;
 				case "ArrowDown":
 					e.preventDefault();
-					setSelectedIndex((prev) =>
-						prev + 1 >= sounds?.length ? 0 : prev + 1,
-					);
+					setSelectedIndex((prev) => (prev + 1 >= sounds?.length ? 0 : prev + 1));
 					break;
 				case "Tab": {
 					e.preventDefault();

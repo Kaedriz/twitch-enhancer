@@ -49,10 +49,7 @@ export default class ReactUtils extends Utils {
 
 	getReactInstance(element: Element | Node | null) {
 		for (const k in element) {
-			if (
-				k.startsWith("__reactFiber$") ||
-				k.startsWith("__reactInternalInstance$")
-			) {
+			if (k.startsWith("__reactFiber$") || k.startsWith("__reactInternalInstance$")) {
 				return (element as any)[k];
 			}
 		}

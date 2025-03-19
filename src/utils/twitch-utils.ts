@@ -7,6 +7,7 @@ import type {
 	FollowedSection,
 	MediaPlayerComponent,
 	PersistentPlayerComponent,
+	TwitchChatMessageComponent,
 } from "types/utils/twitch-utils.types.ts";
 import type ReactUtils from "utils/react-utils.ts";
 import Utils from "utils/utils.ts";
@@ -24,8 +25,7 @@ export default class TwitchUtils extends Utils {
 		url = url.replace(/(^\w+:|^)\/\//, "");
 		const elements = url.split("/");
 		let name = elements[1];
-		if (name === "popout" || elements[0].includes("dashboard"))
-			name = elements[2];
+		if (name === "popout" || elements[0].includes("dashboard")) name = elements[2];
 		if (name.includes("?")) name = name.substring(0, name.indexOf("?"));
 		return name.toLowerCase();
 	}
@@ -40,9 +40,7 @@ export default class TwitchUtils extends Utils {
 
 	getMediaPlayerInstance() {
 		return this.reactUtils.findReactChildren<MediaPlayerComponent>(
-			this.reactUtils.getReactInstance(
-				document.querySelector(".persistent-player"),
-			),
+			this.reactUtils.getReactInstance(document.querySelector(".persistent-player")),
 			(n) => !!n.stateNode?.props?.mediaPlayerInstance,
 			20,
 		)?.stateNode.props.mediaPlayerInstance;
@@ -50,9 +48,7 @@ export default class TwitchUtils extends Utils {
 
 	getPersonalSections() {
 		return this.reactUtils.findReactParents<FollowedSection>(
-			this.reactUtils.getReactInstance(
-				document.querySelector(".side-nav-section"),
-			),
+			this.reactUtils.getReactInstance(document.querySelector(".side-nav-section")),
 			(n) => !!n.stateNode?.props?.section,
 			1000,
 		)?.stateNode;
@@ -60,9 +56,7 @@ export default class TwitchUtils extends Utils {
 
 	getPersistentPlayer() {
 		return this.reactUtils.findReactChildren<PersistentPlayerComponent>(
-			this.reactUtils.getReactInstance(
-				document.querySelector(".persistent-player"),
-			),
+			this.reactUtils.getReactInstance(document.querySelector(".persistent-player")),
 			(n) => !!n.stateNode?.props?.content.channelLogin,
 		)?.stateNode.props;
 	}
@@ -88,9 +82,7 @@ export default class TwitchUtils extends Utils {
 	getChatController() {
 		const node = this.reactUtils.findReactParents<ChatControllerComponent>(
 			this.reactUtils.getReactInstance(
-				document.querySelector(
-					'section[data-test-selector="chat-room-component-layout"]',
-				),
+				document.querySelector('section[data-test-selector="chat-room-component-layout"]'),
 			),
 			(n) => n.stateNode?.props?.chatConnectionAPI,
 			50,
@@ -123,9 +115,7 @@ export default class TwitchUtils extends Utils {
 
 	getChannelId(): string {
 		return this.reactUtils.findReactChildren(
-			this.reactUtils.getReactInstance(
-				document.querySelector(".channel-info-content"),
-			),
+			this.reactUtils.getReactInstance(document.querySelector(".channel-info-content")),
 			(n) => n.stateNode?.props?.channelID,
 			1000,
 		)?.pendingProps.channelID;
@@ -135,5 +125,10 @@ export default class TwitchUtils extends Utils {
 		const chatInput = this.getChatInput() as ChatInput;
 		chatInput.stateNode.state.value = `/playsound ${message}`;
 		chatInput.stateNode.forceUpdate();
+	}
+
+	getChatMessage(message: Node) {
+		const instance = this.reactUtils.getReactInstance(message)?.return?.stateNode as TwitchChatMessageComponent;
+		return instance?.props.message ? instance : undefined;
 	}
 }

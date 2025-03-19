@@ -16,10 +16,7 @@ export default class Extension {
 
 	constructor(private readonly config: ExtensionConfig) {
 		this.eventsEmitter = createEventsEmitter();
-		this.storageRepository = new StorageRepository(
-			this.logger,
-			this.config.platform,
-		);
+		this.storageRepository = new StorageRepository(this.logger, this.config.platform);
 		this.utilsRepository = new UtilsRepository(this.logger);
 		this.apiRepository = new ApiRepository(this.logger);
 	}

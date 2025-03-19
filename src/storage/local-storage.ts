@@ -4,19 +4,14 @@ import Storage from "./storage.ts";
 export default class LocalStorage extends Storage<CoreStorageMap> {
 	private cache: CoreStorageMap | undefined;
 
-	async save<K extends keyof CoreStorageMap>(
-		key: K,
-		value: CoreStorageMap[K],
-	): Promise<void> {
+	async save<K extends keyof CoreStorageMap>(key: K, value: CoreStorageMap[K]): Promise<void> {
 		const storage = this.getStorage();
 		storage[key] = value;
 		this.cache = storage;
 		localStorage.setItem(this.getId(), JSON.stringify(storage));
 	}
 
-	async get<K extends keyof CoreStorageMap>(
-		key: K,
-	): Promise<CoreStorageMap[K]> {
+	async get<K extends keyof CoreStorageMap>(key: K): Promise<CoreStorageMap[K]> {
 		return this.getStorage()[key] as CoreStorageMap[K];
 	}
 

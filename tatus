@@ -1,0 +1,403 @@
+warning: in the working copy of 'biome.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/event/emitter.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/extension/extension.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/index.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/inject.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/logger/logger.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/module/core/applier/event-module-applier.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/module/core/applier/module-applier.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/module/core/applier/selector-module-applier.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/module/core/module-loader.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/module/core/module-registerer.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/module/core/module.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/module/twitch/chatters/chatters-module.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/module/twitch/clip-download/clip-download-module.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/module/twitch/example/example.module.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/module/twitch/pin-streamer/pin-streamer-module.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/module/twitch/soundboard/SoundboardComponent.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/module/twitch/soundboard/soundboard-module.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/module/twitch/stream-latency/stream-latency-module.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/module/twitch/twitch-module-registerer.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/storage/local-storage.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/storage/storage-repository.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/utils/common-utils.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/utils/react-utils.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/utils/twitch-utils.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'types/event/events.types.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'types/extension.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'types/logger/logger.types.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'types/module/module-applier.types.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'types/storage/storage.types.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'types/utils/twitch-utils.types.ts', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/biome.json b/biome.json[m
+[1mindex d2e13c9..c5dfc54 100644[m
+[1m--- a/biome.json[m
+[1m+++ b/biome.json[m
+[36m@@ -22,7 +22,8 @@[m
+ 		}[m
+ 	},[m
+ 	"formatter": {[m
+[31m-		"lineEnding": "lf"[m
+[32m+[m		[32m"lineEnding": "lf",[m
+[32m+[m		[32m"lineWidth": 120[m
+ 	},[m
+ 	"files": {[m
+ 		"ignore": ["node_modules", "dist/**", "README.md"][m
+[1mdiff --git a/src/extension/extension.ts b/src/extension/extension.ts[m
+[1mindex 7eecf07..5401dde 100644[m
+[1m--- a/src/extension/extension.ts[m
+[1m+++ b/src/extension/extension.ts[m
+[36m@@ -16,10 +16,7 @@[m [mexport default class Extension {[m
+ [m
+ 	constructor(private readonly config: ExtensionConfig) {[m
+ 		this.eventsEmitter = createEventsEmitter();[m
+[31m-		this.storageRepository = new StorageRepository([m
+[31m-			this.logger,[m
+[31m-			this.config.platform,[m
+[31m-		);[m
+[32m+[m		[32mthis.storageRepository = new StorageRepository(this.logger, this.config.platform);[m
+ 		this.utilsRepository = new UtilsRepository(this.logger);[m
+ 		this.apiRepository = new ApiRepository(this.logger);[m
+ 	}[m
+[1mdiff --git a/src/inject.ts b/src/inject.ts[m
+[1mindex f1934e1..708e322 100644[m
+[1m--- a/src/inject.ts[m
+[1m+++ b/src/inject.ts[m
+[36m@@ -5,10 +5,7 @@[m [mconst source: Record<ExtensionEnvironment, string> = {[m
+ 	development: `http://localhost:3360/dist/index.js?cache=${Math.random().toString()}`,[m
+ };[m
+ [m
+[31m-const head =[m
+[31m-	document.head ||[m
+[31m-	document.getElementsByTagName("head")[0] ||[m
+[31m-	document.documentElement;[m
+[32m+[m[32mconst head = document.head || document.getElementsByTagName("head")[0] || document.documentElement;[m
+ [m
+ const script = document.createElement("script");[m
+ script.type = "module";[m
+[1mdiff --git a/src/logger/logger.ts b/src/logger/logger.ts[m
+[1mindex 6dfed21..7c871d8 100644[m
+[1m--- a/src/logger/logger.ts[m
+[1m+++ b/src/logger/logger.ts[m
+[36m@@ -28,9 +28,6 @@[m [mexport default class Logger {[m
+ 	}[m
+ [m
+ 	private send(logType: LogType, ...data: any[]) {[m
+[31m-		console[logType]([m
+[31m-			`${Logger.LOGGER_PREFIX} ${Logger.LOG_TYPE_PREFIX[logType]}`,[m
+[31m-			...data,[m
+[31m-		);[m
+[32m+[m		[32mconsole[logType](`${Logger.LOGGER_PREFIX} ${Logger.LOG_TYPE_PREFIX[logType]}`, ...data);[m
+ 	}[m
+ }[m
+[1mdiff --git a/src/module/core/applier/selector-module-applier.ts b/src/module/core/applier/selector-module-applier.ts[m
+[1mindex a501ad0..23a0916 100644[m
+[1m--- a/src/module/core/applier/selector-module-applier.ts[m
+[1m+++ b/src/module/core/applier/selector-module-applier.ts[m
+[36m@@ -24,12 +24,9 @@[m [mexport default class SelectorModuleApplier extends ModuleApplier {[m
+ 			if (this.isApplierOnCooldown(applier)) continue;[m
+ 			applier.lastCheckedAt = Date.now();[m
+ 			const { config } = applier;[m
+[31m-			if (config.validateUrl && !config.validateUrl(window.location.href))[m
+[31m-				continue;[m
+[32m+[m			[32mif (config.validateUrl && !config.validateUrl(window.location.href)) continue;[m
+ 			const elements = this.processElements([m
+[31m-				config.selectors.flatMap((selector) => [[m
+[31m-					...document.querySelectorAll(selector),[m
+[31m-				]),[m
+[32m+[m				[32mconfig.selectors.flatMap((selector) => [...document.querySelectorAll(selector)]),[m
+ 				config,[m
+ 			);[m
+ 			if (elements.length < 1) continue;[m
+[36m@@ -37,17 +34,13 @@[m [mexport default class SelectorModuleApplier extends ModuleApplier {[m
+ 		}[m
+ 	}[m
+ [m
+[31m-	private processElements([m
+[31m-		elements: Element[],[m
+[31m-		config: SelectorModuleApplierConfig,[m
+[31m-	) {[m
+[32m+[m	[32mprivate processElements(elements: Element[], config: SelectorModuleApplierConfig) {[m
+ 		return elements[m
+ 			.map((_element) => {[m
+ 				let element: Element | null = _element;[m
+ 				if (element && config.useParent) element = element.parentElement;[m
+ 				if (!element) return;[m
+[31m-				if (this.isElementAlreadyUsed(element, config.key) && config.once)[m
+[31m-					return;[m
+[32m+[m				[32mif (this.isElementAlreadyUsed(element, config.key) && config.once) return;[m
+ 				this.markElementAsUsed(element, config.key);[m
+ 				return element;[m
+ 			})[m
+[36m@@ -63,9 +56,7 @@[m [mexport default class SelectorModuleApplier extends ModuleApplier {[m
+ 	private markElementAsUsed(element: Element, id: string) {[m
+ 		element.setAttribute("enhanced", "true");[m
+ 		element.setAttribute("enhancedAt", `${Date.now()}`);[m
+[31m-		const modules = new Set([m
+[31m-			element.getAttribute("enhanced-modules")?.split(";") ?? [],[m
+[31m-		);[m
+[32m+[m		[32mconst modules = new Set(element.getAttribute("enhanced-modules")?.split(";") ?? []);[m
+ 		modules.add(id);[m
+ 		element.setAttribute("enhanced-modules", [...modules].join(";"));[m
+ 	}[m
+[1mdiff --git a/src/module/core/module-loader.ts b/src/module/core/module-loader.ts[m
+[1mindex fcb2599..308ffd8 100644[m
+[1m--- a/src/module/core/module-loader.ts[m
+[1m+++ b/src/module/core/module-loader.ts[m
+[36m@@ -16,10 +16,7 @@[m [mexport default class ModuleLoader {[m
+ 	constructor(protected readonly logger: Logger) {}[m
+ [m
+ 	private registerAppliers(eventEmitter: EventEmitter) {[m
+[31m-		const moduleAppliers = [[m
+[31m-			new SelectorModuleApplier(this.logger),[m
+[31m-			new EventModuleApplier(this.logger, eventEmitter),[m
+[31m-		];[m
+[32m+[m		[32mconst moduleAppliers = [new SelectorModuleApplier(this.logger), new EventModuleApplier(this.logger, eventEmitter)];[m
+ 		this.moduleAppliers.push(...moduleAppliers);[m
+ 	}[m
+ [m
+[36m@@ -52,9 +49,7 @@[m [mexport default class ModuleLoader {[m
+ 				}[m
+ 				this.logger.debug(`${module.config.name} module has been loaded`);[m
+ 			} catch (error) {[m
+[31m-				this.logger.error([m
+[31m-					`Failed to load ${module.config.name} module: ${error}`,[m
+[31m-				);[m
+[32m+[m				[32mthis.logger.error(`Failed to load ${module.config.name} module: ${error}`);[m
+ 			}[m
+ 		}[m
+ 	}[m
+[1mdiff --git a/src/module/twitch/chatters/chatters-module.tsx b/src/module/twitch/chatters/chatters-module.tsx[m
+[1mindex 1bb90a8..a8c42df 100644[m
+[1m--- a/src/module/twitch/chatters/chatters-module.tsx[m
+[1m+++ b/src/module/twitch/chatters/chatters-module.tsx[m
+[36m@@ -40,22 +40,12 @@[m [mexport default class ChattersModule extends Module {[m
+ 	private chattersCounter = {} as Signal<number>;[m
+ [m
+ 	private run(elements: Element[]) {[m
+[31m-		const wrappers = this.utilsRepository.commonUtils.createEmptyElements([m
+[31m-			this.getId(),[m
+[31m-			elements,[m
+[31m-			"span",[m
+[31m-		);[m
+[32m+[m		[32mconst wrappers = this.utilsRepository.commonUtils.createEmptyElements(this.getId(), elements, "span");[m
+ 		this.createChattersCounter();[m
+ 		this.refreshChatters();[m
+ 		setInterval(async () => this.refreshChatters(), 30000);[m
+ 		wrappers.forEach((element) => {[m
+[31m-			render([m
+[31m-				<ChattersComponent[m
+[31m-					click={this.refreshChatters.bind(this)}[m
+[31m-					counter={this.chattersCounter}[m
+[31m-				/>,[m
+[31m-				element,[m
+[31m-			);[m
+[32m+[m			[32mrender(<ChattersComponent click={this.refreshChatters.bind(this)} counter={this.chattersCounter} />, element);[m
+ 		});[m
+ 	}[m
+ [m
+[36m@@ -63,25 +53,16 @@[m [mexport default class ChattersModule extends Module {[m
+ 		let channel = undefined;[m
+ 		try {[m
+ 			channel =[m
+[31m-				this.utilsRepository.twitchUtils[m
+[31m-					.getPersistentPlayer()[m
+[31m-					?.content.channelLogin?.toLowerCase() ??[m
+[32m+[m				[32mthis.utilsRepository.twitchUtils.getPersistentPlayer()?.content.channelLogin?.toLowerCase() ??[m
+ 				this.utilsRepository.twitchUtils.getCurrentChannelByUrl();[m
+[31m-			const { data } = await this.apiRepository.twitchApi.gql<ChattersResponse>([m
+[31m-				ChattersQuery,[m
+[31m-				{[m
+[31m-					name: channel,[m
+[31m-				},[m
+[31m-			);[m
+[32m+[m			[32mconst { data } = await this.apiRepository.twitchApi.gql<ChattersResponse>(ChattersQuery, {[m
+[32m+[m				[32mname: channel,[m
+[32m+[m			[32m});[m
+ 			const chatters = data.channel.chatters.count;[m
+[31m-			this.logger.debug([m
+[31m-				`Refreshed chatters count on ${channel} to ${chatters}`,[m
+[31m-			);[m
+[32m+[m			[32mthis.logger.debug(`Refreshed chatters count on ${channel} to ${chatters}`);[m
+ 			this.chattersCounter.value = chatters;[m
+ 		} catch (error) {[m
+[31m-			this.logger.warn([m
+[31m-				`Couldn't refresh chatters count on channel ${channel ?? "unknown"}, caught error: ${error}`,[m
+[31m-			);[m
+[32m+[m			[32mthis.logger.warn(`Couldn't refresh chatters count on channel ${channel ?? "unknown"}, caught error: ${error}`);[m
+ 		}[m
+ 	}[m
+ [m
+[36m@@ -108,9 +89,5 @@[m [mconst Wrapper = styled.span`[m
+ `;[m
+ [m
+ function ChattersComponent({ click, counter }: ChattersComponentProps) {[m
+[31m-	return ([m
+[31m-		<Wrapper onClick={click}>[m
+[31m-			({counter.value === -1 ? "Loading..." : counter.value})[m
+[31m-		</Wrapper>[m
+[31m-	);[m
+[32m+[m	[32mreturn <Wrapper onClick={click}>({counter.value === -1 ? "Loading..." : counter.value})</Wrapper>;[m
+ }[m
+[1mdiff --git a/src/module/twitch/clip-download/clip-download-module.tsx b/src/module/twitch/clip-download/clip-download-module.tsx[m
+[1mindex 097943b..676a948 100644[m
+[1m--- a/src/module/twitch/clip-download/clip-download-module.tsx[m
+[1m+++ b/src/module/twitch/clip-download/clip-download-module.tsx[m
+[36m@@ -21,16 +21,9 @@[m [mexport default class ClipDownloadModule extends Module {[m
+ 	};[m
+ [m
+ 	private run(elements: Element[]) {[m
+[31m-		const wrappers = this.utilsRepository.commonUtils.createEmptyElements([m
+[31m-			this.getId(),[m
+[31m-			elements,[m
+[31m-			"div",[m
+[31m-		);[m
+[32m+[m		[32mconst wrappers = this.utilsRepository.commonUtils.createEmptyElements(this.getId(), elements, "div");[m
+ 		wrappers.forEach((element) => {[m
+[31m-			render([m
+[31m-				<DownloadButtonComponent click={this.downloadClip.bind(this)} />,[m
+[31m-				element,[m
+[31m-			);[m
+[32m+[m			[32mrender(<DownloadButtonComponent click={this.downloadClip.bind(this)} />, element);[m
+ 		});[m
+ 	}[m
+ [m
+[36m@@ -61,9 +54,7 @@[m [mconst Wrapper = styled.div`[m
+ [m
+ `;[m
+ [m
+[31m-const DownloadButtonComponent: FunctionalComponent<[m
+[31m-	DownloadButtonComponentProps[m
+[31m-> = ({ click }) => {[m
+[32m+[m[32mconst DownloadButtonComponent: FunctionalComponent<DownloadButtonComponentProps> = ({ click }) => {[m
+ 	return ([m
+ 		<Wrapper onClick={click}>[m
+ 			<svg[m
+[1mdiff --git a/src/module/twitch/pin-streamer/pin-streamer-module.tsx b/src/module/twitch/pin-streamer/pin-streamer-module.tsx[m
+[1mindex c757fb2..79912fc 100644[m
+[1m--- a/src/module/twitch/pin-streamer/pin-streamer-module.tsx[m
+[1m+++ b/src/module/twitch/pin-streamer/pin-streamer-module.tsx[m
+[36m@@ -17,9 +17,7 @@[m [mexport default class PinStreamerModule extends Module {[m
+ 		appliers: [[m
+ 			{[m
+ 				type: "selector",[m
+[31m-				selectors: [[m
+[31m-					'.side-nav-card__link[data-test-selector="followed-channel"]',[m
+[31m-				],[m
+[32m+[m				[32mselectors: ['.side-nav-card__link[data-test-selector="followed-channel"]'],[m
+ 				callback: this.run.bind(this),[m
+ 				key: "pin-streamer",[m
+ 				once: true,[m
+[36m@@ -37,14 +35,9 @@[m [mexport default class PinStreamerModule extends Module {[m
+ 		elements.forEach(async (element) => {[m
+ 			const isPinned = signal(false);[m
+ [m
+[31m-			const button = this.utilsRepository.commonUtils.createElementByParent([m
+[31m-				"pin-streamer-button",[m
+[31m-				"button",[m
+[31m-				element,[m
+[31m-			);[m
+[32m+[m			[32mconst button = this.utilsRepository.commonUtils.createElementByParent("pin-streamer-button", "button", element);[m
+ [m
+[31m-			const channelID =[m
+[31m-				this.utilsRepository.twitchUtils.getUserIdBySideElement(element);[m
+[32m+[m			[32mconst channelID = this.utilsRepository.twitchUtils.getUserIdBySideElement(element);[m
+ [m
+ 			button.onclick = async (event) => {[m
+ 				event.preventDefault();[m
+[36m@@ -74,29 +67,21 @@[m [mexport default class PinStreamerModule extends Module {[m
+ 	}[m
+ [m
+ 	private async updateFollows() {[m
+[31m-		const section =[m
+[31m-			this.utilsRepository.twitchUtils.getPersonalSections()?.props;[m
+[32m+[m		[32mconst section = this.utilsRepository.twitchUtils.getPersonalSections()?.props;[m
+ 		if (!section) return;[m
+ [m
+[31m-		if ([m
+[31m-			this.originalOfflineFollowList.length &&[m
+[31m-			this.originalFollowList.length[m
+[31m-		) {[m
+[32m+[m		[32mif (this.originalOfflineFollowList.length && this.originalFollowList.length) {[m
+ 			section.section.streams = await this.sortStreamsByPinned([m
+ 				this.originalFollowList,[m
+ 				section.sort.type === "viewers_desc",[m
+ 			);[m
+ [m
+[31m-			section.section.videoConnections = await this.sortStreamsByPinned([m
+[31m-				this.originalOfflineFollowList,[m
+[31m-				true,[m
+[31m-			);[m
+[32m+[m			[32msection.section.videoConnections = await this.sortStreamsByPinned(this.originalOfflineFollowList, true);[m
+ 		}[m
+ 	}[m
+ [m
+ 	private async getPinnedStreamers(): Promise<{ ids: string[] }> {[m
+[31m-		const result =[m
+[31m-			await this.storageRepository.localStorage.get("pinnedStreamers");[m
+[32m+[m		[32mconst result = await this.storageRepository.localStorage.get("pinnedStreamers");[m
+ 		return result || { ids: [] };[m
+ 	}[m
+ [m
+[36m@@ -141,15 +126,10 @@[m [mexport default class PinStreamerModule extends Module {[m
+ 		});[m
+ [m
+ 		if (isSortAvailable) {[m
+[31m-			const sortedRegularStreamers =[m
+[31m-				this.sortStreamDataByViewersCount(regularStreamers);[m
+[31m-			const sortedPinnedStreamers =[m
+[31m-				this.sortStreamDataByViewersCount(pinnedStreamers);[m
+[31m-[m
+[31m-			this.previousFollowListState = [[m
+[31m-				...sortedPinnedStreamers,[m
+[31m-				...sortedRegularStreamers,[m
+[31m-			];[m
+[32m+[m			[32mconst sortedRegularStreamers = this.sortStreamDataByViewersCount(regularStreamers);[m
+[32m+[m			[32mconst sortedPinnedStreamers = this.sortStreamDataByViewersCount(pinnedStreamers);[m
+[32m+[m
+[32m+[m			[32mthis.previousFollowListState = [...sortedPinnedStreamers, ...sortedRegularStreamers];[m
+ 		} else {[m
+ 			this.previousFollowListState = [...pinnedStreamers, ...regularStreamers];[m
+ 		}[m
+[36m@@ -164,33 +144,24 @@[m [mexport default class PinStreamerModule extends Module {[m
+ 	}[m
+ [m
+ 	private getPersonalSectionStreams() {[m
+[31m-		return ([m
+[31m-			this.utilsRepository.twitchUtils.getPersonalSections()?.props?.section[m
+[31m-				.streams ?? [][m
+[31m-		);[m
+[32m+[m		[32mreturn this.utilsRepository.twitchUtils.getPersonalSections()?.props?.section.streams ?? [];[m
+ 	}[m
+ [m
+ 	private getPersonalSectionVideoConnections() {[m
+[31m-		return ([m
+[31m-			this.utilsRepository.twitchUtils.getPersonalSections()?.props?.section[m
+[31m-				.videoConnections ?? [][m
+[31m-		);[m
+[32m+[m		[32mreturn this.utilsRepository.twitchUtils.getPersonalSections()?.props?.section.videoConnections ?? [];[m
+ 	}[m
+ [m
+ 	private async followsObserver() {[m
+ 		const section = this.getPersonalSectionStreams();[m
+ 		if (section !== this.previousFollowListState) {[m
+ 			this.originalFollowList = this.getPersonalSectionStreams();[m
+[31m-			this.originalOfflineFollowList =[m
+[31m-				this.getPersonalSectionVideoConnections();[m
+[32m+[m			[32mthis.originalOfflineFollowList = this.getPersonalSectionVideoConnections();[m
+ 			await this.updateFollows();[m
+ 			await this.refreshFollows();[m
+ 		}[m
+ 	}[m
+ [m
+[31m-	private sortStreamDataByViewersCount([m
+[31m-		streamDataArray: FollowedSectionStreamData[],[m
+[31m-	): FollowedSectionStreamData[] {[m
+[32m+[m	[32mprivate sortStreamDataByViewersCount(streamDataArray: FollowedSectionStreamData[]): FollowedSectionStreamData[] {[m
+ 		return streamDataArray.sort((a, b) => {[m
+ 			const viewersCountA = a.content?.viewersCount ?? 0;[m
+ 			const viewersCountB = b.content?.viewersCount ?? 0;[m
+[1mdiff --git a/src/module/twitch/soundboard/SoundboardComponent.tsx b/src/module/twitch/soundboard/SoundboardComponent.tsx[m
+[1mindex bbf5df9..234a2f1 100644[m
+[1m--- a/src/module/twitch/soundboard/Soundboa

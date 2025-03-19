@@ -1,16 +1,9 @@
 import type { Emitter } from "nanoevents";
+import type { KickEvents } from "types/event/kick-events.types.ts";
+import type { TwitchEvents } from "types/event/twitch-events.types.ts";
 
 export type EventsMap = {
 	"extension:start": () => void;
-} & TwitchEvents &
-	KickEvents;
-
-type TwitchEvents = {
-	"twitch:chatMessage": (message: string) => void;
-};
-
-type KickEvents = {
-	"kick:chatMessage": (message: string) => void;
-};
+} & (TwitchEvents & KickEvents);
 
 export type EventEmitter = Emitter<EventsMap>;

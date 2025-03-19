@@ -28,9 +28,6 @@ export default class Logger {
 	}
 
 	private send(logType: LogType, ...data: any[]) {
-		console[logType](
-			`${Logger.LOGGER_PREFIX} ${Logger.LOG_TYPE_PREFIX[logType]}`,
-			...data,
-		);
+		console[logType](`${Logger.LOGGER_PREFIX} ${Logger.LOG_TYPE_PREFIX[logType]}`, ...data);
 	}
 }

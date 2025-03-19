@@ -17,9 +17,7 @@ export default class PinStreamerModule extends Module {
 		appliers: [
 			{
 				type: "selector",
-				selectors: [
-					'.side-nav-card__link[data-test-selector="followed-channel"]',
-				],
+				selectors: ['.side-nav-card__link[data-test-selector="followed-channel"]'],
 				callback: this.run.bind(this),
 				key: "pin-streamer",
 				once: true,
@@ -37,14 +35,9 @@ export default class PinStreamerModule extends Module {
 		elements.forEach(async (element) => {
 			const isPinned = signal(false);
 
-			const button = this.utilsRepository.commonUtils.createElementByParent(
-				"pin-streamer-button",
-				"button",
-				element,
-			);
+			const button = this.utilsRepository.commonUtils.createElementByParent("pin-streamer-button", "button", element);
 
-			const channelID =
-				this.utilsRepository.twitchUtils.getUserIdBySideElement(element);
+			const channelID = this.utilsRepository.twitchUtils.getUserIdBySideElement(element);
 
 			button.onclick = async (event) => {
 				event.preventDefault();
@@ -74,29 +67,21 @@ export default class PinStreamerModule extends Module {
 	}
 
 	private async updateFollows() {
-		const section =
-			this.utilsRepository.twitchUtils.getPersonalSections()?.props;
+		const section = this.utilsRepository.twitchUtils.getPersonalSections()?.props;
 		if (!section) return;
 
-		if (
-			this.originalOfflineFollowList.length &&
-			this.originalFollowList.length
-		) {
+		if (this.originalOfflineFollowList.length && this.originalFollowList.length) {
 			section.section.streams = await this.sortStreamsByPinned(
 				this.originalFollowList,
 				section.sort.type === "viewers_desc",
 			);
 
-			section.section.videoConnections = await this.sortStreamsByPinned(
-				this.originalOfflineFollowList,
-				true,
-			);
+			section.section.videoConnections = await this.sortStreamsByPinned(this.originalOfflineFollowList, true);
 		}
 	}
 
 	private async getPinnedStreamers(): Promise<{ ids: string[] }> {
-		const result =
-			await this.storageRepository.localStorage.get("pinnedStreamers");
+		const result = await this.storageRepository.localStorage.get("pinnedStreamers");
 		return result || { ids: [] };
 	}
 
@@ -141,15 +126,10 @@ export default class PinStreamerModule extends Module {
 		});
 
 		if (isSortAvailable) {
-			const sortedRegularStreamers =
-				this.sortStreamDataByViewersCount(regularStreamers);
-			const sortedPinnedStreamers =
-				this.sortStreamDataByViewersCount(pinnedStreamers);
+			const sortedRegularStreamers = this.sortStreamDataByViewersCount(regularStreamers);
+			const sortedPinnedStreamers = this.sortStreamDataByViewersCount(pinnedStreamers);
 
-			this.previousFollowListState = [
-				...sortedPinnedStreamers,
-				...sortedRegularStreamers,
-			];
+			this.previousFollowListState = [...sortedPinnedStreamers, ...sortedRegularStreamers];
 		} else {
 			this.previousFollowListState = [...pinnedStreamers, ...regularStreamers];
 		}
@@ -164,33 +144,24 @@ export default class PinStreamerModule extends Module {
 	}
 
 	private getPersonalSectionStreams() {
-		return (
-			this.utilsRepository.twitchUtils.getPersonalSections()?.props?.section
-				.streams ?? []
-		);
+		return this.utilsRepository.twitchUtils.getPersonalSections()?.props?.section.streams ?? [];
 	}
 
 	private getPersonalSectionVideoConnections() {
-		return (
-			this.utilsRepository.twitchUtils.getPersonalSections()?.props?.section
-				.videoConnections ?? []
-		);
+		return this.utilsRepository.twitchUtils.getPersonalSections()?.props?.section.videoConnections ?? [];
 	}
 
 	private async followsObserver() {
 		const section = this.getPersonalSectionStreams();
 		if (section !== this.previousFollowListState) {
 			this.originalFollowList = this.getPersonalSectionStreams();
-			this.originalOfflineFollowList =
-				this.getPersonalSectionVideoConnections();
+			this.originalOfflineFollowList = this.getPersonalSectionVideoConnections();
 			await this.updateFollows();
 			await this.refreshFollows();
 		}
 	}
 
-	private sortStreamDataByViewersCount(
-		streamDataArray: FollowedSectionStreamData[],
-	): FollowedSectionStreamData[] {
+	private sortStreamDataByViewersCount(streamDataArray: FollowedSectionStreamData[]): FollowedSectionStreamData[] {
 		return streamDataArray.sort((a, b) => {
 			const viewersCountA = a.content?.viewersCount ?? 0;
 			const viewersCountB = b.content?.viewersCount ?? 0;

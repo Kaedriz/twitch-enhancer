@@ -5,10 +5,7 @@ const source: Record<ExtensionEnvironment, string> = {
 	development: `http://localhost:3360/dist/index.js?cache=${Math.random().toString()}`,
 };
 
-const head =
-	document.head ||
-	document.getElementsByTagName("head")[0] ||
-	document.documentElement;
+const head = document.head || document.getElementsByTagName("head")[0] || document.documentElement;
 
 const script = document.createElement("script");
 script.type = "module";

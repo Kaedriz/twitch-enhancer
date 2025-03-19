@@ -26,26 +26,14 @@ export default class StreamLatencyModule extends Module {
 	};
 
 	private run(elements: Element[]) {
-		const wrappers = this.utilsRepository.commonUtils.createEmptyElements(
-			this.getId(),
-			elements,
-			"span",
-		);
+		const wrappers = this.utilsRepository.commonUtils.createEmptyElements(this.getId(), elements, "span");
 		this.createLatencyCounter();
 		this.updateLatency();
 		setInterval(async () => this.updateLatency(), 1000);
 		wrappers.forEach((element) => {
-			const header = document.querySelector(
-				"#chat-room-header-label",
-			) as HTMLElement | null;
+			const header = document.querySelector("#chat-room-header-label") as HTMLElement | null;
 			if (header) header.style.display = "none";
-			return render(
-				<LatencyComponent
-					counter={this.latencyCounter}
-					click={this.resetPlayer.bind(this)}
-				/>,
-				element,
-			);
+			return render(<LatencyComponent counter={this.latencyCounter} click={this.resetPlayer.bind(this)} />, element);
 		});
 	}
 
@@ -62,8 +50,7 @@ export default class StreamLatencyModule extends Module {
 
 	private getMediaPlayer() {
 		if (!this.mediaPlayer) {
-			this.mediaPlayer =
-				this.utilsRepository.twitchUtils.getMediaPlayerInstance();
+			this.mediaPlayer = this.utilsRepository.twitchUtils.getMediaPlayerInstance();
 			if (!this.mediaPlayer) {
 				throw new Error("Cannot find MediaPlayerInstance");
 			}
@@ -103,10 +90,7 @@ const Wrapper = styled.div`
 function LatencyComponent({ click, counter }: LatencyComponentProps) {
 	return (
 		<Wrapper onClick={click}>
-			Latency:{" "}
-			{!counter.value || counter.value < 0
-				? "Loading..."
-				: `${counter.value.toFixed(2)}s`}
+			Latency: {!counter.value || counter.value < 0 ? "Loading..." : `${counter.value.toFixed(2)}s`}
 		</Wrapper>
 	);
 }

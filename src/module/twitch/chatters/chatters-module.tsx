@@ -40,22 +40,12 @@ export default class ChattersModule extends Module {
 	private chattersCounter = {} as Signal<number>;
 
 	private run(elements: Element[]) {
-		const wrappers = this.utilsRepository.commonUtils.createEmptyElements(
-			this.getId(),
-			elements,
-			"span",
-		);
+		const wrappers = this.utilsRepository.commonUtils.createEmptyElements(this.getId(), elements, "span");
 		this.createChattersCounter();
 		this.refreshChatters();
 		setInterval(async () => this.refreshChatters(), 30000);
 		wrappers.forEach((element) => {
-			render(
-				<ChattersComponent
-					click={this.refreshChatters.bind(this)}
-					counter={this.chattersCounter}
-				/>,
-				element,
-			);
+			render(<ChattersComponent click={this.refreshChatters.bind(this)} counter={this.chattersCounter} />, element);
 		});
 	}
 
@@ -63,25 +53,16 @@ export default class ChattersModule extends Module {
 		let channel = undefined;
 		try {
 			channel =
-				this.utilsRepository.twitchUtils
-					.getPersistentPlayer()
-					?.content.channelLogin?.toLowerCase() ??
+				this.utilsRepository.twitchUtils.getPersistentPlayer()?.content.channelLogin?.toLowerCase() ??
 				this.utilsRepository.twitchUtils.getCurrentChannelByUrl();
-			const { data } = await this.apiRepository.twitchApi.gql<ChattersResponse>(
-				ChattersQuery,
-				{
-					name: channel,
-				},
-			);
+			const { data } = await this.apiRepository.twitchApi.gql<ChattersResponse>(ChattersQuery, {
+				name: channel,
+			});
 			const chatters = data.channel.chatters.count;
-			this.logger.debug(
-				`Refreshed chatters count on ${channel} to ${chatters}`,
-			);
+			this.logger.debug(`Refreshed chatters count on ${channel} to ${chatters}`);
 			this.chattersCounter.value = chatters;
 		} catch (error) {
-			this.logger.warn(
-				`Couldn't refresh chatters count on channel ${channel ?? "unknown"}, caught error: ${error}`,
-			);
+			this.logger.warn(`Couldn't refresh chatters count on channel ${channel ?? "unknown"}, caught error: ${error}`);
 		}
 	}
 
@@ -108,9 +89,5 @@ const Wrapper = styled.span`
 `;
 
 function ChattersComponent({ click, counter }: ChattersComponentProps) {
-	return (
-		<Wrapper onClick={click}>
-			({counter.value === -1 ? "Loading..." : counter.value})
-		</Wrapper>
-	);
+	return <Wrapper onClick={click}>({counter.value === -1 ? "Loading..." : counter.value})</Wrapper>;
 }

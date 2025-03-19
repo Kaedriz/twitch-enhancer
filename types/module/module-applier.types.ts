@@ -1,8 +1,6 @@
 import type { EventsMap } from "types/event/events.types.ts";
 
-export type ModuleApplierConfig =
-	| SelectorModuleApplierConfig
-	| EventModuleApplierConfig;
+export type ModuleApplierConfig = SelectorModuleApplierConfig | EventModuleApplierConfig;
 
 export type CommonModuleApplierConfig = {
 	key: string;
