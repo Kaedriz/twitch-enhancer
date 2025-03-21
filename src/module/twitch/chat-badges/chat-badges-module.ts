@@ -1,6 +1,6 @@
 import Module from "module/core/module.ts";
-import type { ModuleConfig } from "types/module/module.types.ts";
 import type { TwitchChatMessageEvent } from "types/event/twitch-events.types.ts";
+import type { ModuleConfig } from "types/module/module.types.ts";
 
 export default class ChatBadgesModule extends Module {
 	private TEST_BADGES = [
