@@ -61,13 +61,7 @@ export default class ChatLastMessageModule extends Module {
 
 	private initialize() {
 		if (this.isInitialized) return;
-		const style = document.createElement("style");
-		style.innerHTML = `
-      .te-mention-messages {
-        background-color: #444 !important;
-      }
-    `;
-		document.head.appendChild(style);
+		this.utilsRepository.commonUtils.createGlobalStyle(".te-mention-messages { background-color: #444 !important; }");
 		this.isInitialized = true;
 	}
 }

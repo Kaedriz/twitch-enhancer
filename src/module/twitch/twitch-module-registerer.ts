@@ -2,6 +2,7 @@ import type Logger from "logger";
 import ModuleRegisterer from "module/core/module-registerer.ts";
 import ChatBadgesModule from "module/twitch/chat-badges/chat-badges-module.ts";
 import ChatLastMessageModule from "module/twitch/chat-last-message/chat-last-message-module.tsx";
+import ChatModule from "module/twitch/chat/chat-module.ts";
 import ChattersModule from "module/twitch/chatters/chatters-module.tsx";
 import ClipDownloadModule from "module/twitch/clip-download/clip-download-module.tsx";
 import PinStreamerModule from "module/twitch/pin-streamer/pin-streamer-module.tsx";
@@ -11,7 +12,6 @@ import type { EventEmitter } from "types/event/events.types.ts";
 import type UtilsRepository from "utils/utils-repository.ts";
 import type ApiRepository from "../../api/api-repository.ts";
 import type StorageRepository from "../../storage/storage-repository.ts";
-import ChatModule from "module/twitch/chat/chat-module.ts";
 
 export default class TwitchModuleRegisterer extends ModuleRegisterer {
 	getModules(
