@@ -1,8 +1,8 @@
 import Module from "module/core/module.ts";
+import { render } from "preact";
 import styled from "styled-components";
 import type { TwitchChatMessageEvent } from "types/event/twitch-events.types.ts";
 import type { ModuleConfig } from "types/module/module.types.ts";
-import { render } from "preact";
 
 export default class ChatBadgesModule extends Module {
 	private TEST_BADGES = [
