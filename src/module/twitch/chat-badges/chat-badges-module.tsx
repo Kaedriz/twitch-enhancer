@@ -1,6 +1,8 @@
 import Module from "module/core/module.ts";
-import type { ModuleConfig } from "types/module/module.types.ts";
+import styled from "styled-components";
 import type { TwitchChatMessageEvent } from "types/event/twitch-events.types.ts";
+import type { ModuleConfig } from "types/module/module.types.ts";
+import { render } from "preact";
 
 export default class ChatBadgesModule extends Module {
 	private TEST_BADGES = [
@@ -46,17 +48,24 @@ export default class ChatBadgesModule extends Module {
 		badgeWrapper.style.verticalAlign = "baseline";
 		badgeWrapper.style.display = "inline-block";
 
-		const badgeImage = new Image();
-		badgeWrapper.append(badgeImage);
-
-		badgeImage.style.width = "18px";
-		badgeImage.style.height = "18px";
-		badgeImage.alt = "Test Badge";
-		badgeImage.src = badge.source;
+		render(<Badge sourceUrl={badge.source} name={"Test"} />, badgeWrapper);
+		//render(<Tooltip text={"skibidi test"} />, badgeWrapper);
 
 		if (badgeList.children.length < 1) badgeList.appendChild(badgeWrapper);
 		else badgeList.insertBefore(badgeWrapper, badgeList.firstChild);
 	}
 }
 
-// TODO Move to Preact
+interface BadgeComponentProps {
+	name: string;
+	sourceUrl: string;
+}
+
+const Icon = styled.img`
+	width: 18px;
+	height: 18px;
+`;
+
+function Badge({ name, sourceUrl }: BadgeComponentProps) {
+	return <Icon src={sourceUrl} alt={name} />;
+}

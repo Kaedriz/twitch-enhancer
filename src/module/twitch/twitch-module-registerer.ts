@@ -9,6 +9,8 @@ import type { EventEmitter } from "types/event/events.types.ts";
 import type UtilsRepository from "utils/utils-repository.ts";
 import type ApiRepository from "../../api/api-repository.ts";
 import type StorageRepository from "../../storage/storage-repository.ts";
+import ChatModule from "module/twitch/chat/chat-module.ts";
+import ChatBadgesModule from "module/twitch/chat-badges/chat-badges-module.tsx";
 
 export default class TwitchModuleRegisterer extends ModuleRegisterer {
 	getModules(
@@ -19,6 +21,8 @@ export default class TwitchModuleRegisterer extends ModuleRegisterer {
 		apiRepository: ApiRepository,
 	) {
 		return [
+			new ChatModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
+			new ChatBadgesModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
 			new PinStreamerModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
 			new SoundboardModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
 			new ClipDownloadModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
