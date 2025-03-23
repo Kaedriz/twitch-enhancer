@@ -3,8 +3,6 @@ import type { TwitchChatMessageEvent } from "types/event/twitch-events.types.ts"
 import type { ModuleConfig } from "types/module/module.types.ts";
 
 export default class ChatLastMessageModule extends Module {
-	private isInitialized = false;
-
 	config: ModuleConfig = {
 		name: "chat-last-message",
 		appliers: [
@@ -17,8 +15,13 @@ export default class ChatLastMessageModule extends Module {
 		],
 	};
 
+	async init(): Promise<void> {
+		this.utilsRepository.commonUtils.createGlobalStyle(
+			".enhancer-mention-messages { background-color: #444 !important; }",
+		);
+	}
+
 	private handleMessage({ message, element }: TwitchChatMessageEvent) {
-		this.initialize();
 		setTimeout(() => {
 			const mentions = [
 				...Array.from(element.querySelectorAll(".chat-line__message-mention")),
@@ -48,20 +51,14 @@ export default class ChatLastMessageModule extends Module {
 
 			const authorName = authorElement.textContent?.toLowerCase() || "";
 			if (authorName === username) {
-				messageElement.classList.add("te-mention-messages");
+				messageElement.classList.add("enhancer-mention-messages");
 			}
 		});
 	}
 
 	private unHoverMention(): void {
 		document
-			.querySelectorAll(".te-mention-messages")
-			.forEach((message) => message.classList.remove("te-mention-messages"));
-	}
-
-	private initialize() {
-		if (this.isInitialized) return;
-		this.utilsRepository.commonUtils.createGlobalStyle(".te-mention-messages { background-color: #444 !important; }");
-		this.isInitialized = true;
+			.querySelectorAll(".enhancer-mention-messages")
+			.forEach((message) => message.classList.remove("enhancer-mention-messages"));
 	}
 }
