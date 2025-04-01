@@ -1,11 +1,10 @@
 import type Logger from "logger";
 import type { GQLResponse } from "types/api/gql.types.ts";
+import Api from "../api.ts";
 
-export default class TwitchApi {
+export default class TwitchApi extends Api {
 	private readonly TWITCH_GQL_ENDPOINT = "https://gql.twitch.tv/gql";
 	private readonly TWITCH_CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
-
-	constructor(private readonly logger: Logger) {}
 
 	async gql<T>(query: string, variables: Record<string, string>) {
 		return new Promise<GQLResponse<T>>((resolve, reject) =>

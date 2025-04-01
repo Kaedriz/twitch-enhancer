@@ -14,6 +14,7 @@ export type ChatControllerComponent = {
 	pushMessage: (message: ChatControllerMessage) => void;
 	props: {
 		channelLogin: string;
+		channelID: string;
 		messageHandlerAPI: {
 			addMessageHandler: (callback: (message: TwitchChatMessage) => void) => void;
 		};
