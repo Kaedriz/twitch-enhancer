@@ -18,11 +18,11 @@ export default class Extension {
 		this.eventsEmitter = createEventsEmitter();
 		this.storageRepository = new StorageRepository(this.logger, this.config.platform);
 		this.utilsRepository = new UtilsRepository(this.logger);
-		this.apiRepository = new ApiRepository(this.logger);
+		this.apiRepository = new ApiRepository(this.logger, this.config.platform, this.utilsRepository);
 	}
 
 	async start() {
-		this.logger.info(`Started extension at ${this.config.platform}`);
+		await this.apiRepository.initialize();
 		const moduleLoader = new ModuleLoader(this.logger);
 		await moduleLoader.loadModules(
 			this.config.platform,
@@ -32,5 +32,6 @@ export default class Extension {
 			this.apiRepository,
 		);
 		this.eventsEmitter.emit("extension:start");
+		this.logger.info(`Started extension at ${this.config.platform}`);
 	}
 }

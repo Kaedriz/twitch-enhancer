@@ -1,3 +1,4 @@
+import type { RequestConfig, RequestResponse } from "types/utils/common-utils.types.ts";
 import Utils from "utils/utils.ts";
 
 export default class CommonUtils extends Utils {
@@ -31,4 +32,19 @@ export default class CommonUtils extends Utils {
 
 		return styleElement;
 	}
+
+	async request<T>(url: string, config: RequestConfig): Promise<RequestResponse<T>> {
+		const response = await fetch(url, {
+			method: config.method ?? "GET",
+			body: config.body ?? undefined,
+		});
+		if (!config.validateStatus?.(response.status)) {
+			throw new UnexpectedStatusError(`Received status: ${response.status}`);
+		}
+		const responseType = config.responseType ?? "json";
+		const data = (responseType === "json" ? await response.json() : await response.text()) as T;
+		return { data, status: response.status, response };
+	}
 }
+
+class UnexpectedStatusError extends Error {}

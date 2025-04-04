@@ -1,4 +1,5 @@
 export type TwitchEvents = {
+	"twitch:chatInitialized": (channelId: string) => void;
 	"twitch:chatMessage": (message: TwitchChatMessageEvent) => void;
 };
 

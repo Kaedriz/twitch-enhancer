@@ -54,7 +54,7 @@ export default class SoundboardModule extends Module {
 
 	private async monitorChatInput(elements: HTMLElement[]) {
 		if (!this.soundboardData) {
-			this.soundboardData = await this.fetchSoundEffectsByTwitchId();
+			//this.soundboardData = await this.fetchSoundEffectsByTwitchId();
 
 			if (this.soundboardData === undefined) {
 				this.soundboardData = {
