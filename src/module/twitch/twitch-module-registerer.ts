@@ -1,7 +1,7 @@
 import type Logger from "logger";
 import ModuleRegisterer from "module/core/module-registerer.ts";
 import ChatBadgesModule from "module/twitch/chat-badges/chat-badges-module.tsx";
-import ChatLastMessageModule from "module/twitch/chat-last-message/chat-last-message-module.tsx";
+import ChatHighlightUserModule from "module/twitch/chat-last-message/chat-highlight-user-module.tsx";
 import ChatModule from "module/twitch/chat/chat-module.ts";
 import ChattersModule from "module/twitch/chatters/chatters-module.tsx";
 import ClipDownloadModule from "module/twitch/clip-download/clip-download-module.tsx";
@@ -24,7 +24,7 @@ export default class TwitchModuleRegisterer extends ModuleRegisterer {
 		return [
 			new ChatModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
 			new ChatBadgesModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
-			new ChatLastMessageModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
+			new ChatHighlightUserModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
 			new PinStreamerModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
 			new SoundboardModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
 			new ClipDownloadModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
