@@ -1,12 +1,11 @@
-import type { QueueConfig, QueueValue } from "types/utils/queue.d.ts";
+import type { QueueConfig, QueueValue } from "types/queue.types.ts";
 
 export default class Queue<Value extends QueueValue> {
 	private queue = new Map<string, Value>();
-	private expireTimer: Timer | undefined;
 
 	constructor(private readonly config: QueueConfig) {
 		if (config.expire) {
-			this.expireTimer = setInterval(() => this.clearExpired(), 1000);
+			setInterval(() => this.clearExpired(), 1000);
 		}
 	}
 

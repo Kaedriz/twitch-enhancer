@@ -1,19 +1,17 @@
-export default class Storage<Map> {
-	protected storage: Partial<Record<keyof Map, Map[keyof Map]>> | undefined;
+import type Logger from "logger";
 
-	constructor(protected readonly name: string) {
-		this.load();
-	}
+export default abstract class Storage<KeyMap> {
+	constructor(
+		protected readonly logger: Logger,
+		protected readonly storagePrefix: string,
+		protected readonly defaultValue?: KeyMap,
+	) {}
 
-	async get<K extends keyof Map>(key: K): Promise<Map[K] | undefined> {
+	async save(key: keyof KeyMap, value: KeyMap[keyof KeyMap]) {
 		throw new Error("Not implemented");
 	}
 
-	async set<K extends keyof Map>(key: K, value: Map[K]): Promise<void> {
+	async get(key: keyof KeyMap): Promise<KeyMap[keyof KeyMap] | undefined> {
 		throw new Error("Not implemented");
 	}
-
-	protected load() {}
-
-	protected async save() {}
 }

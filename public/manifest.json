@@ -18,7 +18,7 @@
 	"web_accessible_resources": [
 		{
 			"matches": ["*://*.twitch.tv/*", "*://*.kick.com/*"],
-			"resources": ["index.js"]
+			"resources": ["index.js", "index.js.map", "inject.js.map"]
 		}
 	]
 }
