@@ -1,0 +1,28 @@
+import data from "./package.json";
+
+export function getManifest() {
+	return {
+		manifest_version: 3,
+		name: "Enhancer",
+		description: "Enhancer is open-sourced and free extension, which adds what is missing on streaming platforms.",
+		version: data.version,
+		action: {
+			default_icon: "assets/logo/logo-background-round.png",
+		},
+		icons: {
+			"128": "assets/logo/logo-background-round.png",
+		},
+		content_scripts: [
+			{
+				matches: ["*://*.twitch.tv/*", "*://*.kick.com/*"],
+				js: ["inject.js"],
+			},
+		],
+		web_accessible_resources: [
+			{
+				matches: ["*://*.twitch.tv/*", "*://*.kick.com/*"],
+				resources: ["index.js", "index.js.map", "inject.js.map"],
+			},
+		],
+	};
+}

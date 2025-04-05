@@ -1,6 +1,8 @@
 import preact from "@preact/preset-vite";
 import { defineConfig } from "vite";
+import generateFilePlugin from "vite-plugin-generate-file";
 import tsconfigPaths from "vite-tsconfig-paths";
+import { getManifest } from "./manifest.config";
 import { version } from "./package.json";
 
 const isDevelopment = process.env.ENVIRONMENT === "development";
@@ -18,7 +20,15 @@ export default defineConfig({
 		__environment__: JSON.stringify(process.env.ENVIRONMENT),
 		__version__: JSON.stringify(version),
 	},
-	plugins: [preact(), tsconfigPaths()],
+	plugins: [
+		preact(),
+		tsconfigPaths(),
+		generateFilePlugin({
+			type: "json",
+			output: "./manifest.json",
+			data: getManifest(),
+		}),
+	],
 	build: {
 		outDir: "dist",
 		sourcemap: isDevelopment,

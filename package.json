@@ -2,7 +2,7 @@
 	"name": "enhancer",
 	"module": "src/content/index.ts",
 	"type": "module",
-	"version": "1.0.3",
+	"version": "5.0.1",
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
 		"@types/chrome": "^0.0.262",
@@ -24,6 +24,7 @@
 		"preact-hooks": "^0.0.0-0.0.0",
 		"styled-components": "^6.1.15",
 		"vite": "^6.2.1",
+		"vite-plugin-generate-file": "^0.2.0",
 		"vite-tsconfig-paths": "^5.1.4"
 	},
 	"scripts": {
