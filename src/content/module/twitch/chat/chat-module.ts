@@ -1,7 +1,7 @@
 import type { ChatType } from "types/content/event/twitch-events.types.ts";
 import type { ModuleConfig } from "types/content/module/module.types.ts";
-import type { QueueValue } from "types/shared/queue/queue.types.ts";
 import type { TwitchChatMessage } from "types/content/utils/twitch-utils.types.ts";
+import type { QueueValue } from "types/shared/queue/queue.types.ts";
 import QueueFactory from "../../../../shared/queue/queue-factory.ts";
 import Module from "../../module.ts";
 import type ChatMessageListener from "./listener/chat-message-listener.ts";

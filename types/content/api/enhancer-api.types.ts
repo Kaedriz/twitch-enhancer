@@ -34,3 +34,8 @@ export type EnhancerResponseMap = {
 	badges: EnhancerBadgesResponseDto;
 	"global-badge": EnhancerBadgesResponseDto;
 };
+
+export type EnhancerStreamerWatchTimeData = {
+	streamer: string;
+	count: number;
+};

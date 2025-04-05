@@ -1,3 +1,4 @@
+import WatchTimeModule from "module/twitch/watchtime/watchtime-module.tsx";
 import type { EventEmitter } from "types/content/event/events.types.ts";
 import type Logger from "../../../shared/logger/logger.ts";
 import type StorageRepository from "../../../shared/storage/storage-repository.ts";
@@ -30,6 +31,7 @@ export default class TwitchModuleRegisterer extends ModuleRegisterer {
 			new ClipDownloadModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
 			new ChattersModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
 			new StreamLatencyModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
+			new WatchTimeModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
 		];
 	}
 }
