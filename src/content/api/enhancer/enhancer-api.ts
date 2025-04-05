@@ -25,18 +25,20 @@ export default class EnhancerApi extends Api {
 
 	findUserBadgesForCurrentChannel(externalUserId: string) {
 		const globalBadges = this.state.getGlobalBadges();
-		// const badges = this.state.getBadges();
+		const badges = this.state.getBadges();
+
 		const userBadgesIds = [
-			...(globalBadges.users.find((user) => user.externalId === externalUserId)?.badgesIds ?? []),
-			//...(badges.users.find((user) => user.externalId === externalUserId)?.badgesIds ?? []),
-			// TODO It might be no channel, we have to handle it also, but somehow there is no error thrown
+			...(globalBadges?.users.find((user) => user.externalId === externalUserId)?.badgesIds ?? []),
+			...(badges?.users.find((user) => user.externalId === externalUserId)?.badgesIds ?? []),
 		];
 		if (!userBadgesIds) return;
 		return [
-			...globalBadges.badges
-				.filter((badge) => userBadgesIds.includes(badge.badgeId))
-				.sort((a, b) => b.priority - a.priority),
-			//...badges.badges.filter((badge) => userBadgesIds.includes(badge.badgeId)).sort((a, b) => b.priority - a.priority),
+			...(globalBadges?.badges?.filter((badge) => userBadgesIds?.includes(badge.badgeId)) ?? []).sort(
+				(a, b) => b.priority - a.priority,
+			),
+			...(badges?.badges?.filter((badge) => userBadgesIds?.includes(badge.badgeId)) ?? []).sort(
+				(a, b) => b.priority - a.priority,
+			),
 		];
 	}
 }

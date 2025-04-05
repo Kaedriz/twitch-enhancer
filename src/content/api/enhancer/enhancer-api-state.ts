@@ -17,10 +17,14 @@ export default class EnhancerApiState {
 
 	async joinChannel(channelId: string) {
 		if (channelId === this.currentChannelId) return;
-		this.logger.debug(`Joined ${channelId} channel`);
-		// TODO Check if response is cached, if not then request again
-		this.saveResponseToCache("channel", await this.request.getChannel(channelId));
-		this.saveResponseToCache("badges", await this.request.getBadges(channelId));
+		try {
+			this.saveResponseToCache("channel", await this.request.getChannel(channelId));
+			this.saveResponseToCache("badges", await this.request.getBadges(channelId));
+			this.currentChannelId = channelId;
+			this.logger.debug(`Joined ${channelId} channel`);
+		} catch (error) {
+			this.logger.warn(`Couldn't get data for channel ${channelId}: ${error}`);
+		}
 	}
 
 	getChannel() {
@@ -32,6 +36,7 @@ export default class EnhancerApiState {
 	}
 
 	getGlobalBadges() {
+		// TODO If missing then try to get again
 		return this.getCachedResponse("global-badge");
 	}
 
@@ -43,7 +48,7 @@ export default class EnhancerApiState {
 		return response;
 	}
 
-	private getCachedResponse<T extends keyof EnhancerResponseMap>(key: T): EnhancerResponseMap[T] {
-		return this.cache[key] as EnhancerResponseMap[T];
+	private getCachedResponse<T extends keyof EnhancerResponseMap>(key: T): EnhancerResponseMap[T] | undefined {
+		return this.cache[key];
 	}
 }
