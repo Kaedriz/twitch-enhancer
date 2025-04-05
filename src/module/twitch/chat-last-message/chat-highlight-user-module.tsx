@@ -31,19 +31,16 @@ export default class ChatHighlightUserModule extends Module {
 
 		for (const mention of mentions) {
 			const mentionElement = mention as HTMLElement;
-			this.logger.debug("xd", mentionElement);
 			const username = mentionElement.textContent?.replace("@", "").toLowerCase() || "";
 			mentionElement.setAttribute("enhancer-mention-user", username);
-			mentionElement.addEventListener("mouseover", this.hoverMention.bind(this));
-			mentionElement.addEventListener("mouseout", this.unHoverMention.bind(this));
+			mentionElement.addEventListener("mouseover", this.highlightUserMentions.bind(this));
+			mentionElement.addEventListener("mouseout", this.removeHighlightedUserMentions.bind(this));
 		}
 	}
 
-	private hoverMention(event: MouseEvent): void {
-		const target = event.target as HTMLElement;
-		this.logger.debug("xd2", event.target);
-		const username =
-			target.getAttribute("enhancer-mention-user") ?? target.parentElement?.getAttribute("enhancer-mention-user"); // why the fuck 7tv needs parentElement here?
+	private highlightUserMentions(event: MouseEvent): void {
+		const target = event.currentTarget as HTMLElement;
+		const username = target.getAttribute("enhancer-mention-user");
 		if (!username) return;
 		this.logger.debug(`Highlighting ${username} messages`);
 
@@ -54,8 +51,6 @@ export default class ChatHighlightUserModule extends Module {
 					messageElement.querySelector(".seventv-chat-user-username");
 				if (!authorElement) return;
 
-				// todo still not working perfect on 7tv
-
 				const authorName = authorElement.textContent?.toLowerCase() || "";
 				if (authorName === username) {
 					messageElement.classList.add("enhancer-highlighted-user-message");
@@ -64,7 +59,7 @@ export default class ChatHighlightUserModule extends Module {
 		);
 	}
 
-	private unHoverMention(): void {
+	private removeHighlightedUserMentions(): void {
 		this.logger.debug("Removing highlighted messages");
 		document
 			.querySelectorAll(".enhancer-highlighted-user-message")
