@@ -1,6 +1,6 @@
 import { type FunctionalComponent, h, render } from "preact";
 import styled from "styled-components";
-import type { ModuleConfig } from "types/module/module.types.ts";
+import type { ModuleConfig } from "types/content/module/module.types.ts";
 import Module from "../../module.ts";
 
 export default class ClipDownloadModule extends Module {

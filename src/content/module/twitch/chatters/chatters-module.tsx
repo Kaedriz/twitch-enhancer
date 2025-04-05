@@ -1,8 +1,8 @@
 import { type Signal, signal } from "@preact/signals";
 import { render } from "preact";
 import styled from "styled-components";
-import type { ChattersResponse } from "types/api/twitch-api.types.ts";
-import type { ModuleConfig } from "types/module/module.types.ts";
+import type { ChattersResponse } from "types/content/api/twitch-api.types.ts";
+import type { ModuleConfig } from "types/content/module/module.types.ts";
 import { ChattersQuery } from "../../../api/twitch/twitch-queries.ts";
 import Module from "../../module.ts";
 

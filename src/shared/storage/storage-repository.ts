@@ -1,5 +1,5 @@
-import type { Platform } from "types/extension.ts";
 import type Logger from "logger";
+import type { Platform } from "types/content/extension.ts";
 import LocalStorage from "./local-storage.ts";
 
 export default class StorageRepository {

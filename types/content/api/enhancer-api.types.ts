@@ -1,4 +1,4 @@
-import type { Platform } from "types/extension.ts";
+import type { Platform } from "types/content/extension.ts";
 
 export type EnhancerBadgesResponseDto = {
 	channelId: string;

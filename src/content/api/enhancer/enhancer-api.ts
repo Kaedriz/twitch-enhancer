@@ -1,5 +1,5 @@
 import type Logger from "logger";
-import type { Platform } from "types/extension.ts";
+import type { Platform } from "types/content/extension.ts";
 import type UtilsRepository from "utils/utils-repository.ts";
 import Api from "../api.ts";
 import EnhancerApiRequest from "./enhancer-api-request.ts";

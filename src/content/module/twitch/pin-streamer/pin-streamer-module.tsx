@@ -2,8 +2,8 @@ import { type Signal, signal } from "@preact/signals";
 import { render } from "preact";
 import { useState } from "preact/hooks";
 import styled from "styled-components";
-import type { ModuleConfig } from "types/module/module.types.ts";
-import type { FollowedSectionStreamData } from "types/utils/twitch-utils.types.ts";
+import type { ModuleConfig } from "types/content/module/module.types.ts";
+import type { FollowedSectionStreamData } from "types/content/utils/twitch-utils.types.ts";
 import Module from "../../module.ts";
 
 export default class PinStreamerModule extends Module {

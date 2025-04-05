@@ -1,4 +1,4 @@
-import type { ReactComponent } from "types/utils/react-utils.types.ts";
+import type { ReactComponent } from "types/content/utils/react-utils.types.ts";
 import Utils from "./utils.ts";
 
 export default class ReactUtils extends Utils {

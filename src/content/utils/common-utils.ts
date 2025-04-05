@@ -1,4 +1,4 @@
-import type { RequestConfig, RequestResponse } from "types/utils/common-utils.types.ts";
+import type { RequestConfig, RequestResponse } from "types/content/utils/common-utils.types.ts";
 import Utils from "utils/utils.ts";
 
 export default class CommonUtils extends Utils {

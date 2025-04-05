@@ -1,5 +1,5 @@
 import type Logger from "logger";
-import type { GQLResponse } from "types/api/gql.types.ts";
+import type { GQLResponse } from "types/content/api/gql.types.ts";
 import Api from "../api.ts";
 
 export default class TwitchApi extends Api {

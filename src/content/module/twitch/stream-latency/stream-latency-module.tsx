@@ -1,8 +1,8 @@
 import { type Signal, signal } from "@preact/signals";
 import { render } from "preact";
 import styled from "styled-components";
-import type { ModuleConfig } from "types/module/module.types.ts";
-import type { MediaPlayerInstance } from "types/utils/twitch-utils.types.ts";
+import type { ModuleConfig } from "types/content/module/module.types.ts";
+import type { MediaPlayerInstance } from "types/content/utils/twitch-utils.types.ts";
 import Module from "../../module.ts";
 
 export default class StreamLatencyModule extends Module {

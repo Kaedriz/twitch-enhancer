@@ -1,4 +1,4 @@
-import type { EventsMap } from "types/event/events.types.ts";
+import type { EventsMap } from "types/content/event/events.types.ts";
 
 export type ModuleApplierConfig = SelectorModuleApplierConfig | EventModuleApplierConfig;
 

@@ -1,4 +1,4 @@
-import type { QueueConfig, QueueValue } from "types/queue.types.ts";
+import type { QueueConfig, QueueValue } from "types/shared/queue/queue.types.ts";
 import Queue from "./queue.ts";
 
 export default class QueueFactory<T extends QueueValue> {

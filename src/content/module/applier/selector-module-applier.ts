@@ -1,4 +1,4 @@
-import type { SelectorModuleApplierConfig } from "types/module/module-applier.types.ts";
+import type { SelectorModuleApplierConfig } from "types/content/module/module-applier.types.ts";
 import type Module from "../module.ts";
 import ModuleApplier from "./module-applier.ts";
 

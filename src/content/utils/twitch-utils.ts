@@ -8,7 +8,7 @@ import type {
 	MediaPlayerComponent,
 	PersistentPlayerComponent,
 	TwitchChatMessageComponent,
-} from "types/utils/twitch-utils.types.ts";
+} from "types/content/utils/twitch-utils.types.ts";
 import type ReactUtils from "utils/react-utils.ts";
 import Utils from "utils/utils.ts";
 

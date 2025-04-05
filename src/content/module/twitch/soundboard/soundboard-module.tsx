@@ -1,5 +1,5 @@
 import { render } from "preact";
-import type { ModuleConfig } from "types/module/module.types.ts";
+import type { ModuleConfig } from "types/content/module/module.types.ts";
 import Module from "../../module.ts";
 import { SoundboardComponent } from "./SoundboardComponent.tsx";
 

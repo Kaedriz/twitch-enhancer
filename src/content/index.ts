@@ -1,4 +1,4 @@
-import type { ExtensionConfig, ExtensionEnvironment } from "types/extension.ts";
+import type { ExtensionConfig, ExtensionEnvironment } from "types/content/extension.ts";
 import Extension from "./extension.ts";
 
 (async () => {

@@ -1,4 +1,4 @@
-import type { EventEmitter } from "types/event/events.types.ts";
+import type { EventEmitter } from "types/content/event/events.types.ts";
 import type Logger from "../../../shared/logger/logger.ts";
 import type Module from "../module.ts";
 import ModuleApplier from "./module-applier.ts";

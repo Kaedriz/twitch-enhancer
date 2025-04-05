@@ -1,4 +1,4 @@
-import type { CoreStorageMap } from "types/storage/storage.types.ts";
+import type { CoreStorageMap } from "types/shared/storage/storage.types.ts";
 import Storage from "./storage.ts";
 
 export default class LocalStorage extends Storage<CoreStorageMap> {

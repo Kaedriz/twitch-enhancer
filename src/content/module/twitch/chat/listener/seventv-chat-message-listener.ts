@@ -1,4 +1,4 @@
-import type { TwitchChatMessage } from "types/utils/twitch-utils.types.ts";
+import type { TwitchChatMessage } from "types/content/utils/twitch-utils.types.ts";
 import ChatMessageListener from "./chat-message-listener.ts";
 
 export default class SevenTVChatMessageListener extends ChatMessageListener {

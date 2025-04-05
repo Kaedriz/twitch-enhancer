@@ -1,4 +1,4 @@
-import type { ExtensionEnvironment } from "types/extension.ts";
+import type { ExtensionEnvironment } from "types/content/extension.ts";
 
 const source: Record<ExtensionEnvironment, string> = {
 	production: chrome.runtime.getURL("index.js"),
