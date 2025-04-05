@@ -20,10 +20,9 @@
 		"baseUrl": ".",
 		"paths": {
 			"types/*": ["./types/*"],
-			"module/*": ["./src/module/*"],
-			"utils/*": ["./src/utils/*"],
-			"logger": ["./src/logger/logger.ts"],
-			"css": ["./src/css/*"],
+			"module/*": ["./src/content/module/*"],
+			"utils/*": ["./src/content/utils/*"],
+			"logger": ["./src/shared/logger/logger.ts"],
 			"react": ["node_modules/preact/compat"],
 			"react-dom": ["node_modules/preact/compat"]
 		}

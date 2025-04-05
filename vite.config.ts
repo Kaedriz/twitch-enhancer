@@ -30,8 +30,8 @@ export default defineConfig({
 				assetFileNames: "[name].[ext]",
 			},
 			input: {
-				index: "src/index.ts",
-				inject: "src/inject.ts",
+				index: "src/content/index.ts",
+				inject: "src/content/inject.ts",
 			},
 		},
 	},
