@@ -2,7 +2,7 @@ import type { EventEmitter } from "types/event/events.types.ts";
 import type { Platform } from "types/extension.ts";
 import type Logger from "../../shared/logger/logger.ts";
 import type ApiRepository from "../api/api-repository.ts";
-import type StorageRepository from "../storage/storage-repository.ts";
+import type StorageRepository from "../../shared/storage/storage-repository.ts";
 import type UtilsRepository from "../utils/utils-repository.ts";
 import EventModuleApplier from "./applier/event-module-applier.ts";
 import type ModuleApplier from "./applier/module-applier.ts";

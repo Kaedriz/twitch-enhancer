@@ -5,7 +5,7 @@ import UtilsRepository from "utils/utils-repository.ts";
 import ApiRepository from "./api/api-repository.ts";
 import { createEventsEmitter } from "./event/emitter.ts";
 import ModuleLoader from "./module/module-loader.ts";
-import StorageRepository from "./storage/storage-repository.ts";
+import StorageRepository from "../shared/storage/storage-repository.ts";
 
 export default class Extension {
 	private readonly logger = new Logger(true);

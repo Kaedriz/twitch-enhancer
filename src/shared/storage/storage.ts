@@ -1,4 +1,4 @@
-import type Logger from "../../shared/logger/logger.ts";
+import type Logger from "logger";
 
 export default abstract class Storage<KeyMap> {
 	constructor(

@@ -1,7 +1,7 @@
 import type { EventEmitter } from "types/event/events.types.ts";
 import type Logger from "../../../shared/logger/logger.ts";
 import type ApiRepository from "../../api/api-repository.ts";
-import type StorageRepository from "../../storage/storage-repository.ts";
+import type StorageRepository from "../../../shared/storage/storage-repository.ts";
 import type UtilsRepository from "../../utils/utils-repository.ts";
 import ModuleRegisterer from "../module-registerer.ts";
 import ChatBadgesModule from "./chat-badges/chat-badges-module.tsx";
