@@ -7,7 +7,7 @@
 		"@biomejs/biome": "1.9.4",
 		"@types/chrome": "^0.0.262",
 		"@types/styled-components": "^5.1.34",
-		"bun-types": "^1.2.5",
+		"bun-types": "^1.2.8",
 		"concurrently": "^9.1.2",
 		"husky": "^9.1.7"
 	},
@@ -17,13 +17,13 @@
 	"dependencies": {
 		"@preact/compat": "^18.3.1",
 		"@preact/preset-vite": "^2.10.1",
-		"@preact/signals": "^2.0.1",
+		"@preact/signals": "^2.0.3",
 		"@types/signale": "^1.4.7",
 		"nanoevents": "^9.1.0",
 		"preact": "^10.26.4",
 		"preact-hooks": "^0.0.0-0.0.0",
-		"styled-components": "^6.1.15",
-		"vite": "^6.2.1",
+		"styled-components": "^6.1.17",
+		"vite": "^6.2.5",
 		"vite-plugin-generate-file": "^0.2.0",
 		"vite-tsconfig-paths": "^5.1.4"
 	},
