@@ -19,6 +19,20 @@ export default class CommonUtils extends Utils {
 		return CommonUtils.UUID_REGEX.test(text);
 	}
 
+	createGlobalStyle(css: string): HTMLStyleElement {
+		let styleElement = document.getElementById("enhancer-style") as HTMLStyleElement;
+
+		if (!styleElement) {
+			styleElement = document.createElement("style");
+			styleElement.id = "enhancer-style";
+			document.head.appendChild(styleElement);
+		}
+
+		styleElement.textContent += css;
+
+		return styleElement;
+	}
+
 	async request<T>(url: string, config: RequestConfig): Promise<RequestResponse<T>> {
 		const response = await fetch(url, {
 			method: config.method ?? "GET",
