@@ -21,7 +21,7 @@ export default class ClipDownloadModule extends Module {
 	};
 
 	private run(elements: Element[]) {
-		const wrappers = this.utilsRepository.commonUtils.createEmptyElements(this.getId(), elements, "div");
+		const wrappers = this.commonUtils().createEmptyElements(this.getId(), elements, "div");
 		wrappers.forEach((element) => {
 			render(<DownloadButtonComponent click={this.downloadClip.bind(this)} />, element);
 		});

@@ -16,9 +16,7 @@ export default class ChatHighlightUserModule extends Module {
 	};
 
 	async init(): Promise<void> {
-		this.utilsRepository.commonUtils.createGlobalStyle(
-			".enhancer-highlighted-user-message { background-color: #444 !important; }",
-		);
+		this.commonUtils().createGlobalStyle(".enhancer-highlighted-user-message { background-color: #444 !important; }");
 	}
 
 	private handleMessage({ element }: TwitchChatMessageEvent) {
