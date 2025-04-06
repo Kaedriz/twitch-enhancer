@@ -10,13 +10,13 @@ export default class ChatBadgesModule extends Module {
 		appliers: [
 			{
 				type: "event",
-				key: "chatBadges",
+				key: "chat-badges",
 				event: "twitch:chatMessage",
 				callback: this.handleMessage.bind(this),
 			},
 			{
 				type: "event",
-				key: "chatBadges",
+				key: "chat-badges",
 				event: "twitch:chatInitialized",
 				callback: this.initializeChannel.bind(this),
 			},
