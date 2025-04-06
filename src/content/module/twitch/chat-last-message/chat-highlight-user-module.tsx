@@ -8,7 +8,7 @@ export default class ChatHighlightUserModule extends Module {
 		appliers: [
 			{
 				type: "event",
-				key: "chatHighlightUser",
+				key: "chat-highlight-user",
 				event: "twitch:chatMessage",
 				callback: this.handleMessage.bind(this),
 			},

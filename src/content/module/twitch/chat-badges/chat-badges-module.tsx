@@ -6,7 +6,7 @@ import Module from "../../module.ts";
 
 export default class ChatBadgesModule extends Module {
 	config: ModuleConfig = {
-		name: "example-module",
+		name: "chat-badges",
 		appliers: [
 			{
 				type: "event",
