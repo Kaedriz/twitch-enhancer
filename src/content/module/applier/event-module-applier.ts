@@ -15,6 +15,7 @@ export default class EventModuleApplier extends ModuleApplier {
 		for (const applier of module.config.appliers) {
 			if (applier.type === "event") {
 				try {
+					// TODO This throw will never work, because error will throw inside callback, not here when we are creating listener for this event
 					this.eventEmitter.on(applier.event, applier.callback);
 				} catch (error) {
 					this.logger.error("Error occurred when running module", error);
