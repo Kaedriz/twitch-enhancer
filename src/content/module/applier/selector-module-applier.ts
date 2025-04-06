@@ -30,7 +30,11 @@ export default class SelectorModuleApplier extends ModuleApplier {
 				config,
 			);
 			if (elements.length < 1) continue;
-			config.callback(elements, config.key);
+			try {
+				config.callback(elements, config.key);
+			} catch (error) {
+				this.logger.error("Error occurred when running module", error);
+			}
 		}
 	}
 

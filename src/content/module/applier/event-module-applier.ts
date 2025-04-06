@@ -14,7 +14,11 @@ export default class EventModuleApplier extends ModuleApplier {
 	async apply(module: Module) {
 		for (const applier of module.config.appliers) {
 			if (applier.type === "event") {
-				this.eventEmitter.on(applier.event, applier.callback);
+				try {
+					this.eventEmitter.on(applier.event, applier.callback);
+				} catch (error) {
+					this.logger.error("Error occurred when running module", error);
+				}
 			}
 		}
 	}

@@ -33,12 +33,17 @@ export default class CommonUtils extends Utils {
 		return styleElement;
 	}
 
+	isValidUrl(url: string | undefined): url is string {
+		return typeof url === "string" && url.startsWith("https://") && URL.canParse(url);
+	}
+
 	async request<T>(url: string, config: RequestConfig): Promise<RequestResponse<T>> {
 		const response = await fetch(url, {
 			method: config.method ?? "GET",
 			body: config.body ?? undefined,
 		});
-		if (!config.validateStatus?.(response.status)) {
+		const validateStatus = config.validateStatus ?? ((status: number): boolean => status === 200);
+		if (!validateStatus(response.status)) {
 			throw new UnexpectedStatusError(`Received status: ${response.status}`);
 		}
 		const responseType = config.responseType ?? "json";

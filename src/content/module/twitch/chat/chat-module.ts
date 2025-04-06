@@ -19,7 +19,7 @@ export default class ChatModule extends Module {
 	private type: ChatType = "TWITCH";
 
 	config: ModuleConfig = {
-		name: "example-module",
+		name: "chat-module",
 		appliers: [
 			{
 				type: "selector",
@@ -28,10 +28,21 @@ export default class ChatModule extends Module {
 				callback: this.run.bind(this),
 				once: true,
 			},
+			{
+				type: "event",
+				key: "chat",
+				event: "twitch:chatInitialized",
+				callback: this.initializeChannel.bind(this),
+			},
 		],
 	};
 
+	private initializeChannel(channelId: string) {
+		this.enhancerApi().state.joinChannel(channelId);
+	}
+
 	private run(elements: Element[]) {
+		this.logger.debug("test");
 		if (elements.length > 1) this.logger.warn("Found multiple chat element");
 		const element = elements[0];
 		if (element.classList.contains(ChatModule.TWITCHTV_CHAT_SELECTOR.replace(".", ""))) {

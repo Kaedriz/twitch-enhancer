@@ -131,4 +131,16 @@ export default class TwitchUtils extends Utils {
 		const instance = this.reactUtils.getReactInstance(message)?.return?.stateNode as TwitchChatMessageComponent;
 		return instance?.props.message ? instance : undefined;
 	}
+
+	unstuckScroll() {
+		const chat = (document.querySelector(".scrollable-contents") ||
+			document.querySelector(".chat-scrollable-area__message-container")) as HTMLElement | undefined;
+		if (!chat) return;
+		if (
+			chat.classList.contains("chat-scrollable-area__message-container--paused") ||
+			chat.querySelector(".seventv-message-buffer-notice")?.textContent === "Chat Paused"
+		)
+			return;
+		chat.scrollTop = chat.scrollHeight;
+	}
 }
