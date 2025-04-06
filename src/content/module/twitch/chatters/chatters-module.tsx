@@ -40,7 +40,7 @@ export default class ChattersModule extends Module {
 	private chattersCounter = {} as Signal<number>;
 
 	private run(elements: Element[]) {
-		const wrappers = this.utilsRepository.commonUtils.createEmptyElements(this.getId(), elements, "span");
+		const wrappers = this.commonUtils().createEmptyElements(this.getId(), elements, "span");
 		this.createChattersCounter();
 		this.refreshChatters();
 		setInterval(async () => this.refreshChatters(), 30000);
@@ -53,9 +53,9 @@ export default class ChattersModule extends Module {
 		let channel = undefined;
 		try {
 			channel =
-				this.utilsRepository.twitchUtils.getPersistentPlayer()?.content.channelLogin?.toLowerCase() ??
-				this.utilsRepository.twitchUtils.getCurrentChannelByUrl();
-			const { data } = await this.apiRepository.twitchApi.gql<ChattersResponse>(ChattersQuery, {
+				this.twitchUtils().getPersistentPlayer()?.content.channelLogin?.toLowerCase() ??
+				this.twitchUtils().getCurrentChannelByUrl();
+			const { data } = await this.twitchApi().gql<ChattersResponse>(ChattersQuery, {
 				name: channel,
 			});
 			const chatters = data.channel.chatters.count;

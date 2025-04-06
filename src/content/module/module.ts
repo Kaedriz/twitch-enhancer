@@ -21,4 +21,30 @@ export default abstract class Module {
 	protected getId() {
 		return `enhancer-${this.config.name}`;
 	}
+
+	// Storage
+	protected localStorage() {
+		return this.storageRepository.localStorage;
+	}
+
+	// Utils
+	protected commonUtils() {
+		return this.utilsRepository.commonUtils;
+	}
+
+	protected reactUtils() {
+		return this.utilsRepository.reactUtils;
+	}
+
+	protected twitchUtils() {
+		return this.utilsRepository.twitchUtils;
+	}
+
+	// APIs
+	protected enhancerApi() {
+		return this.apiRepository.enhancerApi;
+	}
+	protected twitchApi() {
+		return this.apiRepository.twitchApi;
+	}
 }

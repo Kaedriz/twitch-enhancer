@@ -24,7 +24,7 @@ export default class ChatBadgesModule extends Module {
 	};
 
 	private initializeChannel(channelId: string) {
-		this.apiRepository.enhancerApi.state.joinChannel(channelId);
+		this.enhancerApi().state.joinChannel(channelId);
 	}
 
 	private handleMessage({ message, element }: TwitchChatMessageEvent) {
@@ -34,7 +34,7 @@ export default class ChatBadgesModule extends Module {
 			element.querySelector(".chat-line__message--badges");
 		if (!badgeList) return;
 
-		const userBadges = this.apiRepository.enhancerApi.findUserBadgesForCurrentChannel(message.user.userID);
+		const userBadges = this.enhancerApi().findUserBadgesForCurrentChannel(message.user.userID);
 		if (!userBadges) return;
 
 		for (const badge of userBadges) {
