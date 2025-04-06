@@ -42,7 +42,6 @@ export default class ChatModule extends Module {
 	}
 
 	private run(elements: Element[]) {
-		this.logger.debug("test");
 		if (elements.length > 1) this.logger.warn("Found multiple chat element");
 		const element = elements[0];
 		if (element.classList.contains(ChatModule.TWITCHTV_CHAT_SELECTOR.replace(".", ""))) {
