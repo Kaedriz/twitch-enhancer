@@ -133,8 +133,9 @@ export default class TwitchUtils extends Utils {
 	}
 
 	unstuckScroll() {
-		const chat = (document.querySelector(".scrollable-contents") ||
-			document.querySelector(".chat-scrollable-area__message-container")) as HTMLElement | undefined;
+		const chat =
+			document.querySelector(".scrollable-contents") ??
+			document.querySelector(".chat-scrollable-area__message-container");
 		if (!chat) return;
 		if (
 			chat.classList.contains("chat-scrollable-area__message-container--paused") ||
@@ -142,5 +143,6 @@ export default class TwitchUtils extends Utils {
 		)
 			return;
 		chat.scrollTop = chat.scrollHeight;
+		// TODO Fix scroll on not 7TV
 	}
 }
