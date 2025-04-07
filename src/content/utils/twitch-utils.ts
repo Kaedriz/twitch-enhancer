@@ -157,7 +157,6 @@ export default class TwitchUtils extends Utils {
 		)
 			return;
 		if (sevenTvChat) {
-			this.logger.debug("scrolling down 7tv");
 			sevenTvChat.scrollTop = sevenTvChat.scrollHeight;
 		} else if (nativeChat) {
 			nativeChat.component?.scrollToBottom();
