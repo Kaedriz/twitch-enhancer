@@ -15,7 +15,9 @@ export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 		"cdn.discordapp.com",
 		"imagizer.imageshack.com",
 		"imgur.com",
-	]; // TODO Add new hosts like nuuls, kappa
+		"i.nuuls.com",
+		"kappa.lol",
+	];
 	static readonly URL_PARSERS: AttachmentUrlParser = {
 		"cdn.discordapp.com": (url) => {
 			url.host = "media.discordapp.net";
@@ -46,7 +48,7 @@ export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 		image.classList.add("enhancer-chat-image");
 		image.src = imageSource;
 		image.onload = () => {
-			element.classList.add("enhancer-chat-image");
+			element.classList.add("enhancer-chat-link");
 			element.replaceChildren(image);
 			this.loadedCallback();
 		};

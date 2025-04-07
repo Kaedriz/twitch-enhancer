@@ -56,12 +56,20 @@ export default class ChatModule extends Module {
 		this.listener.inject();
 		this.createObserver(elements);
 
-		setTimeout(() => {
-			const channelId = this.twitchUtils().getChatController()?.props.channelID;
-			if (!channelId) throw new Error("Missing channelId");
-			this.eventEmitter.emit("twitch:chatInitialized", channelId);
-			// TODO Some better idea, maybe function waitFor?
-		}, 1000);
+		this.broadcastInitializeChannel();
+	}
+
+	async broadcastInitializeChannel() {
+		await this.commonUtils().waitFor<string>(
+			() => {
+				return this.twitchUtils().getChatController()?.props.channelID;
+			},
+			(channelId, attempt) => {
+				this.eventEmitter.emit("twitch:chatInitialized", channelId);
+				this.logger.info(`Initialized chat (attempt: ${attempt})`);
+			},
+			{ delay: 100, maxRetries: 20 },
+		);
 	}
 
 	private createObserver(elements: Element[]) {

@@ -23,7 +23,9 @@ export default class ChatAttachmentsModule extends Module {
 	};
 
 	private readonly chatAttachmentHandlers: ChatAttachmentHandler[] = [
-		new ImageChatAttachmentHandler(this.logger, this.twitchUtils().unstuckScroll),
+		new ImageChatAttachmentHandler(this.logger, () => {
+			this.twitchUtils().unstuckScroll();
+		}),
 	];
 
 	private async handleMessage(message: TwitchChatMessageEvent) {
@@ -74,13 +76,13 @@ export default class ChatAttachmentsModule extends Module {
 
 	async init() {
 		this.commonUtils().createGlobalStyle(`
-			.te-image-a {
+			.enhancer-chat-link {
 				display: block;
 				width: fit-content;
 				margin: 0.5rem 0;
 			}
 			
-			.te-image-img {
+			.enhancer-chat-image {
 				min-height: 16px;
 				max-height: 256px;
 				width: 100%;

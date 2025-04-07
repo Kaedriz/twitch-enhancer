@@ -1,4 +1,4 @@
-import type { RequestConfig, RequestResponse } from "types/content/utils/common-utils.types.ts";
+import type { RequestConfig, RequestResponse, WaitForConfig } from "types/content/utils/common-utils.types.ts";
 import Utils from "utils/utils.ts";
 
 export default class CommonUtils extends Utils {
@@ -49,6 +49,28 @@ export default class CommonUtils extends Utils {
 		const responseType = config.responseType ?? "json";
 		const data = (responseType === "json" ? await response.json() : await response.text()) as T;
 		return { data, status: response.status, response };
+	}
+
+	async waitFor<T>(
+		predicate: () => Promise<T | undefined> | T | undefined,
+		callback: (result: T, retry: number) => Promise<void> | void,
+		config?: WaitForConfig,
+	) {
+		const retries = config?.maxRetries ?? 1;
+		for (let i = 0; i < retries; i++) {
+			const result = await predicate();
+			if (result) {
+				await callback(result, i);
+				return;
+			}
+			if (i < retries - 1) {
+				await this.delay(config?.delay ?? 100);
+			}
+		}
+	}
+
+	async delay(ms: number) {
+		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 }
 
