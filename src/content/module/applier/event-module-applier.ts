@@ -14,12 +14,15 @@ export default class EventModuleApplier extends ModuleApplier {
 	async apply(module: Module) {
 		for (const applier of module.config.appliers) {
 			if (applier.type === "event") {
-				try {
-					// TODO This throw will never work, because error will throw inside callback, not here when we are creating listener for this event
-					this.eventEmitter.on(applier.event, applier.callback);
-				} catch (error) {
-					this.logger.error("Error occurred when running module", error);
-				}
+				// @ts-ignore Its needed, because of the try catch, we are just passing everything that comes to callback
+				this.eventEmitter.on(applier.event, (...args) => {
+					try {
+						// @ts-ignore Same as above
+						applier.callback(...args);
+					} catch (error) {
+						this.logger.error("Error occurred when running module", error);
+					}
+				});
 			}
 		}
 	}

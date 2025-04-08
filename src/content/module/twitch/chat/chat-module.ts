@@ -82,7 +82,6 @@ export default class ChatModule extends Module {
 	private createObserver(elements: Element[]) {
 		this.observer?.disconnect();
 		this.observer = new MutationObserver(async (list) => {
-			this.logger.debug(list);
 			for (const mutation of list) {
 				if (mutation.type === "childList" && mutation.addedNodes) {
 					for (const node of mutation.addedNodes) {
@@ -91,14 +90,8 @@ export default class ChatModule extends Module {
 						const messageProps = this.utilsRepository.twitchUtils.getChatMessage(element.children[0])?.props;
 						const id = seventvId ?? messageProps?.message.id;
 						if (!id) continue;
-
-						this.logger.debug(this.queue.keys());
-						this.logger.debug(id);
-						this.logger.debug(messageProps);
-
 						let message = this.queue.getAndRemove(id);
 						if (messageProps?.message.nonce && !message) message = this.queue.getAndRemove(messageProps?.message.nonce); // Handling re-rendering messages
-
 						if (!message) continue;
 						this.eventEmitter.emit("twitch:chatMessage", {
 							element,
@@ -130,7 +123,6 @@ export default class ChatModule extends Module {
 				...queueMessage,
 				queueKey: message.id,
 			});
-			this.logger.info("adding message for id", message.id);
 		}
 	}
 }
