@@ -52,6 +52,9 @@ export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 			element.replaceChildren(image);
 			this.loadedCallback();
 		};
+		image.onerror = () => {
+			this.logger.warn("Failed to load image");
+		};
 	}
 
 	private parseUrl(url: URL): URL {
