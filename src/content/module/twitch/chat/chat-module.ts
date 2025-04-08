@@ -11,7 +11,7 @@ import TwitchChatMessageListener from "./listener/twitch-chat-message-listener.t
 export default class ChatModule extends Module {
 	static readonly TWITCHTV_CHAT_SELECTOR = ".chat-scrollable-area__message-container";
 	static readonly SEVENTV_CHAT_SELECTOR = "main.seventv-chat-list";
-	static readonly VALID_MESSAGES_TYPES = [0];
+	static readonly VALID_MESSAGE_TYPES = [0];
 	static readonly LINK_MESSAGE_ID = 51;
 
 	private listener = {} as ChatMessageListener;
@@ -39,7 +39,11 @@ export default class ChatModule extends Module {
 	};
 
 	private initializeChannel(channelId: string) {
-		this.enhancerApi().state.joinChannel(channelId);
+		try {
+			this.enhancerApi().state.joinChannel(channelId);
+		} catch (error) {
+			this.logger.error("Failed to join channel, error");
+		}
 	}
 
 	private run(elements: Element[]) {
@@ -61,16 +65,18 @@ export default class ChatModule extends Module {
 	}
 
 	async broadcastInitializeChannel() {
-		await this.commonUtils().waitFor<string>(
-			() => {
-				return this.twitchUtils().getChatController()?.props.channelID;
-			},
-			(channelId, attempt) => {
-				this.eventEmitter.emit("twitch:chatInitialized", channelId);
-				this.logger.info(`Initialized chat (attempt: ${attempt})`);
-			},
-			{ delay: 100, maxRetries: 20 },
-		);
+		await this.commonUtils()
+			.waitFor<string>(
+				() => {
+					return this.twitchUtils().getChatController()?.props.channelID;
+				},
+				(channelId, attempt) => {
+					this.eventEmitter.emit("twitch:chatInitialized", channelId);
+					this.logger.info(`Initialized chat (attempt: ${attempt})`);
+				},
+				{ delay: 100, maxRetries: 20 },
+			)
+			.catch(() => this.logger.warn("Failed to detect channelID for chat initialization after 20 attempts."));
 	}
 
 	private createObserver(elements: Element[]) {
@@ -107,7 +113,7 @@ export default class ChatModule extends Module {
 	}
 
 	private async handleMessage(message: TwitchChatMessage) {
-		if (ChatModule.VALID_MESSAGES_TYPES.includes(message.type)) {
+		if (ChatModule.VALID_MESSAGE_TYPES.includes(message.type)) {
 			this.queue.addByValue({
 				...message,
 				queueKey: message.id,
