@@ -16,7 +16,7 @@ export default class ChatModule extends Module {
 
 	private listener = {} as ChatMessageListener;
 	private observer: MutationObserver | undefined;
-	private readonly queue = new QueueFactory<TwitchChatMessage & QueueValue>().create({ expire: 60 });
+	private readonly queue = new QueueFactory<TwitchChatMessage & QueueValue>().create({ expire: 300 });
 	private type: ChatType = "TWITCH";
 
 	config: ModuleConfig = {
