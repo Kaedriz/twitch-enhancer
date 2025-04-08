@@ -11,7 +11,8 @@ import TwitchChatMessageListener from "./listener/twitch-chat-message-listener.t
 export default class ChatModule extends Module {
 	static readonly TWITCHTV_CHAT_SELECTOR = ".chat-scrollable-area__message-container";
 	static readonly SEVENTV_CHAT_SELECTOR = "main.seventv-chat-list";
-	static readonly VALID_MESSAGES_TYPES = [0]; // 51 is rerendered self message
+	static readonly VALID_MESSAGES_TYPES = [0];
+	static readonly LINK_MESSAGE_ID = 51;
 
 	private listener = {} as ChatMessageListener;
 	private observer: MutationObserver | undefined;
@@ -19,7 +20,7 @@ export default class ChatModule extends Module {
 	private type: ChatType = "TWITCH";
 
 	config: ModuleConfig = {
-		name: "example-module",
+		name: "chat-module",
 		appliers: [
 			{
 				type: "selector",
@@ -28,8 +29,18 @@ export default class ChatModule extends Module {
 				callback: this.run.bind(this),
 				once: true,
 			},
+			{
+				type: "event",
+				key: "chat",
+				event: "twitch:chatInitialized",
+				callback: this.initializeChannel.bind(this),
+			},
 		],
 	};
+
+	private initializeChannel(channelId: string) {
+		this.enhancerApi().state.joinChannel(channelId);
+	}
 
 	private run(elements: Element[]) {
 		if (elements.length > 1) this.logger.warn("Found multiple chat element");
@@ -46,17 +57,26 @@ export default class ChatModule extends Module {
 		this.listener.inject();
 		this.createObserver(elements);
 
-		setTimeout(() => {
-			const channelId = this.twitchUtils().getChatController()?.props.channelID;
-			if (!channelId) throw new Error("Missing channelId");
-			this.eventEmitter.emit("twitch:chatInitialized", channelId);
-			// TODO Some better idea, maybe function waitFor?
-		}, 1000);
+		this.broadcastInitializeChannel();
+	}
+
+	async broadcastInitializeChannel() {
+		await this.commonUtils().waitFor<string>(
+			() => {
+				return this.twitchUtils().getChatController()?.props.channelID;
+			},
+			(channelId, attempt) => {
+				this.eventEmitter.emit("twitch:chatInitialized", channelId);
+				this.logger.info(`Initialized chat (attempt: ${attempt})`);
+			},
+			{ delay: 100, maxRetries: 20 },
+		);
 	}
 
 	private createObserver(elements: Element[]) {
 		this.observer?.disconnect();
 		this.observer = new MutationObserver(async (list) => {
+			this.logger.debug(list);
 			for (const mutation of list) {
 				if (mutation.type === "childList" && mutation.addedNodes) {
 					for (const node of mutation.addedNodes) {
@@ -64,12 +84,16 @@ export default class ChatModule extends Module {
 						const seventvId = element.getAttribute("msg-id");
 						const messageProps = this.utilsRepository.twitchUtils.getChatMessage(element.children[0])?.props;
 						const id = seventvId ?? messageProps?.message.id;
-						if (!id) return;
+						if (!id) continue;
+
+						this.logger.debug(this.queue.keys());
+						this.logger.debug(id);
+						this.logger.debug(messageProps);
 
 						let message = this.queue.getAndRemove(id);
-						if (messageProps?.message.nonce && !message) message = this.queue.getAndRemove(messageProps?.message.nonce); // Handling rerenderig messages
+						if (messageProps?.message.nonce && !message) message = this.queue.getAndRemove(messageProps?.message.nonce); // Handling re-rendering messages
 
-						if (!message) return;
+						if (!message) continue;
 						this.eventEmitter.emit("twitch:chatMessage", {
 							element,
 							message,
@@ -83,18 +107,24 @@ export default class ChatModule extends Module {
 	}
 
 	private async handleMessage(message: TwitchChatMessage) {
-		if (!ChatModule.VALID_MESSAGES_TYPES.includes(message.type)) return;
-		const id = message.id;
-		this.queue.addByValue({
-			...message,
-			queueKey: id,
-		});
-		if (!this.utilsRepository.commonUtils.isUUID(id) && this.type === "TWITCH") {
-			this.logger.debug("Recieved self message, adding backup message with nonce:", message.nonce);
+		if (ChatModule.VALID_MESSAGES_TYPES.includes(message.type)) {
+			this.queue.addByValue({
+				...message,
+				queueKey: message.id,
+			});
+			// Add backup message with nonce for paused chat in 7TV and re-rendering self messages in native chat
 			this.queue.addByValue({
 				...message,
 				queueKey: message.nonce,
 			});
+		} else if (message.type === ChatModule.LINK_MESSAGE_ID) {
+			const queueMessage = this.queue.getAndRemove(message.nonce);
+			if (!queueMessage) return;
+			this.queue.addByValue({
+				...queueMessage,
+				queueKey: message.id,
+			});
+			this.logger.info("adding message for id", message.id);
 		}
 	}
 }

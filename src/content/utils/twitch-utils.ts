@@ -7,6 +7,7 @@ import type {
 	FollowedSection,
 	MediaPlayerComponent,
 	PersistentPlayerComponent,
+	ScrollableChatComponent,
 	TwitchChatMessageComponent,
 } from "types/content/utils/twitch-utils.types.ts";
 import type ReactUtils from "utils/react-utils.ts";
@@ -130,5 +131,35 @@ export default class TwitchUtils extends Utils {
 	getChatMessage(message: Node) {
 		const instance = this.reactUtils.getReactInstance(message)?.return?.stateNode as TwitchChatMessageComponent;
 		return instance?.props.message ? instance : undefined;
+	}
+
+	getScrollableChat() {
+		const element = document.querySelector(".chat-scrollable-area__message-container");
+
+		const node = this.reactUtils.findReactParents<ScrollableChatComponent>(
+			this.reactUtils.getReactInstance(element),
+			(n) => n.stateNode?.onScroll,
+		);
+
+		return {
+			component: node?.stateNode,
+			element,
+		};
+	}
+
+	unstuckScroll() {
+		const nativeChat = this.getScrollableChat();
+		const sevenTvChat = document.querySelector(".scrollable-contents");
+		if (!nativeChat && !sevenTvChat) return;
+		if (
+			nativeChat.element?.classList.contains("chat-scrollable-area__message-container--paused") ||
+			sevenTvChat?.querySelector(".seventv-message-buffer-notice")?.textContent === "Chat Paused"
+		)
+			return;
+		if (sevenTvChat) {
+			sevenTvChat.scrollTop = sevenTvChat.scrollHeight;
+		} else if (nativeChat) {
+			nativeChat.component?.scrollToBottom();
+		}
 	}
 }

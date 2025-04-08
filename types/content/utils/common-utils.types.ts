@@ -10,3 +10,8 @@ export type RequestResponse<T> = {
 	status: number;
 	response: Response;
 };
+
+export type WaitForConfig = {
+	delay: number;
+	maxRetries: number;
+};

@@ -158,3 +158,7 @@ export interface TwitchChatMessageComponent {
 		};
 	};
 }
+
+export type ScrollableChatComponent = {
+	scrollToBottom: () => void;
+};
