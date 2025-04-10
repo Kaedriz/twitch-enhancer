@@ -14,18 +14,8 @@ export default class ChatBadgesModule extends Module {
 				event: "twitch:chatMessage",
 				callback: this.handleMessage.bind(this),
 			},
-			{
-				type: "event",
-				key: "chat-badges",
-				event: "twitch:chatInitialized",
-				callback: this.initializeChannel.bind(this),
-			},
 		],
 	};
-
-	private initializeChannel(channelId: string) {
-		this.enhancerApi().state.joinChannel(channelId);
-	}
 
 	private handleMessage({ message, element }: TwitchChatMessageEvent) {
 		const badgeList =

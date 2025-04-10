@@ -12,14 +12,19 @@ export default class EnhancerApiState {
 	private readonly cache: Partial<EnhancerResponseMap> = {};
 
 	async initialize() {
-		this.saveResponseToCache("global-badge", await this.request.getGlobalBadges());
+		const globalBadges = await this.request.getGlobalBadges();
+		if (globalBadges.status === 200) {
+			this.saveResponseToCache("global-badge", globalBadges.data);
+		} else this.logger.warn("Couldn't get global badges");
 	}
 
 	async joinChannel(channelId: string) {
 		if (channelId === this.currentChannelId) return;
 		try {
-			this.saveResponseToCache("channel", await this.request.getChannel(channelId));
-			this.saveResponseToCache("badges", await this.request.getBadges(channelId));
+			const channel = await this.request.getChannel(channelId);
+			if (channel.ok) this.saveResponseToCache("channel", channel.data);
+			const badges = await this.request.getBadges(channelId);
+			if (badges.ok) this.saveResponseToCache("badges", badges.data);
 			this.currentChannelId = channelId;
 			this.logger.debug(`Joined ${channelId} channel`);
 		} catch (error) {

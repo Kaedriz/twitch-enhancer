@@ -14,7 +14,7 @@ export default defineConfig({
 		watch: {
 			usePolling: true,
 		},
-		cors: true, // TODO Change to allowed domains
+		cors: true,
 	},
 	define: {
 		__environment__: JSON.stringify(process.env.ENVIRONMENT),
@@ -46,5 +46,3 @@ export default defineConfig({
 		},
 	},
 });
-
-// TODO Generate manifest.json from js file
