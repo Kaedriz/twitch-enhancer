@@ -171,8 +171,8 @@ export type ChatInput = {
 			focus: () => void;
 		};
 	};
+};
 
 export type ScrollableChatComponent = {
 	scrollToBottom: () => void;
-
 };

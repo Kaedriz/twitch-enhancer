@@ -133,7 +133,6 @@ export default class TwitchUtils extends Utils {
 		return instance?.props.message ? instance : undefined;
 	}
 
-
 	getAutoCompleteHandler(): ChatInput {
 		const node = this.reactUtils.findReactChildren(
 			this.reactUtils.getReactInstance(document.querySelector(".chat-input__textarea")),
@@ -156,6 +155,7 @@ export default class TwitchUtils extends Utils {
 	format(text: string, value: string): string {
 		const formattedText = !value.endsWith(" ") && value.length > 0 ? ` ${text}` : text;
 		return `${value}${formattedText}`;
+	}
 
 	getScrollableChat() {
 		const element = document.querySelector(".chat-scrollable-area__message-container");
