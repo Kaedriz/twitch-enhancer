@@ -160,16 +160,14 @@ export interface TwitchChatMessageComponent {
 }
 
 export type ChatInput = {
-	stateNode: {
-		state: {
-			value: string;
+	state: {
+		value: string;
+	};
+	componentRef: {
+		props: {
+			onChange: (event: { target: { value: string } }) => void;
 		};
-		componentRef: {
-			props: {
-				onChange: (event: { target: { value: string } }) => void;
-			};
-			focus: () => void;
-		};
+		focus: () => void;
 	};
 };
 

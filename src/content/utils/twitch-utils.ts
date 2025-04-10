@@ -133,23 +133,23 @@ export default class TwitchUtils extends Utils {
 		return instance?.props.message ? instance : undefined;
 	}
 
-	getAutoCompleteHandler(): ChatInput {
-		const node = this.reactUtils.findReactChildren(
+	getAutoCompleteHandler() {
+		return this.reactUtils.findReactChildren<ChatInput>(
 			this.reactUtils.getReactInstance(document.querySelector(".chat-input__textarea")),
 			(n) => n.stateNode?.providers,
 			1000,
-		);
-		return <ChatInput>node;
+		)?.stateNode;
 	}
 
 	setChatText(message: string, focus: boolean) {
-		const chatInput = this.getAutoCompleteHandler() as ChatInput;
-		chatInput.stateNode.componentRef.props.onChange({ target: { value: message } });
-		if (focus) chatInput.stateNode.componentRef.focus();
+		const chatInput = this.getAutoCompleteHandler();
+		chatInput?.componentRef.props.onChange({ target: { value: message } });
+		if (focus) chatInput?.componentRef.focus();
 	}
 
 	addTextToChatInput(message: string) {
-		this.setChatText(this.format(message, this.getAutoCompleteHandler().stateNode.state.value), true);
+		const value = this.getAutoCompleteHandler()?.state.value || "";
+		this.setChatText(this.format(message, value), true);
 	}
 
 	format(text: string, value: string): string {
