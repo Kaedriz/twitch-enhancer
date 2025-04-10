@@ -60,7 +60,7 @@ export type FollowedSection = {
 		collapsed: boolean;
 		section: {
 			streams: FollowedSectionStreamData[];
-			videoConnections: FollowedSectionStreamData[];
+			offlineChannels: FollowedSectionStreamData[];
 		};
 		sort: {
 			setSortType: (type: string) => void;

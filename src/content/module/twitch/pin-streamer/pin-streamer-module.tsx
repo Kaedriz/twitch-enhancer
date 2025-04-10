@@ -76,7 +76,7 @@ export default class PinStreamerModule extends Module {
 				section.sort.type === "viewers_desc",
 			);
 
-			section.section.videoConnections = await this.sortStreamsByPinned(this.originalOfflineFollowList, true);
+			section.section.offlineChannels = await this.sortStreamsByPinned(this.originalOfflineFollowList, true);
 		}
 	}
 
@@ -148,7 +148,7 @@ export default class PinStreamerModule extends Module {
 	}
 
 	private getPersonalSectionVideoConnections() {
-		return this.twitchUtils().getPersonalSections()?.props?.section.videoConnections ?? [];
+		return this.twitchUtils().getPersonalSections()?.props?.section.offlineChannels ?? [];
 	}
 
 	private async followsObserver() {
