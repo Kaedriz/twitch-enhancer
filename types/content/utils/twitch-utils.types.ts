@@ -128,7 +128,7 @@ export type Command = {
 	}[];
 };
 
-export type ChatInput = {
+/*export type ChatInput = {
 	pendingProps: {
 		setInputValue: (message: string, sendIt: boolean) => void;
 	};
@@ -138,7 +138,7 @@ export type ChatInput = {
 		};
 		forceUpdate: () => void;
 	};
-};
+};*/
 
 export interface TwitchChatMessageComponent {
 	props: {
@@ -158,3 +158,17 @@ export interface TwitchChatMessageComponent {
 		};
 	};
 }
+
+export type ChatInput = {
+	stateNode: {
+		state: {
+			value: string;
+		};
+		componentRef: {
+			props: {
+				onChange: (event: { target: { value: string } }) => void;
+			};
+			focus: () => void;
+		};
+	};
+};
