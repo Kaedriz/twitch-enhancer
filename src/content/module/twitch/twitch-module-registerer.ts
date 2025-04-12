@@ -1,6 +1,5 @@
 import ChatAttachmentsModule from "module/twitch/chat-attachments/chat-attachments-module.ts";
 import ChatHighlightUserModule from "module/twitch/chat-highlight-user/chat-highlight-user-module.tsx";
-import ChatCopyEmoteModule from "module/twitch/copy-emote/chat-copy-emote-module.tsx";
 import type { EventEmitter } from "types/content/event/events.types.ts";
 import type Logger from "../../../shared/logger/logger.ts";
 import type StorageRepository from "../../../shared/storage/storage-repository.ts";
@@ -14,6 +13,7 @@ import ClipDownloadModule from "./clip-download/clip-download-module.tsx";
 import PinStreamerModule from "./pin-streamer/pin-streamer-module.tsx";
 import SoundboardModule from "./soundboard/soundboard-module.tsx";
 import StreamLatencyModule from "./stream-latency/stream-latency-module.tsx";
+import ChatCopyEmoteModule from "module/twitch/chat-copy-emote/chat-copy-emote-module.tsx";
 
 export default class TwitchModuleRegisterer extends ModuleRegisterer {
 	getModules(
