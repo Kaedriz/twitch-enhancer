@@ -106,13 +106,13 @@ export default class TwitchUtils extends Utils {
 		return null;
 	}
 
-	getChatInput() {
+	/*getChatInput() {
 		return this.reactUtils.findReactChildren(
 			this.reactUtils.getReactInstance(document.querySelector(".chat-input")),
 			(n) => n.stateNode?.state?.value,
 			1000,
 		);
-	}
+	}*/
 
 	getChannelId(): string {
 		return this.reactUtils.findReactChildren(
@@ -122,15 +122,39 @@ export default class TwitchUtils extends Utils {
 		)?.pendingProps.channelID;
 	}
 
-	setChatMessage(message: string) {
+	/*	setChatMessage(message: string) {
 		const chatInput = this.getChatInput() as ChatInput;
 		chatInput.stateNode.state.value = `/playsound ${message}`;
 		chatInput.stateNode.forceUpdate();
-	}
+	}*/
 
 	getChatMessage(message: Node) {
 		const instance = this.reactUtils.getReactInstance(message)?.return?.stateNode as TwitchChatMessageComponent;
 		return instance?.props.message ? instance : undefined;
+	}
+
+	getAutoCompleteHandler() {
+		return this.reactUtils.findReactChildren<ChatInput>(
+			this.reactUtils.getReactInstance(document.querySelector(".chat-input__textarea")),
+			(n) => n.stateNode?.providers,
+			1000,
+		)?.stateNode;
+	}
+
+	setChatText(message: string, focus: boolean) {
+		const chatInput = this.getAutoCompleteHandler();
+		chatInput?.componentRef.props.onChange({ target: { value: message } });
+		if (focus) chatInput?.componentRef.focus();
+	}
+
+	addTextToChatInput(message: string) {
+		const value = this.getAutoCompleteHandler()?.state.value || "";
+		this.setChatText(this.format(message, value), true);
+	}
+
+	format(text: string, value: string): string {
+		const formattedText = !value.endsWith(" ") && value.length > 0 ? ` ${text}` : text;
+		return `${value}${formattedText}`;
 	}
 
 	getScrollableChat() {
