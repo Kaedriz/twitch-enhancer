@@ -2,13 +2,13 @@ import Module from "module/module.ts";
 import type { TwitchChatMessageEvent } from "types/content/event/twitch-events.types.ts";
 import type { ModuleConfig } from "types/content/module/module.types.ts";
 
-export default class CopyEmoteModule extends Module {
+export default class ChatCopyEmoteModule extends Module {
 	config: ModuleConfig = {
-		name: "copy-emote",
+		name: "chat-copy-emote",
 		appliers: [
 			{
 				type: "event",
-				key: "copy-emote",
+				key: "chat-copy-emote",
 				event: "twitch:chatMessage",
 				callback: this.handleMessage.bind(this),
 			},
