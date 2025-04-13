@@ -162,3 +162,9 @@ export interface TwitchChatMessageComponent {
 export type ScrollableChatComponent = {
 	scrollToBottom: () => void;
 };
+
+export type ChatInfo = {
+	pendingProps: {
+		sharedChatDataByChannelID: Map<string, string>;
+	};
+};
