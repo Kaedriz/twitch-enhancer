@@ -1,3 +1,4 @@
+import KickModuleRegisterer from "module/kick/kick-module-registerer.ts";
 import type { EventEmitter } from "types/content/event/events.types.ts";
 import type { Platform } from "types/content/extension.ts";
 import type Logger from "../../shared/logger/logger.ts";
@@ -58,6 +59,8 @@ export default class ModuleLoader {
 		switch (platform) {
 			case "twitch":
 				return new TwitchModuleRegisterer();
+			case "kick":
+				return new KickModuleRegisterer();
 			default:
 				throw new Error(`${platform} platform is not supported`);
 		}
