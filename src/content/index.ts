@@ -20,8 +20,8 @@ declare global {
 }
 
 function getPlatform(): Platform {
-	const host = window.location.host;
-	if (host === "twitch.tv") return "twitch";
-	if (host === "kick.com") return "kick";
-	throw Error(`Unsupported host name ${host} (${window.location.href})`);
+	const hostname = window.location.hostname.toLowerCase();
+	if (hostname.endsWith("twitch.tv")) return "twitch";
+	if (hostname.endsWith("kick.com")) return "kick";
+	throw Error(`Unsupported host name ${hostname} (${window.location.href})`);
 }
