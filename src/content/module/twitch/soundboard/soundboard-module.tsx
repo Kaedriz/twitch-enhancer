@@ -87,7 +87,7 @@ export default class SoundboardModule extends Module {
 				? this.soundboardData?.playSounds.filter((sound) => sound.name.toLowerCase().includes(partialSoundName))
 				: this.soundboardData?.playSounds;
 
-			elements.forEach((element) => {
+			/*elements.forEach((element) => {
 				element.innerHTML = "";
 				render(
 					<SoundboardComponent
@@ -97,7 +97,7 @@ export default class SoundboardModule extends Module {
 					/>,
 					element,
 				);
-			});
+			});*/
 		}, 300);
 	}
 

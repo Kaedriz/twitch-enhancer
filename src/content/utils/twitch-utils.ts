@@ -122,7 +122,7 @@ export default class TwitchUtils extends Utils {
 		)?.pendingProps.channelID;
 	}
 
-	/*	setChatMessage(message: string) {
+	/*setChatMessage(message: string) {
 		const chatInput = this.getChatInput() as ChatInput;
 		chatInput.stateNode.state.value = `/playsound ${message}`;
 		chatInput.stateNode.forceUpdate();
