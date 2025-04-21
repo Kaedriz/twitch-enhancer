@@ -1,9 +1,9 @@
-import { signal, type Signal } from "@preact/signals";
+import { type Signal, signal } from "@preact/signals";
 import Module from "module/module.ts";
 import { render } from "preact";
 import styled from "styled-components";
-import type { ModuleConfig } from "types/content/module/module.types.ts";
 import type { VideoCreatedAtResponse } from "types/content/api/twitch-api.types.ts";
+import type { ModuleConfig } from "types/content/module/module.types.ts";
 import { VideoCreatedAtQuery } from "../../../api/twitch/twitch-queries.ts";
 
 export default class RealTimeModule extends Module {
@@ -16,11 +16,10 @@ export default class RealTimeModule extends Module {
 		appliers: [
 			{
 				type: "selector",
-				selectors: [".player-controls__right-control-group"],
+				selectors: [".player-controls__left-control-group"],
 				callback: this.run.bind(this),
 				key: "realtime",
 				validateUrl: RealTimeModule.URL_CONFIG,
-				useParent: true,
 				once: true,
 			},
 		],
@@ -30,47 +29,6 @@ export default class RealTimeModule extends Module {
 	private elements: Element[] = [];
 	private currentVideoId: string | null = null;
 	private intervalId: number | null = null;
-
-	private isObserving = false;
-
-	private observeUrlChanges() {
-		if (this.isObserving) return;
-		this.isObserving = true;
-
-		let lastUrl = window.location.href;
-
-		const checkUrlChange = () => {
-			const currentUrl = window.location.href;
-			if (currentUrl !== lastUrl) {
-				lastUrl = currentUrl;
-
-				if (!RealTimeModule.URL_CONFIG(currentUrl)) {
-					this.timeCounter = {} as Signal<number>;
-					this.elements.forEach((element) => {
-						const existing = element.querySelector(`.${this.getId()}`);
-						if (existing) existing.remove();
-					});
-				} else {
-					this.currentVideoId = null;
-					this.run(this.elements);
-				}
-			}
-		};
-
-		const pushState = history.pushState;
-		history.pushState = function (...args) {
-			pushState.apply(this, args);
-			setTimeout(checkUrlChange, 50);
-		};
-
-		const replaceState = history.replaceState;
-		history.replaceState = function (...args) {
-			replaceState.apply(this, args);
-			setTimeout(checkUrlChange, 50);
-		};
-
-		window.addEventListener("popstate", checkUrlChange);
-	}
 
 	private async run(elements: Element[]) {
 		const videoId = this.getVideoId(window.location.href);
@@ -92,7 +50,6 @@ export default class RealTimeModule extends Module {
 		wrappers.forEach((element) => {
 			render(<RealTimeComponent time={this.timeCounter} />, element);
 		});
-		this.observeUrlChanges();
 	}
 
 	private createTimeCounter() {
