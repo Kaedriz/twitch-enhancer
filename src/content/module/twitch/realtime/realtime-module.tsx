@@ -72,16 +72,15 @@ export default class RealTimeModule extends Module {
 
 	private async updateTimeCounter(createdAtMs: number) {
 		if (!RealTimeModule.URL_CONFIG(window.location.href)) {
-			this.elements.forEach((element) => {
-				const existingElement = element.querySelector(`.${this.getId()}`);
-				if (existingElement) {
-					existingElement.remove();
-				}
-			});
-			this.currentVideoId = null;
+			this.cleanup();
 			return;
 		}
-		const currentTime = this.twitchUtils().getMediaPlayerInstance()?.getPosition() || 0;
+		const mediaPlayer = this.twitchUtils().getMediaPlayerInstance();
+		if (!mediaPlayer) {
+			this.logger?.error("[RealTimeModule] Media player not available");
+			return;
+		}
+		const currentTime = mediaPlayer.getPosition() || 0;
 		this.timeCounter.value = createdAtMs + currentTime * 1000;
 	}
 
