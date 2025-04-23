@@ -46,7 +46,7 @@ export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 
 	validate(baseData: BaseChatAttachmentData) {
 		return (
-			ImageChatAttachmentHandler.ALLOWED_HOSTS.some((host) => baseData.url.host.endsWith(host)) &&
+			ImageChatAttachmentHandler.ALLOWED_HOSTS.some((host) => baseData.url.host === host) &&
 			!this.isImgurAlbum(baseData.url)
 		);
 	}
