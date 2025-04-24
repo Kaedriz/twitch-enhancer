@@ -104,9 +104,8 @@ export default class ChattersModule extends Module {
 		const sharedLogins = Array.from(chatInfo.sharedChatDataByChannelID.values()).map((userInfo) =>
 			userInfo.login.toLowerCase(),
 		);
-		const uniqueLogins = [...new Set([chatInfo.channelLogin.toLowerCase(), ...sharedLogins])];
-		if (!uniqueLogins) return;
-
+const uniqueLogins = [...new Set([chatInfo.channelLogin.toLowerCase(), ...sharedLogins])];
+if (uniqueLogins.length === 0) return;
 		for (const login of uniqueLogins) {
 			if (loginsToUpdate.length > 0 && !loginsToUpdate.includes(login)) continue;
 
