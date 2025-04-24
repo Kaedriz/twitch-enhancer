@@ -107,19 +107,19 @@ export default class ChattersModule extends Module {
 		const uniqueLogins = [...new Set([chatInfo.channelLogin.toLowerCase(), ...sharedLogins])];
 		if (!uniqueLogins) return;
 
-		for (const login of uniqueLogins) {
-			if (loginsToUpdate.length > 0 && !loginsToUpdate.includes(login)) continue;
-
-			try {
-				const { data } = await this.twitchApi().gql<ChattersResponse>(ChattersQuery, {
-					name: login,
-				});
-				const counter = this.getOrCreateCounter(login, data.channel.chatters.count);
-				counter.value = data.channel.chatters.count;
-			} catch (error) {
-				this.logger.warn(`Failed to fetch chatters for ${login}`, error);
-			}
-		}
+		const logins = loginsToUpdate.length > 0 ? uniqueLogins.filter((l) => loginsToUpdate.includes(l)) : uniqueLogins;
+		await Promise.all(
+			logins.map(async (login) => {
+				try {
+					const { data } = await this.twitchApi().gql<ChattersResponse>(ChattersQuery, { name: login });
+					const counter = this.getOrCreateCounter(login, data.channel.chatters.count);
+					this.logger.info(`updating ${login} with ${data.channel.chatters.count}`);
+					counter.value = data.channel.chatters.count;
+				} catch (error) {
+					this.logger.warn(`Failed to fetch chatters for ${login}`, error);
+				}
+			}),
+		);
 
 		for (const activeLogin of Object.keys(this.chattersCounters)) {
 			if (!uniqueLogins.includes(activeLogin)) {
