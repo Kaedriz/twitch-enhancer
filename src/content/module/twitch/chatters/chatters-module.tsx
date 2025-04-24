@@ -105,7 +105,7 @@ export default class ChattersModule extends Module {
 			userInfo.login.toLowerCase(),
 		);
 		const uniqueLogins = [...new Set([chatInfo.channelLogin.toLowerCase(), ...sharedLogins])];
-        if (uniqueLogins.length === 0) return;
+		if (uniqueLogins.length === 0) return;
 
 		const logins = loginsToUpdate.length > 0 ? uniqueLogins.filter((l) => loginsToUpdate.includes(l)) : uniqueLogins;
 		await Promise.all(
@@ -135,9 +135,7 @@ export default class ChattersModule extends Module {
 		const chatterSignals = Object.values(this.chattersCounters);
 		if (chatterSignals.length === 0) return -1;
 		this.totalChattersCounter.value = chatterSignals.reduce((sum, chatterSignal) => {
-			return chatterSignal.value === -1
-				? sum
-				: sum + chatterSignal.value;
+			return chatterSignal.value === -1 ? sum : sum + chatterSignal.value;
 		}, 0);
 	}
 
