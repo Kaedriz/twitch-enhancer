@@ -168,7 +168,7 @@ export default class TwitchUtils extends Utils {
 		return this.reactUtils.findReactChildren<ChatInfoComponent>(
 			this.reactUtils.getReactInstance(document.querySelector(".chat-list--default")),
 			(n) => n.stateNode?.props?.sharedChatDataByChannelID,
-			10000,
+			100,
 		)?.stateNode;
 	}
 }
