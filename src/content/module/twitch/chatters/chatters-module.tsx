@@ -1,10 +1,10 @@
 import { type Signal, signal } from "@preact/signals";
+import { render } from "preact";
 import styled from "styled-components";
 import type { ChattersResponse } from "types/content/api/twitch-api.types.ts";
 import type { ModuleConfig } from "types/content/module/module.types.ts";
 import { ChattersQuery } from "../../../api/twitch/twitch-queries.ts";
 import Module from "../../module.ts";
-import { render } from "preact";
 
 export default class ChattersModule extends Module {
 	private static URL_CONFIG = (url: string) => !url.includes("clips.twitch.tv");
@@ -115,7 +115,6 @@ export default class ChattersModule extends Module {
 					name: login,
 				});
 				const counter = this.getOrCreateCounter(login, data.channel.chatters.count);
-				this.logger.info(`updating ${login} with ${data.channel.chatters.count}`);
 				counter.value = data.channel.chatters.count;
 			} catch (error) {
 				this.logger.warn(`Failed to fetch chatters for ${login}`, error);
