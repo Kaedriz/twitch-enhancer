@@ -134,7 +134,10 @@ if (uniqueLogins.length === 0) return;
 		const chatterSignals = Object.values(this.chattersCounters);
 		if (chatterSignals.length === 0) return -1;
 		this.totalChattersCounter.value = chatterSignals.reduce((sum, chatterSignal) => {
-			return sum + chatterSignal.value;
+-			return sum + chatterSignal.value;
++			return chatterSignal.value === -1
++				? sum
++				: sum + chatterSignal.value;
 		}, 0);
 	}
 
