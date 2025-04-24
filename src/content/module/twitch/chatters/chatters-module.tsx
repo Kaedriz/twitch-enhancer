@@ -114,7 +114,6 @@ export default class ChattersModule extends Module {
 				try {
 					const { data } = await this.twitchApi().gql<ChattersResponse>(ChattersQuery, { name: login });
 					const counter = this.getOrCreateCounter(login, data.channel.chatters.count);
-					this.logger.info(`updating ${login} with ${data.channel.chatters.count}`);
 					counter.value = data.channel.chatters.count;
 				} catch (error) {
 					this.logger.warn(`Failed to fetch chatters for ${login}`, error);
