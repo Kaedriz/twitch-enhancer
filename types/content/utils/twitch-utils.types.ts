@@ -163,8 +163,23 @@ export type ScrollableChatComponent = {
 	scrollToBottom: () => void;
 };
 
-export type ChatInfo = {
-	pendingProps: {
-		sharedChatDataByChannelID: Map<string, string>;
+export type ChatInfoComponent = {
+	props: {
+		channelLogin: string;
+		channelID: string;
+		sharedChatDataByChannelID: Map<string, UserChatInfo>;
 	};
+};
+
+export type UserChatInfo = {
+	displayName: string;
+	login: string;
+	profileImageURL: string;
+	badges: {
+		count: number;
+		globalsBySet: Record<string, any>; // You might want to refine these types further
+		channelsBySet: Record<string, any>; // You might want to refine these types further
+	};
+	status: "ACTIVE" | "LEFT"; // Using a union type for better type safety
+	primaryColorHex: string;
 };
