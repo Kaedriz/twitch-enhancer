@@ -107,7 +107,8 @@ export default class ChattersModule extends Module {
 		const uniqueLogins = [...new Set([chatInfo.channelLogin.toLowerCase(), ...sharedLogins])];
 		if (uniqueLogins.length === 0) return;
 
-		const logins = loginsToUpdate.length > 0 ? uniqueLogins.filter((l) => loginsToUpdate.includes(l)) : uniqueLogins;
+		const logins =
+			loginsToUpdate.length > 0 ? uniqueLogins.filter((login) => loginsToUpdate.includes(login)) : uniqueLogins;
 		await Promise.all(
 			logins.map(async (login) => {
 				try {
