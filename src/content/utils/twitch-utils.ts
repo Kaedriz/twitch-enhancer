@@ -2,6 +2,7 @@ import type Logger from "logger";
 import type {
 	Chat,
 	ChatControllerComponent,
+	ChatInfoComponent,
 	ChatInput,
 	Command,
 	FollowedSection,
@@ -71,13 +72,13 @@ export default class TwitchUtils extends Utils {
 		return node?.pendingProps.value;
 	}
 
-	getChat(): Chat {
-		const node = this.reactUtils.findReactChildren(
+	getChat() {
+		const node = this.reactUtils.findReactChildren<Chat>(
 			this.reactUtils.getReactInstance(document.querySelector(".stream-chat")),
 			(n) => n.stateNode?.props?.onSendMessage,
 			1000,
 		);
-		return <Chat>node?.stateNode;
+		return node?.stateNode;
 	}
 
 	getChatController() {
@@ -185,5 +186,13 @@ export default class TwitchUtils extends Utils {
 		} else if (nativeChat) {
 			nativeChat.component?.scrollToBottom();
 		}
+	}
+
+	getChatInfo() {
+		return this.reactUtils.findReactChildren<ChatInfoComponent>(
+			this.reactUtils.getReactInstance(document.querySelector(".chat-list--default")),
+			(n) => n.stateNode?.props?.sharedChatDataByChannelID,
+			100,
+		)?.stateNode;
 	}
 }

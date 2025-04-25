@@ -39,7 +39,7 @@ export default class SoundboardModule extends Module {
 			helpText: "Plays sound from streamer binds",
 			permissionLevel: 0,
 			handler: (song) => {
-				this.twitchUtils().getChat().props.onSendMessage(`${this.soundboardData?.command} ${song}`);
+				this.twitchUtils().getChat()?.props.onSendMessage(`${this.soundboardData?.command} ${song}`);
 			},
 			commandArgs: [
 				{

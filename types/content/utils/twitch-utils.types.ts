@@ -174,3 +174,19 @@ export type ChatInput = {
 export type ScrollableChatComponent = {
 	scrollToBottom: () => void;
 };
+
+export type ChatInfoComponent = {
+	props: {
+		channelLogin: string;
+		channelID: string;
+		sharedChatDataByChannelID: Map<string, UserChatInfo>;
+	};
+};
+
+export type UserChatInfo = {
+	displayName: string;
+	login: string;
+	profileImageURL: string;
+	status: "ACTIVE" | "LEFT";
+	primaryColorHex: string;
+};
