@@ -7,10 +7,10 @@ export function getManifest() {
 		description: "Enhancer is open-sourced and free extension, which adds what is missing on streaming platforms.",
 		version: data.version,
 		action: {
-			default_icon: "assets/logo/logo-background-round.png",
+			default_icon: "assets/brand/logo-128.png",
 		},
 		icons: {
-			"128": "assets/logo/logo-background-round.png",
+			"128": "assets/brand/logo-128.png",
 		},
 		content_scripts: [
 			{

@@ -11,7 +11,8 @@
 				"noForEach": "off"
 			},
 			"a11y": {
-				"useKeyWithClickEvents": "off"
+				"useKeyWithClickEvents": "off",
+				"noSvgWithoutTitle": "off"
 			},
 			"suspicious": {
 				"noExplicitAny": "off"

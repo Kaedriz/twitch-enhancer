@@ -15,6 +15,7 @@ import ClipDownloadModule from "./clip-download/clip-download-module.tsx";
 import PinStreamerModule from "./pin-streamer/pin-streamer-module.tsx";
 import SoundboardModule from "./soundboard/soundboard-module.tsx";
 import StreamLatencyModule from "./stream-latency/stream-latency-module.tsx";
+import ChannelSectionModule from "module/twitch/channel-section/channel-section-module.tsx";
 
 export default class TwitchModuleRegisterer extends ModuleRegisterer {
 	getModules(
@@ -35,6 +36,7 @@ export default class TwitchModuleRegisterer extends ModuleRegisterer {
 			new ChattersModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
 			new StreamLatencyModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
 			new ChatCopyEmoteModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
+			new ChannelSectionModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
 			new RealVideoTimeModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
 		];
 	}
