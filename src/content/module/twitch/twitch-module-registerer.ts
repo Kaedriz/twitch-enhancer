@@ -1,7 +1,7 @@
 import ChatAttachmentsModule from "module/twitch/chat-attachments/chat-attachments-module.ts";
 import ChatCopyEmoteModule from "module/twitch/chat-copy-emote/chat-copy-emote-module.tsx";
 import ChatHighlightUserModule from "module/twitch/chat-highlight-user/chat-highlight-user-module.tsx";
-import RealTimeModule from "module/twitch/realtime/realtime-module.tsx";
+import RealVideoTimeModule from "module/twitch/real-video-time/real-video-time-module.tsx";
 import type { EventEmitter } from "types/content/event/events.types.ts";
 import type Logger from "../../../shared/logger/logger.ts";
 import type StorageRepository from "../../../shared/storage/storage-repository.ts";
@@ -35,7 +35,7 @@ export default class TwitchModuleRegisterer extends ModuleRegisterer {
 			new ChattersModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
 			new StreamLatencyModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
 			new ChatCopyEmoteModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
-			new RealTimeModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
+			new RealVideoTimeModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
 		];
 	}
 }
