@@ -194,6 +194,7 @@ const LinkItem = styled.a`
 		background: rgba(145, 71, 255, 0.2);
 		color: white;
 		transform: translateY(-2px);
+		text-decoration: none;
 	}
 `;
 
