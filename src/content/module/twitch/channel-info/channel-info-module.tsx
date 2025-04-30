@@ -2,6 +2,7 @@ import Module from "module/module.ts";
 import { h, render } from "preact";
 import styled from "styled-components";
 import type { ModuleConfig } from "types/content/module/module.types.ts";
+import EnhancerIcon from "../../../../shared/components/icon/enhancer-icon.tsx";
 
 export default class ChannelInfoModule extends Module {
 	config: ModuleConfig = {
@@ -17,119 +18,189 @@ export default class ChannelInfoModule extends Module {
 		],
 	};
 
-	private sites: site[] = [
-		{ name: "Sullygnome", redirectUrl: "https://sullygnome.com/channel/" },
-		{ name: "TwitchTracker", redirectUrl: "https://twitchtracker.com/" },
+	private defaultSites: Site[] = [
+		{
+			name: "Sullygnome",
+			redirectUrl: "https://sullygnome.com/channel/",
+		},
+		{
+			name: "TwitchTracker",
+			redirectUrl: "https://twitchtracker.com/",
+		},
 	];
 
 	private run(elements: Element[]) {
 		elements.forEach((parentElement) => {
 			const newElement = this.commonUtils().createElementByParent(this.getId(), "div", parentElement);
 			newElement.id = this.getId();
-
 			parentElement.appendChild(newElement);
-
 			const channelName = this.twitchUtils().getCurrentChannelByUrl();
-
 			if (!channelName) {
 				this.logger.warn("Error: Channel name not found");
 				return null;
 			}
-
-			render(<ChatInfoComponent channelName={channelName} sites={this.sites} />, newElement);
+			const watchTime = this.getWatchTime(channelName);
+			render(
+				<ChannelInfoComponent channelName={channelName} sites={this.defaultSites} watchTime={watchTime} />,
+				newElement,
+			);
 		});
+	}
+
+	private getWatchTime(channelName: string): number {
+		// This is a placeholder - implement actual watch time tracking
+		// You would likely get this from your extension's storage
+		return 42.5; // Example: 42.5 hours
 	}
 }
 
-type site = {
+type Site = {
 	name: string;
 	redirectUrl: string;
 };
 
-interface ChatInfoComponentProps {
-	sites: site[];
+interface ChannelInfoComponentProps {
 	channelName: string;
+	sites: Site[];
+	watchTime: number;
 }
 
-const InfoContainer = styled.div`
-	background-color: #19191c;
-	color: #ffffff;
-	border-radius: 8px;
-	padding: 10px 20px 20px 10px;
-	margin: 16px 0;
-	display: flex;
-	align-items: center;
-`;
+const ChannelInfoComponent = ({ channelName, sites, watchTime }: ChannelInfoComponentProps) => {
+	const formatWatchTime = (hours: number) => {
+		if (hours < 1) return `${Math.round(hours * 60)} minutes`;
+		if (hours < 10) return `${hours.toFixed(1)} hours`;
+		return `${Math.round(hours)} hours`;
+	};
 
-const IconContainer = styled.div`
-	display: flex;
-	align-items: center;
-	margin-top: 10px;
-	margin-bottom: 10px;
-	margin-left: 10px;
-	height: 64px;
-`;
-
-const LinksContainer = styled.div`
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-	margin-left: 20px;
-	gap: 15px;
-`;
-
-const StyledLink = styled.a`
-    color: white;
-    text-decoration: none;
-    font-size: 1.1em;
-    font-weight: 600;
-
-    &:hover {
-        text-decoration: underline;
-        color: #bf94ff;
-    }
-
-    &:focus {
-        outline: 2px solid #a970ff;
-        outline-offset: 2px;
-        border-radius: 3px;
-    }
-`;
-
-const ChatInfoComponent = ({ sites, channelName }: ChatInfoComponentProps) => {
 	return (
-		<InfoContainer>
-			<IconContainer>
-				<svg width="48" height="48" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
-					<title>Enhancer logo</title>
-					<path
-						d="M73.2308 64C73.2308 69.098 69.098 73.2308 64 73.2308C58.902 73.2308 54.7692 69.098 54.7692 64C54.7692 58.902 58.902 54.7692 64 54.7692C69.098 54.7692 73.2308 58.902 73.2308 64Z"
-						fill="#9147FF"
-					/>
-					<path
-						d="M85.5385 97.2069V104H104V85.5385H96.9427C93.9804 90.1653 90.0918 94.142 85.5385 97.2069Z"
-						fill="#9147FF"
-					/>
-					<path
-						d="M64 91.6923C48.706 91.6923 36.3077 79.294 36.3077 64C36.3077 48.706 48.706 36.3077 64 36.3077C79.294 36.3077 91.6923 48.706 91.6923 64H104C104 41.9086 86.0914 24 64 24C41.9086 24 24 41.9086 24 64C24 86.0914 41.9086 104 64 104V91.6923Z"
-						fill="#9147FF"
-					/>
-					<path d="M64 91.6923H76.3077V104H64V91.6923Z" fill="#9147FF" />
-					<path d="M91.6923 64H104V76.3077H91.6923V64Z" fill="#9147FF" />
-				</svg>
-			</IconContainer>
+		<Container>
+			<Header>
+				<ChannelInfo>
+					<LogoContainer>
+						<EnhancerIcon />
+					</LogoContainer>
+					<ChannelDetails>
+						<ChannelNameRow>
+							<ChannelName>{channelName}</ChannelName>
+							<RowText>—</RowText>
+							<RowText>You've watched this channel for {formatWatchTime(watchTime)}</RowText>
+						</ChannelNameRow>
+					</ChannelDetails>
+				</ChannelInfo>
+			</Header>
 
-			<LinksContainer>
-				{sites.map((site) => {
-					const fullUrl = `${site.redirectUrl}${channelName}`;
+			<Content>
+				<LinkGrid>
+					{sites.map((site) => {
+						const fullUrl = site.redirectUrl.endsWith("/")
+							? `${site.redirectUrl}${channelName}`
+							: `${site.redirectUrl}/${channelName}`;
 
-					return (
-						<StyledLink key={site.name} href={fullUrl} target="_blank" rel="noopener noreferrer">
-							{site.name}
-						</StyledLink>
-					);
-				})}
-			</LinksContainer>
-		</InfoContainer>
+						return (
+							<LinkItem key={site.name} href={fullUrl} target="_blank" rel="noopener noreferrer">
+								<LinkName>{site.name}</LinkName>
+							</LinkItem>
+						);
+					})}
+				</LinkGrid>
+			</Content>
+		</Container>
 	);
 };
+
+const Container = styled.div`
+	background: rgba(25, 25, 28, 0.95);
+	border-radius: 8px;
+	overflow: hidden;
+	margin: 16px 0;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+	border: 1px solid rgba(255, 255, 255, 0.05);
+	transition: all 0.2s ease;
+
+	&:hover {
+		border-color: rgba(145, 71, 255, 0.3);
+		box-shadow: 0 4px 16px rgba(145, 71, 255, 0.15);
+	}
+`;
+
+const Header = styled.div`
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 12px 16px;
+	background: rgba(30, 30, 40, 0.6);
+`;
+
+const ChannelInfo = styled.div`
+	display: flex;
+	align-items: center;
+	width: 100%;
+`;
+
+const LogoContainer = styled.div`
+	margin-right: 8px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 24px;
+	height: 24px;
+`;
+
+const ChannelDetails = styled.div`
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+`;
+
+const ChannelNameRow = styled.div`
+	display: flex;
+	align-items: center;
+	gap: 12px;
+`;
+
+const ChannelName = styled.div`
+	font-weight: 600;
+	color: #ffffff;
+	font-size: 14px;
+`;
+
+const RowText = styled.div`
+	color: #b8b8b8;
+	font-size: 12px;
+	display: flex;
+	align-items: center;
+`;
+
+const Content = styled.div`
+	padding: 12px 16px;
+`;
+
+const LinkGrid = styled.div`
+	display: flex;
+	gap: 8px;
+`;
+
+const LinkItem = styled.a`
+	display: flex;
+	align-items: center;
+	padding: 8px 12px;
+	background: rgba(40, 40, 50, 0.6);
+	border-radius: 6px;
+	color: #e0e0e0;
+	text-decoration: none;
+	transition: all 0.2s;
+
+	&:hover {
+		background: rgba(145, 71, 255, 0.2);
+		color: white;
+		transform: translateY(-2px);
+	}
+`;
+
+const LinkName = styled.div`
+	font-size: 13px;
+	font-weight: 500;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+`;

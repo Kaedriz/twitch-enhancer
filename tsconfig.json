@@ -23,6 +23,8 @@
 			"module/*": ["./src/content/module/*"],
 			"utils/*": ["./src/content/utils/*"],
 			"logger": ["./src/shared/logger/logger.ts"],
+			"shared": ["./src/shared/*"],
+			"assets": ["./public/assets/*"],
 			"react": ["node_modules/preact/compat"],
 			"react-dom": ["node_modules/preact/compat"]
 		}
