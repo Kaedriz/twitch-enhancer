@@ -4,7 +4,7 @@ import styled from "styled-components";
 import type { ModuleConfig } from "types/content/module/module.types.ts";
 import EnhancerIcon from "../../../../shared/components/icon/enhancer-icon.tsx";
 
-export default class ChannelInfoModule extends Module {
+export default class ChannelSectionModule extends Module {
 	config: ModuleConfig = {
 		name: "channel-info",
 		appliers: [
