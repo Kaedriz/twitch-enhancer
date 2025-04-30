@@ -61,6 +61,9 @@ export default class RealVideoTimeModule extends Module {
 
 	private async updateCurrentVideo() {
 		const videoId = this.twitchUtils().getVideoIdFromLink(window.location.href);
+		if (!videoId) {
+			return this.logger.warn("Failed to find video id");
+		}
 		if (this.currentVideoId === videoId) return;
 		this.currentVideoId = videoId;
 		this.videoCreatedAt = await this.getVideoCreatedAt(videoId);
