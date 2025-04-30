@@ -6,26 +6,16 @@ import Module from "../../module.ts";
 
 export default class ChatBadgesModule extends Module {
 	config: ModuleConfig = {
-		name: "example-module",
+		name: "chat-badges",
 		appliers: [
 			{
 				type: "event",
-				key: "chatBadges",
+				key: "chat-badges",
 				event: "twitch:chatMessage",
 				callback: this.handleMessage.bind(this),
 			},
-			{
-				type: "event",
-				key: "chatBadges",
-				event: "twitch:chatInitialized",
-				callback: this.initializeChannel.bind(this),
-			},
 		],
 	};
-
-	private initializeChannel(channelId: string) {
-		this.apiRepository.enhancerApi.state.joinChannel(channelId);
-	}
 
 	private handleMessage({ message, element }: TwitchChatMessageEvent) {
 		const badgeList =
@@ -34,7 +24,7 @@ export default class ChatBadgesModule extends Module {
 			element.querySelector(".chat-line__message--badges");
 		if (!badgeList) return;
 
-		const userBadges = this.apiRepository.enhancerApi.findUserBadgesForCurrentChannel(message.user.userID);
+		const userBadges = this.enhancerApi().findUserBadgesForCurrentChannel(message.user.userID);
 		if (!userBadges) return;
 
 		for (const badge of userBadges) {

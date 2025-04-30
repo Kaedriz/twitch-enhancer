@@ -30,7 +30,11 @@ export default class SelectorModuleApplier extends ModuleApplier {
 				config,
 			);
 			if (elements.length < 1) continue;
-			config.callback(elements, config.key);
+			try {
+				config.callback(elements, config.key);
+			} catch (error) {
+				this.logger.error(`Error occurred when running module, key: ${applier.config.key}`, error);
+			}
 		}
 	}
 
@@ -55,7 +59,7 @@ export default class SelectorModuleApplier extends ModuleApplier {
 
 	private markElementAsUsed(element: Element, id: string) {
 		element.setAttribute("enhanced", "true");
-		element.setAttribute("enhancedAt", `${Date.now()}`);
+		element.setAttribute("enhanced-at", `${Date.now()}`);
 		const modules = new Set(element.getAttribute("enhanced-modules")?.split(";") ?? []);
 		modules.add(id);
 		element.setAttribute("enhanced-modules", [...modules].join(";"));

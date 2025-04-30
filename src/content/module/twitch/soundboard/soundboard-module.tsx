@@ -32,14 +32,14 @@ export default class SoundboardModule extends Module {
 	};
 
 	private async run(elements: Element[]) {
-		const el = this.utilsRepository.commonUtils.createEmptyElements(this.getId(), elements, "div");
-		this.utilsRepository.twitchUtils.addCommandToChat({
+		const el = this.commonUtils().createEmptyElements(this.getId(), elements, "div");
+		this.twitchUtils().addCommandToChat({
 			name: "playsound",
 			description: "Play soundbind",
 			helpText: "Plays sound from streamer binds",
 			permissionLevel: 0,
 			handler: (song) => {
-				this.utilsRepository.twitchUtils.getChat().props.onSendMessage(`${this.soundboardData?.command} ${song}`);
+				this.twitchUtils().getChat()?.props.onSendMessage(`${this.soundboardData?.command} ${song}`);
 			},
 			commandArgs: [
 				{
@@ -65,7 +65,7 @@ export default class SoundboardModule extends Module {
 		}
 
 		setInterval(async () => {
-			const chatInputContent = this.utilsRepository.twitchUtils.getChatInputContent();
+			const chatInputContent = this.twitchUtils().getChatInputContent();
 
 			if (!chatInputContent?.startsWith("/playsound")) {
 				elements.forEach((element) => {
@@ -87,22 +87,22 @@ export default class SoundboardModule extends Module {
 				? this.soundboardData?.playSounds.filter((sound) => sound.name.toLowerCase().includes(partialSoundName))
 				: this.soundboardData?.playSounds;
 
-			elements.forEach((element) => {
+			/*elements.forEach((element) => {
 				element.innerHTML = "";
 				render(
 					<SoundboardComponent
 						key={matchingSounds?.map((sound) => sound.name).join(",")}
-						onTab={(name: string) => this.utilsRepository.twitchUtils.setChatMessage(name)}
+						onTab={(name: string) => this.twitchUtils().setChatMessage(name)}
 						sounds={matchingSounds || []}
 					/>,
 					element,
 				);
-			});
+			});*/
 		}, 300);
 	}
 
 	protected async fetchSoundEffectsByTwitchId() {
-		const channelId = this.utilsRepository.twitchUtils.getChannelId();
+		const channelId = this.twitchUtils().getChannelId();
 
 		const endpoint = `http://localhost:8080/playsounds/${channelId}`;
 		try {

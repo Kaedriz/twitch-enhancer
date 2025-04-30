@@ -60,7 +60,7 @@ export type FollowedSection = {
 		collapsed: boolean;
 		section: {
 			streams: FollowedSectionStreamData[];
-			videoConnections: FollowedSectionStreamData[];
+			offlineChannels: FollowedSectionStreamData[];
 		};
 		sort: {
 			setSortType: (type: string) => void;
@@ -128,7 +128,7 @@ export type Command = {
 	}[];
 };
 
-export type ChatInput = {
+/*export type ChatInput = {
 	pendingProps: {
 		setInputValue: (message: string, sendIt: boolean) => void;
 	};
@@ -138,7 +138,7 @@ export type ChatInput = {
 		};
 		forceUpdate: () => void;
 	};
-};
+};*/
 
 export interface TwitchChatMessageComponent {
 	props: {
@@ -158,3 +158,35 @@ export interface TwitchChatMessageComponent {
 		};
 	};
 }
+
+export type ChatInput = {
+	state: {
+		value: string;
+	};
+	componentRef: {
+		props: {
+			onChange: (event: { target: { value: string } }) => void;
+		};
+		focus: () => void;
+	};
+};
+
+export type ScrollableChatComponent = {
+	scrollToBottom: () => void;
+};
+
+export type ChatInfoComponent = {
+	props: {
+		channelLogin: string;
+		channelID: string;
+		sharedChatDataByChannelID: Map<string, UserChatInfo>;
+	};
+};
+
+export type UserChatInfo = {
+	displayName: string;
+	login: string;
+	profileImageURL: string;
+	status: "ACTIVE" | "LEFT";
+	primaryColorHex: string;
+};

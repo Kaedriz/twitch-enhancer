@@ -1,4 +1,4 @@
-import type { ExtensionConfig, ExtensionEnvironment } from "types/content/extension.ts";
+import type { ExtensionConfig, ExtensionEnvironment, Platform } from "types/content/extension.ts";
 import Extension from "./extension.ts";
 
 (async () => {
@@ -8,7 +8,7 @@ import Extension from "./extension.ts";
 	const config: ExtensionConfig = {
 		version,
 		environment,
-		platform: "twitch",
+		platform: getPlatform(),
 	};
 	window.enhancer = config;
 	await new Extension(config).start();
@@ -17,4 +17,11 @@ import Extension from "./extension.ts";
 declare global {
 	const __version__: string;
 	const __environment__: ExtensionEnvironment;
+}
+
+function getPlatform(): Platform {
+	const hostname = window.location.hostname.toLowerCase();
+	if (hostname.endsWith("twitch.tv")) return "twitch";
+	if (hostname.endsWith("kick.com")) return "kick";
+	throw Error(`Unsupported host name ${hostname} (${window.location.href})`);
 }

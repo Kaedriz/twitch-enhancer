@@ -2,11 +2,13 @@ import type Logger from "logger";
 import type {
 	Chat,
 	ChatControllerComponent,
+	ChatInfoComponent,
 	ChatInput,
 	Command,
 	FollowedSection,
 	MediaPlayerComponent,
 	PersistentPlayerComponent,
+	ScrollableChatComponent,
 	TwitchChatMessageComponent,
 } from "types/content/utils/twitch-utils.types.ts";
 import type ReactUtils from "utils/react-utils.ts";
@@ -70,13 +72,13 @@ export default class TwitchUtils extends Utils {
 		return node?.pendingProps.value;
 	}
 
-	getChat(): Chat {
-		const node = this.reactUtils.findReactChildren(
+	getChat() {
+		const node = this.reactUtils.findReactChildren<Chat>(
 			this.reactUtils.getReactInstance(document.querySelector(".stream-chat")),
 			(n) => n.stateNode?.props?.onSendMessage,
 			1000,
 		);
-		return <Chat>node?.stateNode;
+		return node?.stateNode;
 	}
 
 	getChatController() {
@@ -105,13 +107,13 @@ export default class TwitchUtils extends Utils {
 		return null;
 	}
 
-	getChatInput() {
+	/*getChatInput() {
 		return this.reactUtils.findReactChildren(
 			this.reactUtils.getReactInstance(document.querySelector(".chat-input")),
 			(n) => n.stateNode?.state?.value,
 			1000,
 		);
-	}
+	}*/
 
 	getChannelId(): string {
 		return this.reactUtils.findReactChildren(
@@ -121,14 +123,86 @@ export default class TwitchUtils extends Utils {
 		)?.pendingProps.channelID;
 	}
 
-	setChatMessage(message: string) {
+	/*setChatMessage(message: string) {
 		const chatInput = this.getChatInput() as ChatInput;
 		chatInput.stateNode.state.value = `/playsound ${message}`;
 		chatInput.stateNode.forceUpdate();
-	}
+	}*/
 
 	getChatMessage(message: Node) {
 		const instance = this.reactUtils.getReactInstance(message)?.return?.stateNode as TwitchChatMessageComponent;
 		return instance?.props.message ? instance : undefined;
+	}
+
+	getAutoCompleteHandler() {
+		return this.reactUtils.findReactChildren<ChatInput>(
+			this.reactUtils.getReactInstance(document.querySelector(".chat-input__textarea")),
+			(n) => n.stateNode?.providers,
+			1000,
+		)?.stateNode;
+	}
+
+	setChatText(message: string, focus: boolean) {
+		const chatInput = this.getAutoCompleteHandler();
+		chatInput?.componentRef.props.onChange({ target: { value: message } });
+		if (focus) chatInput?.componentRef.focus();
+	}
+
+	addTextToChatInput(message: string) {
+		const value = this.getAutoCompleteHandler()?.state.value || "";
+		this.setChatText(this.format(message, value), true);
+	}
+
+	format(text: string, value: string): string {
+		const formattedText = !value.endsWith(" ") && value.length > 0 ? ` ${text}` : text;
+		return `${value}${formattedText}`;
+	}
+
+	getScrollableChat() {
+		const element = document.querySelector(".chat-scrollable-area__message-container");
+
+		const node = this.reactUtils.findReactParents<ScrollableChatComponent>(
+			this.reactUtils.getReactInstance(element),
+			(n) => n.stateNode?.onScroll,
+		);
+
+		return {
+			component: node?.stateNode,
+			element,
+		};
+	}
+
+	unstuckScroll() {
+		const nativeChat = this.getScrollableChat();
+		const sevenTvChat = document.querySelector(".scrollable-contents");
+		if (!nativeChat && !sevenTvChat) return;
+		if (
+			nativeChat.element?.classList.contains("chat-scrollable-area__message-container--paused") ||
+			sevenTvChat?.querySelector(".seventv-message-buffer-notice")?.textContent === "Chat Paused"
+		)
+			return;
+		if (sevenTvChat) {
+			sevenTvChat.scrollTop = sevenTvChat.scrollHeight;
+		} else if (nativeChat) {
+			nativeChat.component?.scrollToBottom();
+		}
+	}
+
+	getVideoIdFromLink(link: string) {
+		if (!URL.canParse(link)) return;
+		const params = link.split("/");
+		const videoIndex = params.indexOf("videos");
+		if (videoIndex === -1) return;
+		let id = params[videoIndex + 1];
+		if (id.includes("?")) id = id.substring(0, id.lastIndexOf("?"));
+		return id;
+	}
+
+	getChatInfo() {
+		return this.reactUtils.findReactChildren<ChatInfoComponent>(
+			this.reactUtils.getReactInstance(document.querySelector(".chat-list--default")),
+			(n) => n.stateNode?.props?.sharedChatDataByChannelID,
+			100,
+		)?.stateNode;
 	}
 }

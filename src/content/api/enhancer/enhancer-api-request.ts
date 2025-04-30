@@ -22,27 +22,27 @@ export default class EnhancerApiRequest {
 	}
 
 	async getChannel(channelId: string) {
-		const { data } = await this.request<EnhancerChannelDto>(
+		const { data, status } = await this.request<EnhancerChannelDto>(
 			`${EnhancerApiRequest.API_URL}/channel/${this.platform}/${channelId}`,
 			{
 				method: "GET",
-				validateStatus: (status) => status === 200,
 				responseType: "json",
+				validateStatus: (status) => [200, 404].includes(status),
 			},
 		);
-		return data;
+		return { data, ok: status === 200, status };
 	}
 
-	async getBadges(channelId: string): Promise<EnhancerBadgesResponseDto> {
-		const { data } = await this.request<EnhancerBadgesResponseDto>(
+	async getBadges(channelId: string) {
+		const { data, status } = await this.request<EnhancerBadgesResponseDto>(
 			`${EnhancerApiRequest.API_URL}/badge/${this.platform}/${channelId}`,
 			{
 				method: "GET",
-				validateStatus: (status) => status === 200,
 				responseType: "json",
+				validateStatus: (status) => [200, 404].includes(status),
 			},
 		);
-		return data;
+		return { data, ok: status === 200, status };
 	}
 
 	getGlobalBadges() {

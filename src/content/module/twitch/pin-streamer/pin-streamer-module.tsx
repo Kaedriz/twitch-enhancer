@@ -35,9 +35,9 @@ export default class PinStreamerModule extends Module {
 		elements.forEach(async (element) => {
 			const isPinned = signal(false);
 
-			const button = this.utilsRepository.commonUtils.createElementByParent("pin-streamer-button", "button", element);
+			const button = this.commonUtils().createElementByParent("pin-streamer-button", "button", element);
 
-			const channelID = this.utilsRepository.twitchUtils.getUserIdBySideElement(element);
+			const channelID = this.twitchUtils().getUserIdBySideElement(element);
 
 			button.onclick = async (event) => {
 				event.preventDefault();
@@ -67,7 +67,7 @@ export default class PinStreamerModule extends Module {
 	}
 
 	private async updateFollows() {
-		const section = this.utilsRepository.twitchUtils.getPersonalSections()?.props;
+		const section = this.twitchUtils().getPersonalSections()?.props;
 		if (!section) return;
 
 		if (this.originalOfflineFollowList.length && this.originalFollowList.length) {
@@ -76,12 +76,12 @@ export default class PinStreamerModule extends Module {
 				section.sort.type === "viewers_desc",
 			);
 
-			section.section.videoConnections = await this.sortStreamsByPinned(this.originalOfflineFollowList, true);
+			section.section.offlineChannels = await this.sortStreamsByPinned(this.originalOfflineFollowList, true);
 		}
 	}
 
 	private async getPinnedStreamers(): Promise<{ ids: string[] }> {
-		const result = await this.storageRepository.localStorage.get("pinnedStreamers");
+		const result = await this.localStorage().get("pinnedStreamers");
 		return result || { ids: [] };
 	}
 
@@ -97,7 +97,7 @@ export default class PinStreamerModule extends Module {
 			? [...favouriteStreamers.ids, channelID]
 			: favouriteStreamers.ids.filter((id) => id !== channelID);
 
-		await this.storageRepository.localStorage.save("pinnedStreamers", {
+		await this.localStorage().save("pinnedStreamers", {
 			ids: favouriteStreamers.ids,
 		});
 
@@ -138,17 +138,17 @@ export default class PinStreamerModule extends Module {
 	}
 
 	private async refreshFollows() {
-		const section = this.utilsRepository.twitchUtils.getPersonalSections();
+		const section = this.twitchUtils().getPersonalSections();
 		if (!section) return;
 		section.forceUpdate();
 	}
 
 	private getPersonalSectionStreams() {
-		return this.utilsRepository.twitchUtils.getPersonalSections()?.props?.section.streams ?? [];
+		return this.twitchUtils().getPersonalSections()?.props?.section.streams ?? [];
 	}
 
 	private getPersonalSectionVideoConnections() {
-		return this.utilsRepository.twitchUtils.getPersonalSections()?.props?.section.videoConnections ?? [];
+		return this.twitchUtils().getPersonalSections()?.props?.section.offlineChannels ?? [];
 	}
 
 	private async followsObserver() {

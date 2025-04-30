@@ -26,7 +26,7 @@ export default class StreamLatencyModule extends Module {
 	};
 
 	private run(elements: Element[]) {
-		const wrappers = this.utilsRepository.commonUtils.createEmptyElements(this.getId(), elements, "span");
+		const wrappers = this.commonUtils().createEmptyElements(this.getId(), elements, "span");
 		this.createLatencyCounter();
 		this.updateLatency();
 		setInterval(async () => this.updateLatency(), 1000);
@@ -50,7 +50,7 @@ export default class StreamLatencyModule extends Module {
 
 	private getMediaPlayer() {
 		if (!this.mediaPlayer) {
-			this.mediaPlayer = this.utilsRepository.twitchUtils.getMediaPlayerInstance();
+			this.mediaPlayer = this.twitchUtils().getMediaPlayerInstance();
 			if (!this.mediaPlayer) {
 				throw new Error("Cannot find MediaPlayerInstance");
 			}
