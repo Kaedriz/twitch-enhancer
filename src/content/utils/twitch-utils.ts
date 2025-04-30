@@ -123,7 +123,7 @@ export default class TwitchUtils extends Utils {
 		)?.pendingProps.channelID;
 	}
 
-	/*	setChatMessage(message: string) {
+	/*setChatMessage(message: string) {
 		const chatInput = this.getChatInput() as ChatInput;
 		chatInput.stateNode.state.value = `/playsound ${message}`;
 		chatInput.stateNode.forceUpdate();
@@ -186,6 +186,16 @@ export default class TwitchUtils extends Utils {
 		} else if (nativeChat) {
 			nativeChat.component?.scrollToBottom();
 		}
+	}
+
+	getVideoIdFromLink(link: string) {
+		if (!URL.canParse(link)) return;
+		const params = link.split("/");
+		const videoIndex = params.indexOf("videos");
+		if (videoIndex === -1) return;
+		let id = params[videoIndex + 1];
+		if (id.includes("?")) id = id.substring(0, id.lastIndexOf("?"));
+		return id;
 	}
 
 	getChatInfo() {
