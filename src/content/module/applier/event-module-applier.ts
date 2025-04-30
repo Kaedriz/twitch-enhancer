@@ -20,7 +20,7 @@ export default class EventModuleApplier extends ModuleApplier {
 						// @ts-ignore Same as above
 						applier.callback(...args);
 					} catch (error) {
-						this.logger.error("Error occurred when running module", error);
+						this.logger.error(`Error occurred when running module, key: ${applier.key}`, error);
 					}
 				});
 			}
