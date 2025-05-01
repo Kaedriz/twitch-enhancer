@@ -138,7 +138,9 @@ export function MessagePopup({ title, content, autoclose, onClose }: TwitchChatM
 			setTimeLeft((prev) => {
 				if (prev <= 1) {
 					clearInterval(interval);
-					onClose();
+					if (onClose) {
+						onClose();
+					}
 					return 0;
 				}
 

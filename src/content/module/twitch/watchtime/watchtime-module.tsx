@@ -61,7 +61,6 @@ export default class WatchTimeModule extends Module {
 	}
 
 	private async addCommand() {
-		this.logger.info("adding command");
 		this.utilsRepository.twitchUtils.addCommandToChat({
 			name: "watchtime",
 			description: "See user's watchtime from xayo.pl service",

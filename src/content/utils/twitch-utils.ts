@@ -94,6 +94,7 @@ export default class TwitchUtils extends Utils {
 	}
 
 	addCommandToChat(command: Command) {
+		this.logger.debug(`Registering new command: ${command.name}`);
 		this.getChatCommandStore().addCommand({ ...command, group: "Enhancer" });
 	}
 
