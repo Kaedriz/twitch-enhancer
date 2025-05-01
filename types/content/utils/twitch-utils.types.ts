@@ -122,6 +122,7 @@ export type Command = {
 	helpText: string;
 	permissionLevel: number;
 	handler: (song: string) => void;
+	group?: string;
 	commandArgs: {
 		name: string;
 		isRequired: boolean;

@@ -93,7 +93,7 @@ export default class TwitchUtils extends Utils {
 	}
 
 	addCommandToChat(command: Command) {
-		this.getChatCommandStore().addCommand(command);
+		this.getChatCommandStore().addCommand({ ...command, group: "Enhancer" });
 	}
 
 	getChatInputContent(): string | null {

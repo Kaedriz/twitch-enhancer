@@ -1,6 +1,9 @@
+import type { ComponentChildren } from "preact";
+
 export type TwitchEvents = {
 	"twitch:chatInitialized": (channelId: string) => void;
 	"twitch:chatMessage": (message: TwitchChatMessageEvent) => void;
+	"twitch:chatPopupMessage": (message: TwitchChatMessagePopup) => void;
 };
 
 export type TwitchChatMessage = {
@@ -31,4 +34,11 @@ export type TwitchChatMessageEvent = {
 	message: TwitchChatMessage;
 	element: Element;
 	type: ChatType;
+};
+
+export type TwitchChatMessagePopup = {
+	title: string;
+	content: ComponentChildren;
+	autoclose?: number;
+	onClose?: () => void;
 };

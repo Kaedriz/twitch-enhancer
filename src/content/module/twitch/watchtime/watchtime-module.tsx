@@ -1,13 +1,9 @@
 import Module from "module/module.ts";
-import { render } from "preact";
 import styled from "styled-components";
 import type { EnhancerStreamerWatchTimeData } from "types/content/api/enhancer-api.types.ts";
 import type { ModuleConfig } from "types/content/module/module.types.ts";
 
 export default class WatchTimeModule extends Module {
-	static readonly TWITCHTV_CHAT_SELECTOR = ".chat-list--default";
-	static readonly SEVENTV_CHAT_SELECTOR = "main.seventv-chat-list";
-
 	config: ModuleConfig = {
 		name: "watchtime",
 		appliers: [
@@ -21,14 +17,23 @@ export default class WatchTimeModule extends Module {
 		],
 	};
 
-	async init(): Promise<void> {
+	private async run() {
 		this.utilsRepository.twitchUtils.addCommandToChat({
 			name: "watchtime",
-			description: "Display watch time",
-			helpText: "Display watch time of the user",
+			description: "See user's watchtime from xayo.pl service",
+			helpText: "Missing username",
 			permissionLevel: 0,
-			handler: (username) => {
-				this.renderWatchTime(username, this.fetchWatchTimeByUserName(username));
+			handler: async (username) => {
+				const name = username.startsWith("@") ? username.substring(1) : username;
+				this.renderLoading(name);
+				try {
+					const data = await this.fetchWatchTimeByUserName(name.toLowerCase());
+					await new Promise((resolve) => setTimeout(resolve, 5000)); // TODO remove
+					this.renderWatchtime(name, data);
+				} catch (error) {
+					this.logger.error(`Failed to fetch watchtime for ${username}`, error);
+					this.renderError(name);
+				}
 			},
 			commandArgs: [
 				{
@@ -39,96 +44,112 @@ export default class WatchTimeModule extends Module {
 		});
 	}
 
-	private async run() {}
-
 	private async fetchWatchTimeByUserName(username: string): Promise<EnhancerStreamerWatchTimeData[]> {
-		return await this.apiRepository.enhancerApi.getUserWatchTime(username);
+		return await this.enhancerApi().getUserWatchTime(username);
 	}
 
-	private async renderWatchTime(username: string, promise: Promise<EnhancerStreamerWatchTimeData[]>) {
-		const data = await promise;
+	private renderLoading(username: string) {
+		this.eventEmitter.emit("twitch:chatPopupMessage", {
+			title: `Fetching data for ${username}`,
+			autoclose: 60,
+			content: <WatchTimeLoadingContent />,
+		});
+	}
 
-		let contentElement: Element | null = null;
+	private renderWatchtime(username: string, data: EnhancerStreamerWatchTimeData[]) {
+		this.eventEmitter.emit("twitch:chatPopupMessage", {
+			title: `Watchtime for ${username}`,
+			autoclose: 15,
+			content: <WatchTimeContent data={data} />,
+		});
+	}
 
-		if (document.querySelector(WatchTimeModule.SEVENTV_CHAT_SELECTOR)) {
-			contentElement = document.querySelector(WatchTimeModule.SEVENTV_CHAT_SELECTOR);
-		} else if (document.querySelector(WatchTimeModule.TWITCHTV_CHAT_SELECTOR)) {
-			contentElement = document.querySelector(WatchTimeModule.TWITCHTV_CHAT_SELECTOR);
-		}
-
-		if (contentElement) {
-			const wrapper = document.createElement("div");
-			wrapper.classList.add("watchtime");
-			contentElement.append(wrapper);
-
-			const timeoutId = setTimeout(() => {
-				wrapper.remove();
-			}, 60000);
-
-			render(
-				<WatchTimeListComponent timeoutId={timeoutId} username={username} data={data} wrapper={wrapper} />,
-				wrapper,
-			);
-		}
+	private renderError(username: string) {
+		this.eventEmitter.emit("twitch:chatPopupMessage", {
+			title: `Failed to fetch watchtime for ${username}`,
+			autoclose: 15,
+			content: <WatchTimeErrorContent />,
+		});
 	}
 }
 
-interface UserWatchTimeProps {
-	data: EnhancerStreamerWatchTimeData[];
-	username: string;
-	wrapper: HTMLElement;
-	timeoutId: ReturnType<typeof setTimeout>;
-}
-
-const WatchTimeWrapper = styled.div`
-	margin-bottom: 8px;
-	background: #1e1e1e;
-	padding: 10px;
-	border-radius: 8px;
-	color: white;
-	font-size: 14px;
+const LoadingSpinnerWrapper = styled.div`
 	display: flex;
 	flex-direction: column;
-	gap: 8px;
+	align-items: center;
+	padding: 10px 0;
 `;
 
-const Header = styled.div`
+const LoadingSpinner = styled.div`
+	width: 20px;
+	height: 20px;
+	border: 2px solid rgba(255, 255, 255, 0.1);
+	border-top: 2px solid #bf94ff;
+	border-radius: 50%;
+	animation: spin 1s linear infinite;
+	margin-bottom: 8px;
+
+	@keyframes spin {
+		0% { transform: rotate(0deg); }
+		100% { transform: rotate(360deg); }
+	}
+`;
+
+const ContentText = styled.div`
+	color: #8e8e8e;
+	font-size: 13px;
+`;
+
+function WatchTimeLoadingContent() {
+	return (
+		<LoadingSpinnerWrapper>
+			<LoadingSpinner />
+			<ContentText>Fetching data from xayo.pl...</ContentText>
+		</LoadingSpinnerWrapper>
+	);
+}
+
+function WatchTimeErrorContent() {
+	return <ContentText>An unexpected error occurred and we are sorry about that :( Please try again later.</ContentText>;
+}
+
+interface WatchTimeContentProps {
+	data: EnhancerStreamerWatchTimeData[];
+}
+
+const WatchTimeList = styled.div`
 	display: flex;
-	justify-content: space-between;
-	align-items: center;
+	flex-direction: column;
+	gap: 6px;
 `;
 
 const WatchTimeItem = styled.div`
-	margin-left: 5px;
+	display: flex;
+	align-items: center;
 `;
 
-const CloseButton = styled.button`
-	cursor: pointer;
-	background: transparent;
-	border: none;
-	color: white;
-	font-size: 14px;
+const Username = styled.span`
+	color: #efeff1;
 `;
 
-function WatchTimeListComponent({ data, username, wrapper, timeoutId }: UserWatchTimeProps) {
-	const removeWatchTime = () => {
-		if (wrapper) {
-			clearTimeout(timeoutId);
-			wrapper.remove();
-		}
-	};
+const Arrow = styled.span`
+	margin: 0 8px;
+	color: #8e8e8e;
+`;
 
+const Time = styled.span`
+	color: #bf94ff;
+`;
+
+const NoDataMessage = styled.div`
+	color: #8e8e8e;
+	text-align: center;
+	padding: 10px 0;
+`;
+
+function WatchTimeContent({ data }: WatchTimeContentProps) {
 	if (!data || data.length === 0) {
-		return (
-			<WatchTimeWrapper>
-				<Header>
-					<strong>No data available for {username}:</strong>
-					<CloseButton type="button" onClick={removeWatchTime}>
-						X
-					</CloseButton>
-				</Header>
-			</WatchTimeWrapper>
-		);
+		return <NoDataMessage>No watchtime data available</NoDataMessage>;
 	}
 
 	const topFive = data.slice(0, 5);
@@ -137,22 +158,18 @@ function WatchTimeListComponent({ data, username, wrapper, timeoutId }: UserWatc
 		const totalMinutes = count * 5;
 		const hours = Math.floor(totalMinutes / 60);
 		const minutes = totalMinutes % 60;
-		return `${hours > 0 ? `${hours}h ` : ""}${minutes}m`;
+		return `${hours}h ${minutes}m`;
 	};
 
 	return (
-		<WatchTimeWrapper>
-			<Header>
-				<strong>Watchtime of {username}:</strong>
-				<CloseButton type="button" onClick={removeWatchTime}>
-					X
-				</CloseButton>
-			</Header>
+		<WatchTimeList>
 			{topFive.map((item) => (
 				<WatchTimeItem key={item.streamer}>
-					{item.streamer} –{">"} {formatWatchTime(item.count)}
+					<Username>{item.streamer}</Username>
+					<Arrow>→</Arrow>
+					<Time>{formatWatchTime(item.count)}</Time>
 				</WatchTimeItem>
 			))}
-		</WatchTimeWrapper>
+		</WatchTimeList>
 	);
 }
