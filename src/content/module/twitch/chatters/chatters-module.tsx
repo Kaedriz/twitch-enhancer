@@ -30,7 +30,6 @@ export default class WatchTimeModule extends Module {
 				this.renderLoading(name);
 				try {
 					const data = await this.fetchWatchTimeByUserName(name.toLowerCase());
-					await new Promise((resolve) => setTimeout(resolve, 2000)); // TODO remove
 					this.renderWatchtime(name, data);
 				} catch (error) {
 					this.logger.error(`Failed to fetch watchtime for ${username}`, error);

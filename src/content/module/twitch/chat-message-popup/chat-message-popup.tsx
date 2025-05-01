@@ -1,9 +1,9 @@
 import Module from "module/module.ts";
-import type { ModuleConfig } from "types/content/module/module.types.ts";
-import type { TwitchChatMessagePopup } from "types/content/event/twitch-events.types.ts";
 import { h, render } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import styled from "styled-components";
+import type { TwitchChatMessagePopup } from "types/content/event/twitch-events.types.ts";
+import type { ModuleConfig } from "types/content/module/module.types.ts";
 
 export default class ChatMessagePopupModule extends Module {
 	static readonly TWITCHTV_CHAT_SELECTOR = ".chat-list--default";
