@@ -17,6 +17,8 @@ export default class WatchTimeModule extends Module {
 		],
 	};
 
+	private isLoadingPopupVisible = false;
+
 	private async run() {
 		this.utilsRepository.twitchUtils.addCommandToChat({
 			name: "watchtime",
@@ -28,7 +30,6 @@ export default class WatchTimeModule extends Module {
 				this.renderLoading(name);
 				try {
 					const data = await this.fetchWatchTimeByUserName(name.toLowerCase());
-					await new Promise((resolve) => setTimeout(resolve, 5000)); // TODO remove
 					this.renderWatchtime(name, data);
 				} catch (error) {
 					this.logger.error(`Failed to fetch watchtime for ${username}`, error);
@@ -49,14 +50,20 @@ export default class WatchTimeModule extends Module {
 	}
 
 	private renderLoading(username: string) {
+		this.isLoadingPopupVisible = true;
 		this.eventEmitter.emit("twitch:chatPopupMessage", {
 			title: `Fetching data for ${username}`,
 			autoclose: 60,
 			content: <WatchTimeLoadingContent />,
+			onClose: () => this.handleLoadingPopupClose(),
 		});
 	}
 
 	private renderWatchtime(username: string, data: EnhancerStreamerWatchTimeData[]) {
+		if (!this.isLoadingPopupVisible) {
+			return;
+		}
+		this.isLoadingPopupVisible = false;
 		this.eventEmitter.emit("twitch:chatPopupMessage", {
 			title: `Watchtime for ${username}`,
 			autoclose: 15,
@@ -65,11 +72,19 @@ export default class WatchTimeModule extends Module {
 	}
 
 	private renderError(username: string) {
+		if (!this.isLoadingPopupVisible) {
+			return;
+		}
+		this.isLoadingPopupVisible = false;
 		this.eventEmitter.emit("twitch:chatPopupMessage", {
 			title: `Failed to fetch watchtime for ${username}`,
 			autoclose: 15,
 			content: <WatchTimeErrorContent />,
 		});
+	}
+
+	private handleLoadingPopupClose() {
+		this.isLoadingPopupVisible = false;
 	}
 }
 
