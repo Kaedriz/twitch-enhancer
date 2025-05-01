@@ -26,7 +26,7 @@ export default class WatchTimeModule extends Module {
 			helpText: "Missing username",
 			permissionLevel: 0,
 			handler: async (username) => {
-				const name = username.startsWith("@") ? username.substring(1) : username;
+				const name = username.replace(/^@/, '');
 				this.renderLoading(name);
 				try {
 					const data = await this.fetchWatchTimeByUserName(name.toLowerCase());
