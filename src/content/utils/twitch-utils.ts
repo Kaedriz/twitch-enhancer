@@ -10,6 +10,7 @@ import type {
 	PersistentPlayerComponent,
 	ScrollableChatComponent,
 	TwitchChatMessageComponent,
+	UserCardComponent,
 } from "types/content/utils/twitch-utils.types.ts";
 import type ReactUtils from "utils/react-utils.ts";
 import Utils from "utils/utils.ts";
@@ -204,5 +205,13 @@ export default class TwitchUtils extends Utils {
 			(n) => n.stateNode?.props?.sharedChatDataByChannelID,
 			100,
 		)?.stateNode;
+	}
+
+	getUserCardTargetName(): string | undefined {
+		return this.reactUtils.findReactParents<UserCardComponent>(
+			this.reactUtils.getReactInstance(document.querySelector(".viewer-card-header__banner")),
+			(n) => n.stateNode?.props?.targetLogin,
+			1000,
+		)?.stateNode.props.targetLogin;
 	}
 }

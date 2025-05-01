@@ -1,36 +1,78 @@
+import { signal } from "@preact/signals";
 import Module from "module/module.ts";
-import styled from "styled-components";
+import {
+	WatchTimePopupErrorMessage,
+	WatchTimePopupLoadingMessage,
+	WatchTimePopupMessage,
+	WatchTimeUserCard,
+} from "module/twitch/watchtime/wachtime-card.tsx";
+
+import { render } from "preact";
 import type { EnhancerStreamerWatchTimeData } from "types/content/api/enhancer-api.types.ts";
 import type { ModuleConfig } from "types/content/module/module.types.ts";
 
 export default class WatchTimeModule extends Module {
+	private isLoadingPopupVisible = false;
+
 	config: ModuleConfig = {
 		name: "watchtime",
 		appliers: [
 			{
+				type: "event",
+				event: "twitch:chatInitialized",
+				callback: this.addCommand.bind(this),
+				key: "watchtime-chat",
+				once: true,
+			},
+			{
 				type: "selector",
-				selectors: [".chat-scrollable-area__message-container"],
+				selectors: [".viewer-card"],
 				callback: this.run.bind(this),
-				key: "watchtime",
+				key: "watchtime-usercard",
 				once: true,
 			},
 		],
 	};
 
-	private isLoadingPopupVisible = false;
+	private async run(elements: Element[]) {
+		const wrapper = this.utilsRepository.commonUtils.createEmptyElements(this.getId(), elements, "div");
+		const username = this.utilsRepository.twitchUtils.getUserCardTargetName();
+		if (!username) {
+			this.logger.error("Failed to found username from usercard");
+			return;
+		}
 
-	private async run() {
+		const data = signal<undefined | EnhancerStreamerWatchTimeData[]>(undefined);
+		const isLoading = signal(true);
+		const isError = signal(false);
+
+		wrapper.forEach((element) => {
+			render(<WatchTimeUserCard username={username} data={data} isLoading={isLoading} isError={isError} />, element);
+		});
+
+		try {
+			data.value = await this.enhancerApi().getUserWatchTime(username);
+			isLoading.value = false;
+		} catch (error) {
+			this.logger.error(`Failed to fetch usercard watchtime ${username}`, error);
+			isError.value = true;
+			isLoading.value = false;
+		}
+	}
+
+	private async addCommand() {
+		this.logger.info("adding command");
 		this.utilsRepository.twitchUtils.addCommandToChat({
 			name: "watchtime",
 			description: "See user's watchtime from xayo.pl service",
 			helpText: "Missing username",
 			permissionLevel: 0,
 			handler: async (username) => {
-				const name = username.replace(/^@/, '');
+				const name = username.replace(/^@/, "");
 				this.renderLoading(name);
 				try {
 					const data = await this.fetchWatchTimeByUserName(name.toLowerCase());
-					this.renderWatchtime(name, data);
+					this.renderWatchTime(name, data);
 				} catch (error) {
 					this.logger.error(`Failed to fetch watchtime for ${username}`, error);
 					this.renderError(name);
@@ -54,12 +96,12 @@ export default class WatchTimeModule extends Module {
 		this.eventEmitter.emit("twitch:chatPopupMessage", {
 			title: `Fetching data for ${username}`,
 			autoclose: 60,
-			content: <WatchTimeLoadingContent />,
+			content: <WatchTimePopupLoadingMessage />,
 			onClose: () => this.handleLoadingPopupClose(),
 		});
 	}
 
-	private renderWatchtime(username: string, data: EnhancerStreamerWatchTimeData[]) {
+	private renderWatchTime(username: string, data: EnhancerStreamerWatchTimeData[]) {
 		if (!this.isLoadingPopupVisible) {
 			return;
 		}
@@ -67,7 +109,7 @@ export default class WatchTimeModule extends Module {
 		this.eventEmitter.emit("twitch:chatPopupMessage", {
 			title: `Watchtime for ${username}`,
 			autoclose: 15,
-			content: <WatchTimeContent data={data} />,
+			content: <WatchTimePopupMessage username={username} watchTime={data} />,
 		});
 	}
 
@@ -79,112 +121,11 @@ export default class WatchTimeModule extends Module {
 		this.eventEmitter.emit("twitch:chatPopupMessage", {
 			title: `Failed to fetch watchtime for ${username}`,
 			autoclose: 15,
-			content: <WatchTimeErrorContent />,
+			content: <WatchTimePopupErrorMessage />,
 		});
 	}
 
 	private handleLoadingPopupClose() {
 		this.isLoadingPopupVisible = false;
 	}
-}
-
-const LoadingSpinnerWrapper = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	padding: 10px 0;
-`;
-
-const LoadingSpinner = styled.div`
-	width: 20px;
-	height: 20px;
-	border: 2px solid rgba(255, 255, 255, 0.1);
-	border-top: 2px solid #bf94ff;
-	border-radius: 50%;
-	animation: spin 1s linear infinite;
-	margin-bottom: 8px;
-
-	@keyframes spin {
-		0% { transform: rotate(0deg); }
-		100% { transform: rotate(360deg); }
-	}
-`;
-
-const ContentText = styled.div`
-	color: #8e8e8e;
-	font-size: 13px;
-`;
-
-function WatchTimeLoadingContent() {
-	return (
-		<LoadingSpinnerWrapper>
-			<LoadingSpinner />
-			<ContentText>Fetching data from xayo.pl...</ContentText>
-		</LoadingSpinnerWrapper>
-	);
-}
-
-function WatchTimeErrorContent() {
-	return <ContentText>An unexpected error occurred and we are sorry about that :( Please try again later.</ContentText>;
-}
-
-interface WatchTimeContentProps {
-	data: EnhancerStreamerWatchTimeData[];
-}
-
-const WatchTimeList = styled.div`
-	display: flex;
-	flex-direction: column;
-	gap: 6px;
-`;
-
-const WatchTimeItem = styled.div`
-	display: flex;
-	align-items: center;
-`;
-
-const Username = styled.span`
-	color: #efeff1;
-`;
-
-const Arrow = styled.span`
-	margin: 0 8px;
-	color: #8e8e8e;
-`;
-
-const Time = styled.span`
-	color: #bf94ff;
-`;
-
-const NoDataMessage = styled.div`
-	color: #8e8e8e;
-	text-align: center;
-	padding: 10px 0;
-`;
-
-function WatchTimeContent({ data }: WatchTimeContentProps) {
-	if (!data || data.length === 0) {
-		return <NoDataMessage>No watchtime data available</NoDataMessage>;
-	}
-
-	const topFive = data.slice(0, 5);
-
-	const formatWatchTime = (count: number): string => {
-		const totalMinutes = count * 5;
-		const hours = Math.floor(totalMinutes / 60);
-		const minutes = totalMinutes % 60;
-		return `${hours}h ${minutes}m`;
-	};
-
-	return (
-		<WatchTimeList>
-			{topFive.map((item) => (
-				<WatchTimeItem key={item.streamer}>
-					<Username>{item.streamer}</Username>
-					<Arrow>→</Arrow>
-					<Time>{formatWatchTime(item.count)}</Time>
-				</WatchTimeItem>
-			))}
-		</WatchTimeList>
-	);
 }

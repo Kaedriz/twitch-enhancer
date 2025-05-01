@@ -184,6 +184,14 @@ export type ChatInfoComponent = {
 	};
 };
 
+export type UserCardComponent = {
+	props: {
+		channelID: string;
+		channelLogin: string;
+		targetLogin: string;
+	};
+};
+
 export type UserChatInfo = {
 	displayName: string;
 	login: string;
