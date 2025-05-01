@@ -1,190 +1,192 @@
-import Module from "module/module.ts";
+import { type Signal, signal } from "@preact/signals";
+import { render } from "preact";
 import styled from "styled-components";
-import type { EnhancerStreamerWatchTimeData } from "types/content/api/enhancer-api.types.ts";
+import type { ChattersResponse } from "types/content/api/twitch-api.types.ts";
 import type { ModuleConfig } from "types/content/module/module.types.ts";
+import { ChattersQuery } from "../../../api/twitch/twitch-queries.ts";
+import Module from "../../module.ts";
 
-export default class WatchTimeModule extends Module {
+export default class ChattersModule extends Module {
+	private static URL_CONFIG = (url: string) => !url.includes("clips.twitch.tv");
+
 	config: ModuleConfig = {
-		name: "watchtime",
+		name: "chatters",
 		appliers: [
 			{
 				type: "selector",
-				selectors: [".chat-scrollable-area__message-container"],
-				callback: this.run.bind(this),
-				key: "watchtime",
+				selectors: ['p[data-a-target="animated-channel-viewers-count"]'],
+				callback: this.createTotalChattersComponent.bind(this),
+				key: "chatters",
+				validateUrl: ChattersModule.URL_CONFIG,
+				useParent: true,
+				once: true,
+			},
+			{
+				type: "selector",
+				selectors: [
+					'div[data-a-target="channel-viewers-count"]',
+					'p[data-test-selector="stream-info-card-component__description"]',
+				],
+				callback: this.createTotalChattersComponent.bind(this),
+				key: "chatters",
+				validateUrl: ChattersModule.URL_CONFIG,
+				once: true,
+			},
+			{
+				type: "selector",
+				selectors: [".ReactModal__Content .tw-balloon"],
+				callback: this.createIndividualChattersComponents.bind(this),
+				key: "shared-chatters",
+				validateUrl: ChattersModule.URL_CONFIG,
+				useParent: true,
 				once: true,
 			},
 		],
 	};
 
-	private isLoadingPopupVisible = false;
+	private totalChattersCounter = signal(-1);
+	private chattersCounters: Record<string, Signal<number>> = {};
 
-	private async run() {
-		this.utilsRepository.twitchUtils.addCommandToChat({
-			name: "watchtime",
-			description: "See user's watchtime from xayo.pl service",
-			helpText: "Missing username",
-			permissionLevel: 0,
-			handler: async (username) => {
-				const name = username.startsWith("@") ? username.substring(1) : username;
-				this.renderLoading(name);
-				try {
-					const data = await this.fetchWatchTimeByUserName(name.toLowerCase());
-					this.renderWatchtime(name, data);
-				} catch (error) {
-					this.logger.error(`Failed to fetch watchtime for ${username}`, error);
-					this.renderError(name);
+	private updateInterval: NodeJS.Timeout | undefined;
+	private lastUpdatedAt = 0;
+
+	private static INDIVIDUAL_CHATTERS_COMPONENT_WRAPPER_CLASS = "enhancer-chat-counter-wrapper";
+	private static UPDATE_INTERVAL_TIME = 30000;
+
+	private findUsernameFromStatusIndicator(el?: Element | null): string | null {
+		const container = el?.parentElement?.parentElement?.parentElement;
+		return container?.querySelector("p")?.textContent ?? null;
+	}
+
+	private createTotalChattersComponent(elements: Element[]) {
+		const wrappers = this.commonUtils().createEmptyElements(this.getId(), elements, "span");
+
+		this.requestUpdate();
+		if (this.updateInterval) clearInterval(this.updateInterval);
+		this.updateInterval = setInterval(() => this.requestUpdate(), ChattersModule.UPDATE_INTERVAL_TIME);
+
+		wrappers.forEach((element) => {
+			render(
+				<ChattersComponent click={this.refreshChatters.bind(this)} counter={this.totalChattersCounter} />,
+				element,
+			);
+		});
+	}
+
+	private createIndividualChattersComponents(elements: Element[]) {
+		elements.forEach((root) => {
+			const indicators = root.querySelectorAll(".tw-channel-status-indicator");
+
+			indicators.forEach((indicator) => {
+				const username = this.findUsernameFromStatusIndicator(indicator)?.toLowerCase();
+				if (!username) return;
+
+				const counter = this.getOrCreateCounter(username, -1);
+				if (counter !== undefined && indicator.parentElement) {
+					let existing = indicator.parentElement.querySelector(
+						`.${ChattersModule.INDIVIDUAL_CHATTERS_COMPONENT_WRAPPER_CLASS}`,
+					);
+					if (!existing) {
+						existing = document.createElement("span");
+						existing.className = ChattersModule.INDIVIDUAL_CHATTERS_COMPONENT_WRAPPER_CLASS;
+						indicator.parentElement.appendChild(existing);
+					}
+					render(<ChattersComponent click={this.refreshChatters.bind(this)} counter={counter} />, existing);
 				}
-			},
-			commandArgs: [
-				{
-					name: "username",
-					isRequired: true,
-				},
-			],
+			});
 		});
 	}
 
-	private async fetchWatchTimeByUserName(username: string): Promise<EnhancerStreamerWatchTimeData[]> {
-		return await this.enhancerApi().getUserWatchTime(username);
+	private async refreshChatters(loginsToUpdate: string[] = []) {
+		const chatInfo = this.twitchUtils().getChatInfo()?.props;
+		if (!chatInfo) return;
+
+		const sharedLogins = Array.from(chatInfo.sharedChatDataByChannelID.values()).map((userInfo) =>
+			userInfo.login.toLowerCase(),
+		);
+		const uniqueLogins = [...new Set([chatInfo.channelLogin.toLowerCase(), ...sharedLogins])];
+		if (uniqueLogins.length === 0) return;
+
+		const logins =
+			loginsToUpdate.length > 0 ? uniqueLogins.filter((login) => loginsToUpdate.includes(login)) : uniqueLogins;
+		await Promise.all(
+			logins.map(async (login) => {
+				try {
+					const { data } = await this.twitchApi().gql<ChattersResponse>(ChattersQuery, { name: login });
+					const counter = this.getOrCreateCounter(login, data.channel.chatters.count);
+					counter.value = data.channel.chatters.count;
+				} catch (error) {
+					this.logger.warn(`Failed to fetch chatters for ${login}`, error);
+				}
+			}),
+		);
+
+		for (const activeLogin of Object.keys(this.chattersCounters)) {
+			if (!uniqueLogins.includes(activeLogin)) {
+				delete this.chattersCounters[activeLogin];
+			}
+		}
+
+		this.updateTotalChattersCounter();
+		this.lastUpdatedAt = Date.now();
 	}
 
-	private renderLoading(username: string) {
-		this.isLoadingPopupVisible = true;
-		this.eventEmitter.emit("twitch:chatPopupMessage", {
-			title: `Fetching data for ${username}`,
-			autoclose: 60,
-			content: <WatchTimeLoadingContent />,
-			onClose: () => this.handleLoadingPopupClose(),
-		});
+	private updateTotalChattersCounter() {
+		const chatterSignals = Object.values(this.chattersCounters);
+		if (chatterSignals.length === 0) return -1;
+		this.totalChattersCounter.value = chatterSignals.reduce((sum, chatterSignal) => {
+			return chatterSignal.value === -1 ? sum : sum + chatterSignal.value;
+		}, 0);
 	}
 
-	private renderWatchtime(username: string, data: EnhancerStreamerWatchTimeData[]) {
-		if (!this.isLoadingPopupVisible) {
+	private getOrCreateCounter(login: string, value: number) {
+		let counter = this.chattersCounters[login];
+		if (!counter) {
+			counter = signal(value);
+			this.chattersCounters[login] = counter;
+		}
+		return counter;
+	}
+
+	private async requestUpdate() {
+		if (this.lastUpdatedAt + ChattersModule.UPDATE_INTERVAL_TIME * 0.75 >= Date.now()) {
+			await this.updateAllEmptyCounters();
 			return;
 		}
-		this.isLoadingPopupVisible = false;
-		this.eventEmitter.emit("twitch:chatPopupMessage", {
-			title: `Watchtime for ${username}`,
-			autoclose: 15,
-			content: <WatchTimeContent data={data} />,
-		});
+		await this.refreshChatters();
 	}
 
-	private renderError(username: string) {
-		if (!this.isLoadingPopupVisible) {
-			return;
-		}
-		this.isLoadingPopupVisible = false;
-		this.eventEmitter.emit("twitch:chatPopupMessage", {
-			title: `Failed to fetch watchtime for ${username}`,
-			autoclose: 15,
-			content: <WatchTimeErrorContent />,
-		});
-	}
-
-	private handleLoadingPopupClose() {
-		this.isLoadingPopupVisible = false;
+	private async updateAllEmptyCounters() {
+		const emptyLogins = Object.entries(this.chattersCounters)
+			.filter(([login, counter]) => {
+				return counter.value === -1;
+			})
+			.map(([login]) => {
+				return login;
+			});
+		if (emptyLogins.length < 1) return;
+		await this.refreshChatters(emptyLogins);
 	}
 }
 
-const LoadingSpinnerWrapper = styled.div`
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	padding: 10px 0;
-`;
+const Wrapper = styled.span`
+	margin-left: 4px;
+	color: #ff8280;
+	font-weight: 600 !important;
+	white-space: nowrap;
 
-const LoadingSpinner = styled.div`
-	width: 20px;
-	height: 20px;
-	border: 2px solid rgba(255, 255, 255, 0.1);
-	border-top: 2px solid #bf94ff;
-	border-radius: 50%;
-	animation: spin 1s linear infinite;
-	margin-bottom: 8px;
-
-	@keyframes spin {
-		0% { transform: rotate(0deg); }
-		100% { transform: rotate(360deg); }
+	&:hover {
+		opacity: 0.75;
+		cursor: pointer;
 	}
 `;
 
-const ContentText = styled.div`
-	color: #8e8e8e;
-	font-size: 13px;
-`;
+const formatChatters = (chatters: number) => chatters.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
-function WatchTimeLoadingContent() {
-	return (
-		<LoadingSpinnerWrapper>
-			<LoadingSpinner />
-			<ContentText>Fetching data from xayo.pl...</ContentText>
-		</LoadingSpinnerWrapper>
-	);
-}
-
-function WatchTimeErrorContent() {
-	return <ContentText>An unexpected error occurred and we are sorry about that :( Please try again later.</ContentText>;
-}
-
-interface WatchTimeContentProps {
-	data: EnhancerStreamerWatchTimeData[];
-}
-
-const WatchTimeList = styled.div`
-	display: flex;
-	flex-direction: column;
-	gap: 6px;
-`;
-
-const WatchTimeItem = styled.div`
-	display: flex;
-	align-items: center;
-`;
-
-const Username = styled.span`
-	color: #efeff1;
-`;
-
-const Arrow = styled.span`
-	margin: 0 8px;
-	color: #8e8e8e;
-`;
-
-const Time = styled.span`
-	color: #bf94ff;
-`;
-
-const NoDataMessage = styled.div`
-	color: #8e8e8e;
-	text-align: center;
-	padding: 10px 0;
-`;
-
-function WatchTimeContent({ data }: WatchTimeContentProps) {
-	if (!data || data.length === 0) {
-		return <NoDataMessage>No watchtime data available</NoDataMessage>;
-	}
-
-	const topFive = data.slice(0, 5);
-
-	const formatWatchTime = (count: number): string => {
-		const totalMinutes = count * 5;
-		const hours = Math.floor(totalMinutes / 60);
-		const minutes = totalMinutes % 60;
-		return `${hours}h ${minutes}m`;
-	};
-
-	return (
-		<WatchTimeList>
-			{topFive.map((item) => (
-				<WatchTimeItem key={item.streamer}>
-					<Username>{item.streamer}</Username>
-					<Arrow>→</Arrow>
-					<Time>{formatWatchTime(item.count)}</Time>
-				</WatchTimeItem>
-			))}
-		</WatchTimeList>
-	);
-}
+const ChattersComponent = ({
+	click,
+	counter,
+}: {
+	counter: Signal<number>;
+	click: () => void;
+}) => <Wrapper onClick={click}>({counter.value === -1 ? "Loading..." : formatChatters(counter.value)})</Wrapper>;
