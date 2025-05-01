@@ -29,8 +29,9 @@ const WatchTimeItem = styled.a`
 const TotalWatchTimeItem = styled(WatchTimeItem)`
 	margin-top: 8px;
 	font-weight: 600;
-	color: #9147ff;
+	color: #bf94ff;
 	border-bottom: none;
+	padding-left: 4px;
 
 	&:hover {
 		text-decoration: none;
