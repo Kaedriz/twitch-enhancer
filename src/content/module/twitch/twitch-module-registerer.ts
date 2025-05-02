@@ -16,7 +16,6 @@ import ChatModule from "./chat/chat-module.ts";
 import ChattersModule from "./chatters/chatters-module.tsx";
 import ClipDownloadModule from "./clip-download/clip-download-module.tsx";
 import PinStreamerModule from "./pin-streamer/pin-streamer-module.tsx";
-import SoundboardModule from "./soundboard/soundboard-module.tsx";
 import StreamLatencyModule from "./stream-latency/stream-latency-module.tsx";
 
 export default class TwitchModuleRegisterer extends ModuleRegisterer {
