@@ -170,15 +170,15 @@ export default class ChattersModule extends Module {
 }
 
 const Wrapper = styled.span`
-  margin-left: 4px;
-  color: #ff8280;
-  font-weight: 600 !important;
-  white-space: nowrap;
+	margin-left: 4px;
+	color: #ff8280;
+	font-weight: 600 !important;
+	white-space: nowrap;
 
-  &:hover {
-    opacity: 0.75;
-    cursor: pointer;
-  }
+	&:hover {
+		opacity: 0.75;
+		cursor: pointer;
+	}
 `;
 
 const formatChatters = (chatters: number) => chatters.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");

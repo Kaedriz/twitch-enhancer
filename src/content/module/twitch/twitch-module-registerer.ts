@@ -2,7 +2,9 @@ import ChannelSectionModule from "module/twitch/channel-section/channel-section-
 import ChatAttachmentsModule from "module/twitch/chat-attachments/chat-attachments-module.ts";
 import ChatCopyEmoteModule from "module/twitch/chat-copy-emote/chat-copy-emote-module.tsx";
 import ChatHighlightUserModule from "module/twitch/chat-highlight-user/chat-highlight-user-module.tsx";
+import ChatMessagePopupModule from "module/twitch/chat-message-popup/chat-message-popup.tsx";
 import RealVideoTimeModule from "module/twitch/real-video-time/real-video-time-module.tsx";
+import WatchTimeModule from "module/twitch/watchtime/watchtime-module.tsx";
 import type { EventEmitter } from "types/content/event/events.types.ts";
 import type Logger from "../../../shared/logger/logger.ts";
 import type StorageRepository from "../../../shared/storage/storage-repository.ts";
@@ -38,6 +40,8 @@ export default class TwitchModuleRegisterer extends ModuleRegisterer {
 			new ChatCopyEmoteModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
 			new ChannelSectionModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
 			new RealVideoTimeModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
+			new ChatMessagePopupModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
+			new WatchTimeModule(logger, eventEmitter, storageRepository, utilsRepository, apiRepository),
 		];
 	}
 }

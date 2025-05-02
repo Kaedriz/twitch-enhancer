@@ -122,6 +122,7 @@ export type Command = {
 	helpText: string;
 	permissionLevel: number;
 	handler: (song: string) => void;
+	group?: string;
 	commandArgs: {
 		name: string;
 		isRequired: boolean;
@@ -180,6 +181,14 @@ export type ChatInfoComponent = {
 		channelLogin: string;
 		channelID: string;
 		sharedChatDataByChannelID: Map<string, UserChatInfo>;
+	};
+};
+
+export type UserCardComponent = {
+	props: {
+		channelID: string;
+		channelLogin: string;
+		targetLogin: string;
 	};
 };
 

@@ -23,6 +23,10 @@ export default class EnhancerApi extends Api {
 		await this.state.initialize();
 	}
 
+	getUserWatchTime(username: string) {
+		return this.request.getWatchTime(username);
+	}
+
 	findUserBadgesForCurrentChannel(externalUserId: string) {
 		const globalBadges = this.state.getGlobalBadges();
 		const badges = this.state.getBadges();

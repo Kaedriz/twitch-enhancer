@@ -1,4 +1,8 @@
-import type { EnhancerBadgesResponseDto, EnhancerChannelDto } from "types/content/api/enhancer-api.types.ts";
+import type {
+	EnhancerBadgesResponseDto,
+	EnhancerChannelDto,
+	EnhancerStreamerWatchTimeData,
+} from "types/content/api/enhancer-api.types.ts";
 import type { Platform } from "types/content/extension.ts";
 import type Logger from "../../../shared/logger/logger.ts";
 import type UtilsRepository from "../../utils/utils-repository.ts";
@@ -43,6 +47,18 @@ export default class EnhancerApiRequest {
 
 	getGlobalBadges() {
 		return this.getBadges(EnhancerApiRequest.GLOBAL_CHANNEL_ID);
+	}
+
+	async getWatchTime(username: string) {
+		const { data } = await this.request<EnhancerStreamerWatchTimeData[]>(
+			`${EnhancerApiRequest.API_URL}/xayo/${username}`,
+			{
+				method: "GET",
+				validateStatus: (status) => status === 200,
+				responseType: "json",
+			},
+		);
+		return data;
 	}
 
 	getPlaysounds(channelId: string) {}
