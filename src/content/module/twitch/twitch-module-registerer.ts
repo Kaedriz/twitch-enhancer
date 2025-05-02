@@ -1,3 +1,4 @@
+import ChannelSectionModule from "module/twitch/channel-section/channel-section-module.tsx";
 import ChatAttachmentsModule from "module/twitch/chat-attachments/chat-attachments-module.ts";
 import ChatCopyEmoteModule from "module/twitch/chat-copy-emote/chat-copy-emote-module.tsx";
 import ChatHighlightUserModule from "module/twitch/chat-highlight-user/chat-highlight-user-module.tsx";
@@ -15,7 +16,6 @@ import ClipDownloadModule from "./clip-download/clip-download-module.tsx";
 import PinStreamerModule from "./pin-streamer/pin-streamer-module.tsx";
 import SoundboardModule from "./soundboard/soundboard-module.tsx";
 import StreamLatencyModule from "./stream-latency/stream-latency-module.tsx";
-import ChannelSectionModule from "module/twitch/channel-section/channel-section-module.tsx";
 
 export default class TwitchModuleRegisterer extends ModuleRegisterer {
 	getModules(

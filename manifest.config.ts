@@ -16,6 +16,7 @@ export function getManifest() {
 			{
 				matches: ["*://*.twitch.tv/*", "*://*.kick.com/*"],
 				js: ["inject.js"],
+				world: "MAIN",
 			},
 		],
 		web_accessible_resources: [
