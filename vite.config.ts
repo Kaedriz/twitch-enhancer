@@ -41,6 +41,7 @@ export default defineConfig({
 			},
 			input: {
 				index: "src/content/index.ts",
+				inject: "src/content/inject.ts",
 			},
 		},
 	},

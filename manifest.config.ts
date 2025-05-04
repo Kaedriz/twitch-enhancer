@@ -15,8 +15,7 @@ export function getManifest() {
 		content_scripts: [
 			{
 				matches: ["*://*.twitch.tv/*", "*://*.kick.com/*"],
-				js: ["index.js"],
-				world: "MAIN",
+				js: ["inject.js"],
 			},
 		],
 		web_accessible_resources: [
