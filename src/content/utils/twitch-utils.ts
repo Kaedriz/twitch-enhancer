@@ -193,7 +193,7 @@ export default class TwitchUtils extends Utils {
 	getVideoIdFromLink(link: string) {
 		if (!URL.canParse(link)) return;
 		const params = link.split("/");
-		const videoIndex = params.indexOf("videos");
+		const videoIndex = params.findIndex((item) => item === "videos" || item === "video");
 		if (videoIndex === -1) return;
 		let id = params[videoIndex + 1];
 		if (id.includes("?")) id = id.substring(0, id.lastIndexOf("?"));
