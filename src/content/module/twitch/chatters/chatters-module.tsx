@@ -34,7 +34,7 @@ export default class ChattersModule extends Module {
 			},
 			{
 				type: "selector",
-				selectors: [".ReactModal__Content .tw-balloon"],
+				selectors: [".tw-dialog-layer .tw-transition .tw-balloon"],
 				callback: this.createIndividualChattersComponents.bind(this),
 				key: "shared-chatters",
 				validateUrl: ChattersModule.URL_CONFIG,
@@ -53,6 +53,22 @@ export default class ChattersModule extends Module {
 	private static INDIVIDUAL_CHATTERS_COMPONENT_WRAPPER_CLASS = "enhancer-chat-counter-wrapper";
 	private static UPDATE_INTERVAL_TIME = 30000;
 
+	private previousUrl = "";
+
+
+	async init(): Promise<void> {
+		this.previousUrl = window.location.href;
+		setInterval(() => this.urlObserver(), 1000);
+	}
+
+	private urlObserver(){
+		if(window.location.href !== this.previousUrl){
+			console.log("url changed");
+			this.refreshChatters();
+			this.previousUrl = window.location.href;
+		}
+	}
+
 	private findUsernameFromStatusIndicator(el?: Element | null): string | null {
 		const container = el?.parentElement?.parentElement?.parentElement;
 		return container?.querySelector("p")?.textContent ?? null;
@@ -66,6 +82,7 @@ export default class ChattersModule extends Module {
 		this.updateInterval = setInterval(() => this.requestUpdate(), ChattersModule.UPDATE_INTERVAL_TIME);
 
 		wrappers.forEach((element) => {
+
 			render(
 				<ChattersComponent click={this.refreshChatters.bind(this)} counter={this.totalChattersCounter} />,
 				element,
@@ -75,7 +92,8 @@ export default class ChattersModule extends Module {
 
 	private createIndividualChattersComponents(elements: Element[]) {
 		elements.forEach((root) => {
-			const indicators = root.querySelectorAll(".tw-channel-status-indicator");
+			const indicators = Array.from(root.querySelectorAll(".tw-channel-status-indicator"))
+				.filter(el => !el.closest(".online-side-nav-channel-tooltip__body"));
 
 			indicators.forEach((indicator) => {
 				const username = this.findUsernameFromStatusIndicator(indicator)?.toLowerCase();
@@ -98,37 +116,40 @@ export default class ChattersModule extends Module {
 	}
 
 	private async refreshChatters(loginsToUpdate: string[] = []) {
-		const chatInfo = this.twitchUtils().getChatInfo()?.props;
-		if (!chatInfo) return;
+		await this.commonUtils().waitFor(
+			() => this.twitchUtils().getChatInfo()?.props,
+			async (chatInfo) => {
+				const sharedLogins = Array.from(chatInfo.sharedChatDataByChannelID.values()).map((userInfo) =>
+					userInfo.login.toLowerCase(),
+				);
+				const uniqueLogins = [...new Set([chatInfo.channelLogin.toLowerCase(), ...sharedLogins])];
+				if (uniqueLogins.length === 0) return;
 
-		const sharedLogins = Array.from(chatInfo.sharedChatDataByChannelID.values()).map((userInfo) =>
-			userInfo.login.toLowerCase(),
-		);
-		const uniqueLogins = [...new Set([chatInfo.channelLogin.toLowerCase(), ...sharedLogins])];
-		if (uniqueLogins.length === 0) return;
+				const logins =
+					loginsToUpdate.length > 0 ? uniqueLogins.filter((login) => loginsToUpdate.includes(login)) : uniqueLogins;
+				await Promise.all(
+					logins.map(async (login) => {
+						try {
+							const { data } = await this.twitchApi().gql<ChattersResponse>(ChattersQuery, { name: login });
+							const counter = this.getOrCreateCounter(login, data.channel.chatters.count);
+							counter.value = data.channel.chatters.count;
+						} catch (error) {
+							this.logger.warn(`Failed to fetch chatters for ${login}`, error);
+						}
+					}),
+				);
 
-		const logins =
-			loginsToUpdate.length > 0 ? uniqueLogins.filter((login) => loginsToUpdate.includes(login)) : uniqueLogins;
-		await Promise.all(
-			logins.map(async (login) => {
-				try {
-					const { data } = await this.twitchApi().gql<ChattersResponse>(ChattersQuery, { name: login });
-					const counter = this.getOrCreateCounter(login, data.channel.chatters.count);
-					counter.value = data.channel.chatters.count;
-				} catch (error) {
-					this.logger.warn(`Failed to fetch chatters for ${login}`, error);
+				for (const activeLogin of Object.keys(this.chattersCounters)) {
+					if (!uniqueLogins.includes(activeLogin)) {
+						delete this.chattersCounters[activeLogin];
+					}
 				}
-			}),
+
+				this.updateTotalChattersCounter();
+				this.lastUpdatedAt = Date.now();
+			},
+			{ delay: 1000, maxRetries: 5 }
 		);
-
-		for (const activeLogin of Object.keys(this.chattersCounters)) {
-			if (!uniqueLogins.includes(activeLogin)) {
-				delete this.chattersCounters[activeLogin];
-			}
-		}
-
-		this.updateTotalChattersCounter();
-		this.lastUpdatedAt = Date.now();
 	}
 
 	private updateTotalChattersCounter() {
