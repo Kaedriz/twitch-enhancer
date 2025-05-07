@@ -41,6 +41,12 @@ export default class ChattersModule extends Module {
 				useParent: true,
 				once: true,
 			},
+			{
+				type: "event",
+				event: "twitch:chatInitialized",
+				callback: this.reloadCounters.bind(this),
+				key: "chatters",
+			},
 		],
 	};
 
@@ -52,22 +58,6 @@ export default class ChattersModule extends Module {
 
 	private static INDIVIDUAL_CHATTERS_COMPONENT_WRAPPER_CLASS = "enhancer-chat-counter-wrapper";
 	private static UPDATE_INTERVAL_TIME = 30000;
-
-	private previousUrl = "";
-
-
-	async init(): Promise<void> {
-		this.previousUrl = window.location.href;
-		setInterval(() => this.urlObserver(), 1000);
-	}
-
-	private urlObserver(){
-		if(window.location.href !== this.previousUrl){
-			console.log("url changed");
-			this.refreshChatters();
-			this.previousUrl = window.location.href;
-		}
-	}
 
 	private findUsernameFromStatusIndicator(el?: Element | null): string | null {
 		const container = el?.parentElement?.parentElement?.parentElement;
@@ -82,7 +72,6 @@ export default class ChattersModule extends Module {
 		this.updateInterval = setInterval(() => this.requestUpdate(), ChattersModule.UPDATE_INTERVAL_TIME);
 
 		wrappers.forEach((element) => {
-
 			render(
 				<ChattersComponent click={this.refreshChatters.bind(this)} counter={this.totalChattersCounter} />,
 				element,
@@ -92,8 +81,9 @@ export default class ChattersModule extends Module {
 
 	private createIndividualChattersComponents(elements: Element[]) {
 		elements.forEach((root) => {
-			const indicators = Array.from(root.querySelectorAll(".tw-channel-status-indicator"))
-				.filter(el => !el.closest(".online-side-nav-channel-tooltip__body"));
+			const indicators = Array.from(root.querySelectorAll(".tw-channel-status-indicator")).filter(
+				(el) => !el.closest(".online-side-nav-channel-tooltip__body"),
+			);
 
 			indicators.forEach((indicator) => {
 				const username = this.findUsernameFromStatusIndicator(indicator)?.toLowerCase();
@@ -133,6 +123,7 @@ export default class ChattersModule extends Module {
 							const { data } = await this.twitchApi().gql<ChattersResponse>(ChattersQuery, { name: login });
 							const counter = this.getOrCreateCounter(login, data.channel.chatters.count);
 							counter.value = data.channel.chatters.count;
+							this.logger.debug(`Refreshed chatters for ${login}`, counter.value);
 						} catch (error) {
 							this.logger.warn(`Failed to fetch chatters for ${login}`, error);
 						}
@@ -148,7 +139,7 @@ export default class ChattersModule extends Module {
 				this.updateTotalChattersCounter();
 				this.lastUpdatedAt = Date.now();
 			},
-			{ delay: 1000, maxRetries: 5 }
+			{ delay: 1000, maxRetries: 5 },
 		);
 	}
 
@@ -187,6 +178,14 @@ export default class ChattersModule extends Module {
 			});
 		if (emptyLogins.length < 1) return;
 		await this.refreshChatters(emptyLogins);
+	}
+
+	private async reloadCounters() {
+		Object.values(this.chattersCounters).forEach((counter) => {
+			counter.value = -1;
+		});
+		this.totalChattersCounter.value = -1;
+		await this.refreshChatters();
 	}
 }
 
