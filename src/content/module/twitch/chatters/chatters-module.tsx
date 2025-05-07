@@ -8,6 +8,7 @@ import Module from "../../module.ts";
 
 export default class ChattersModule extends Module {
 	private static URL_CONFIG = (url: string) => !url.includes("clips.twitch.tv");
+	public static LOADING_VALUE = -1;
 
 	config: ModuleConfig = {
 		name: "chatters",
@@ -50,7 +51,7 @@ export default class ChattersModule extends Module {
 		],
 	};
 
-	private totalChattersCounter = signal(-1);
+	private totalChattersCounter = signal(ChattersModule.LOADING_VALUE);
 	private chattersCounters: Record<string, Signal<number>> = {};
 
 	private updateInterval: NodeJS.Timeout | undefined;
@@ -89,7 +90,7 @@ export default class ChattersModule extends Module {
 				const username = this.findUsernameFromStatusIndicator(indicator)?.toLowerCase();
 				if (!username) return;
 
-				const counter = this.getOrCreateCounter(username, -1);
+				const counter = this.getOrCreateCounter(username, ChattersModule.LOADING_VALUE);
 				if (counter !== undefined && indicator.parentElement) {
 					let existing = indicator.parentElement.querySelector(
 						`.${ChattersModule.INDIVIDUAL_CHATTERS_COMPONENT_WRAPPER_CLASS}`,
@@ -145,9 +146,9 @@ export default class ChattersModule extends Module {
 
 	private updateTotalChattersCounter() {
 		const chatterSignals = Object.values(this.chattersCounters);
-		if (chatterSignals.length === 0) return -1;
+		if (chatterSignals.length === 0) return ChattersModule.LOADING_VALUE;
 		this.totalChattersCounter.value = chatterSignals.reduce((sum, chatterSignal) => {
-			return chatterSignal.value === -1 ? sum : sum + chatterSignal.value;
+			return chatterSignal.value === ChattersModule.LOADING_VALUE ? sum : sum + chatterSignal.value;
 		}, 0);
 	}
 
@@ -171,7 +172,7 @@ export default class ChattersModule extends Module {
 	private async updateAllEmptyCounters() {
 		const emptyLogins = Object.entries(this.chattersCounters)
 			.filter(([login, counter]) => {
-				return counter.value === -1;
+				return counter.value === ChattersModule.LOADING_VALUE;
 			})
 			.map(([login]) => {
 				return login;
@@ -182,9 +183,9 @@ export default class ChattersModule extends Module {
 
 	private async reloadCounters() {
 		Object.values(this.chattersCounters).forEach((counter) => {
-			counter.value = -1;
+			counter.value = ChattersModule.LOADING_VALUE;
 		});
-		this.totalChattersCounter.value = -1;
+		this.totalChattersCounter.value = ChattersModule.LOADING_VALUE;
 		await this.refreshChatters();
 	}
 }
@@ -209,4 +210,8 @@ const ChattersComponent = ({
 }: {
 	counter: Signal<number>;
 	click: () => void;
-}) => <Wrapper onClick={click}>({counter.value === -1 ? "Loading..." : formatChatters(counter.value)})</Wrapper>;
+}) => (
+	<Wrapper onClick={click}>
+		({counter.value === ChattersModule.LOADING_VALUE ? "Loading..." : formatChatters(counter.value)})
+	</Wrapper>
+);
