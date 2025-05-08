@@ -8,6 +8,7 @@ import Module from "../../module.ts";
 
 export default class ChattersModule extends Module {
 	private static URL_CONFIG = (url: string) => !url.includes("clips.twitch.tv");
+	public static LOADING_VALUE = -1;
 
 	config: ModuleConfig = {
 		name: "chatters",
@@ -34,17 +35,23 @@ export default class ChattersModule extends Module {
 			},
 			{
 				type: "selector",
-				selectors: [".ReactModal__Content .tw-balloon"],
+				selectors: [".tw-dialog-layer .tw-transition .tw-balloon"],
 				callback: this.createIndividualChattersComponents.bind(this),
 				key: "shared-chatters",
 				validateUrl: ChattersModule.URL_CONFIG,
 				useParent: true,
 				once: true,
 			},
+			{
+				type: "event",
+				event: "twitch:chatInitialized",
+				callback: this.reloadCounters.bind(this),
+				key: "chatters",
+			},
 		],
 	};
 
-	private totalChattersCounter = signal(-1);
+	private totalChattersCounter = signal(ChattersModule.LOADING_VALUE);
 	private chattersCounters: Record<string, Signal<number>> = {};
 
 	private updateInterval: NodeJS.Timeout | undefined;
@@ -75,13 +82,15 @@ export default class ChattersModule extends Module {
 
 	private createIndividualChattersComponents(elements: Element[]) {
 		elements.forEach((root) => {
-			const indicators = root.querySelectorAll(".tw-channel-status-indicator");
+			const indicators = Array.from(root.querySelectorAll(".tw-channel-status-indicator")).filter(
+				(el) => !el.closest(".online-side-nav-channel-tooltip__body"),
+			);
 
 			indicators.forEach((indicator) => {
 				const username = this.findUsernameFromStatusIndicator(indicator)?.toLowerCase();
 				if (!username) return;
 
-				const counter = this.getOrCreateCounter(username, -1);
+				const counter = this.getOrCreateCounter(username, ChattersModule.LOADING_VALUE);
 				if (counter !== undefined && indicator.parentElement) {
 					let existing = indicator.parentElement.querySelector(
 						`.${ChattersModule.INDIVIDUAL_CHATTERS_COMPONENT_WRAPPER_CLASS}`,
@@ -98,44 +107,48 @@ export default class ChattersModule extends Module {
 	}
 
 	private async refreshChatters(loginsToUpdate: string[] = []) {
-		const chatInfo = this.twitchUtils().getChatInfo()?.props;
-		if (!chatInfo) return;
+		await this.commonUtils().waitFor(
+			() => this.twitchUtils().getChatInfo()?.props,
+			async (chatInfo) => {
+				const sharedLogins = Array.from(chatInfo.sharedChatDataByChannelID.values()).map((userInfo) =>
+					userInfo.login.toLowerCase(),
+				);
+				const uniqueLogins = [...new Set([chatInfo.channelLogin.toLowerCase(), ...sharedLogins])];
+				if (uniqueLogins.length === 0) return;
 
-		const sharedLogins = Array.from(chatInfo.sharedChatDataByChannelID.values()).map((userInfo) =>
-			userInfo.login.toLowerCase(),
-		);
-		const uniqueLogins = [...new Set([chatInfo.channelLogin.toLowerCase(), ...sharedLogins])];
-		if (uniqueLogins.length === 0) return;
+				const logins =
+					loginsToUpdate.length > 0 ? uniqueLogins.filter((login) => loginsToUpdate.includes(login)) : uniqueLogins;
+				await Promise.all(
+					logins.map(async (login) => {
+						try {
+							const { data } = await this.twitchApi().gql<ChattersResponse>(ChattersQuery, { name: login });
+							const counter = this.getOrCreateCounter(login, data.channel.chatters.count);
+							counter.value = data.channel.chatters.count;
+							this.logger.debug(`Refreshed chatters for ${login}`, counter.value);
+						} catch (error) {
+							this.logger.warn(`Failed to fetch chatters for ${login}`, error);
+						}
+					}),
+				);
 
-		const logins =
-			loginsToUpdate.length > 0 ? uniqueLogins.filter((login) => loginsToUpdate.includes(login)) : uniqueLogins;
-		await Promise.all(
-			logins.map(async (login) => {
-				try {
-					const { data } = await this.twitchApi().gql<ChattersResponse>(ChattersQuery, { name: login });
-					const counter = this.getOrCreateCounter(login, data.channel.chatters.count);
-					counter.value = data.channel.chatters.count;
-				} catch (error) {
-					this.logger.warn(`Failed to fetch chatters for ${login}`, error);
+				for (const activeLogin of Object.keys(this.chattersCounters)) {
+					if (!uniqueLogins.includes(activeLogin)) {
+						delete this.chattersCounters[activeLogin];
+					}
 				}
-			}),
+
+				this.updateTotalChattersCounter();
+				this.lastUpdatedAt = Date.now();
+			},
+			{ delay: 1000, maxRetries: 5 },
 		);
-
-		for (const activeLogin of Object.keys(this.chattersCounters)) {
-			if (!uniqueLogins.includes(activeLogin)) {
-				delete this.chattersCounters[activeLogin];
-			}
-		}
-
-		this.updateTotalChattersCounter();
-		this.lastUpdatedAt = Date.now();
 	}
 
 	private updateTotalChattersCounter() {
 		const chatterSignals = Object.values(this.chattersCounters);
-		if (chatterSignals.length === 0) return -1;
+		if (chatterSignals.length === 0) return ChattersModule.LOADING_VALUE;
 		this.totalChattersCounter.value = chatterSignals.reduce((sum, chatterSignal) => {
-			return chatterSignal.value === -1 ? sum : sum + chatterSignal.value;
+			return chatterSignal.value === ChattersModule.LOADING_VALUE ? sum : sum + chatterSignal.value;
 		}, 0);
 	}
 
@@ -159,13 +172,21 @@ export default class ChattersModule extends Module {
 	private async updateAllEmptyCounters() {
 		const emptyLogins = Object.entries(this.chattersCounters)
 			.filter(([login, counter]) => {
-				return counter.value === -1;
+				return counter.value === ChattersModule.LOADING_VALUE;
 			})
 			.map(([login]) => {
 				return login;
 			});
 		if (emptyLogins.length < 1) return;
 		await this.refreshChatters(emptyLogins);
+	}
+
+	private async reloadCounters() {
+		Object.values(this.chattersCounters).forEach((counter) => {
+			counter.value = ChattersModule.LOADING_VALUE;
+		});
+		this.totalChattersCounter.value = ChattersModule.LOADING_VALUE;
+		await this.refreshChatters();
 	}
 }
 
@@ -189,4 +210,8 @@ const ChattersComponent = ({
 }: {
 	counter: Signal<number>;
 	click: () => void;
-}) => <Wrapper onClick={click}>({counter.value === -1 ? "Loading..." : formatChatters(counter.value)})</Wrapper>;
+}) => (
+	<Wrapper onClick={click}>
+		({counter.value === ChattersModule.LOADING_VALUE ? "Loading..." : formatChatters(counter.value)})
+	</Wrapper>
+);
