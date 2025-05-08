@@ -9,7 +9,7 @@ import { VideoCreatedAtQuery } from "../../../api/twitch/twitch-queries.ts";
 
 export default class RealVideoTimeModule extends Module {
 	private static URL_CONFIG = (url: string) => {
-		return url.includes("/videos/");
+		return url.includes("/videos/") || url.includes("/video/");
 	};
 
 	config: ModuleConfig = {
