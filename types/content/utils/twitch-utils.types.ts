@@ -199,3 +199,15 @@ export type UserChatInfo = {
 	status: "ACTIVE" | "LEFT";
 	primaryColorHex: string;
 };
+
+export type CurrentLiveStatusComponent = {
+	props: {
+		autoplay: boolean;
+		isPlaying: boolean;
+		isOffline: boolean;
+		forbidden: boolean;
+		isLive: boolean;
+		liveContentChannelLogin: string;
+		isVideoAdShowing: boolean;
+	};
+};

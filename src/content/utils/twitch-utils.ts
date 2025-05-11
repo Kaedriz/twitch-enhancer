@@ -5,12 +5,12 @@ import type {
 	ChatInfoComponent,
 	ChatInput,
 	Command,
+	CurrentLiveStatusComponent,
 	FollowedSection,
 	MediaPlayerComponent,
 	PersistentPlayerComponent,
 	ScrollableChatComponent,
 	TwitchChatMessageComponent,
-	UserCardComponent,
 } from "types/content/utils/twitch-utils.types.ts";
 import type ReactUtils from "utils/react-utils.ts";
 import Utils from "utils/utils.ts";
@@ -208,11 +208,14 @@ export default class TwitchUtils extends Utils {
 		)?.stateNode;
 	}
 
-	getUserCardTargetName(): string | undefined {
-		return this.reactUtils.findReactParents<UserCardComponent>(
-			this.reactUtils.getReactInstance(document.querySelector(".viewer-card-header__banner")),
-			(n) => n.stateNode?.props?.targetLogin,
-			1000,
-		)?.stateNode.props.targetLogin;
+	getCurrentLiveStatus() {
+		return this.reactUtils.findReactChildren<CurrentLiveStatusComponent>(
+			this.reactUtils.getReactInstance(document.querySelector(".video-player__default-player")),
+			(n) =>
+				n?.stateNode?.props.isOffline !== undefined &&
+				n?.stateNode?.props.isPlaying !== undefined &&
+				n?.stateNode?.props.liveContentChannelLogin,
+			100,
+		)?.stateNode.props;
 	}
 }
