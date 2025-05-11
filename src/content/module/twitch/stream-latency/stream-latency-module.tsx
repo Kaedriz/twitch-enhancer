@@ -99,8 +99,6 @@ const LatencyWrapper = styled.div`
 	display: flex;
 	align-items: center;
 	padding: 6px 12px;
-	//background-color: rgba(0, 0, 0, 0.6);
-	//border-radius: 4px;
 	color: #dedee3;
 	font-weight: 600;
 	font-size: 14px;
@@ -108,7 +106,6 @@ const LatencyWrapper = styled.div`
 	user-select: none;
 
 	&:hover {
-		//background-color: rgba(0, 0, 0, 0.8);
 		color: #ffffff;
 		cursor: pointer;
 		transform: translateY(-1px);
