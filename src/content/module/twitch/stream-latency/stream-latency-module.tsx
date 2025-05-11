@@ -6,8 +6,8 @@ import type { MediaPlayerInstance } from "types/content/utils/twitch-utils.types
 import Module from "../../module.ts";
 
 export default class StreamLatencyModule extends Module {
-	private mediaPlayer: MediaPlayerInstance | undefined;
 	private latencyCounter = {} as Signal<number>;
+	private isLiveState = {} as Signal<boolean>;
 
 	config: ModuleConfig = {
 		name: "stream-latency",
@@ -33,64 +33,109 @@ export default class StreamLatencyModule extends Module {
 		wrappers.forEach((element) => {
 			const header = document.querySelector("#chat-room-header-label") as HTMLElement | null;
 			if (header) header.style.display = "none";
-			return render(<LatencyComponent counter={this.latencyCounter} click={this.resetPlayer.bind(this)} />, element);
+			return render(
+				<LatencyComponent
+					isLive={this.isLiveState}
+					latencyCounter={this.latencyCounter}
+					click={this.resetPlayer.bind(this)}
+				/>,
+				element,
+			);
 		});
 	}
 
 	private updateLatency() {
-		this.latencyCounter.value = this.getLatency(false);
+		const currentLiveStatus = this.twitchUtils().getCurrentLiveStatus();
+		if (!currentLiveStatus) {
+			return;
+		}
+		const isLive = !currentLiveStatus.isOffline && currentLiveStatus.isLive;
+		this.isLiveState.value = isLive;
+		if (!isLive) {
+			return;
+		}
+		const latency = this.getLatency(false);
+		if (latency === undefined || latency < 0) return;
+		this.latencyCounter.value = latency;
 	}
 
 	private resetPlayer() {
-		const currentPosition = this.getMediaPlayer().getPosition();
-		const latency = this.getLatency(true);
-		if (latency < 0) return;
-		this.getMediaPlayer().seekTo(currentPosition + latency);
-	}
-
-	private getMediaPlayer() {
-		if (!this.mediaPlayer) {
-			this.mediaPlayer = this.twitchUtils().getMediaPlayerInstance();
-			if (!this.mediaPlayer) {
-				throw new Error("Cannot find MediaPlayerInstance");
-			}
+		const mediaPlayer = this.twitchUtils().getMediaPlayerInstance();
+		if (!mediaPlayer) {
+			this.logger.warn("Failed to find media player");
+			return;
 		}
-		return this.mediaPlayer;
+		const currentPosition = mediaPlayer.getPosition();
+		const latency = this.getLatency(true);
+		if (latency === undefined || latency < 0) return;
+		mediaPlayer.seekTo(currentPosition + latency);
 	}
 
 	private getLatency(includeBuffer: boolean) {
-		const liveLatency = this.getMediaPlayer().core.state.liveLatency;
-		const ingestLatency = this.getMediaPlayer().core.state.ingestLatency;
+		const mediaPlayer = this.twitchUtils().getMediaPlayerInstance();
+		if (!mediaPlayer) {
+			this.logger.warn("Failed to find media player");
+			return;
+		}
+		const liveLatency = mediaPlayer.core.state.liveLatency;
+		const ingestLatency = mediaPlayer.core.state.ingestLatency;
 		return includeBuffer ? ingestLatency : liveLatency + ingestLatency;
 	}
 
 	private createLatencyCounter() {
 		if ("value" in this.latencyCounter) return;
-		this.latencyCounter = signal<number>(-1);
+		this.latencyCounter = signal(-1);
+		this.isLiveState = signal(true);
 	}
 }
 
 interface LatencyComponentProps {
-	counter: Signal<number>;
+	latencyCounter: Signal<number>;
+	isLive: Signal<boolean>;
 	click: () => void;
 }
 
-const Wrapper = styled.div`
+const LatencyWrapper = styled.div`
+	display: flex;
+	align-items: center;
+	padding: 6px 12px;
+	//background-color: rgba(0, 0, 0, 0.6);
+	//border-radius: 4px;
 	color: #dedee3;
-	font-weight: 600 !important;
-	justify-content: center;
-	text-transform: capitalize;
+	font-weight: 600;
+	font-size: 14px;
+	transition: all 0.2s ease;
+	user-select: none;
 
 	&:hover {
-		opacity: 0.75;
+		//background-color: rgba(0, 0, 0, 0.8);
+		color: #ffffff;
 		cursor: pointer;
+		transform: translateY(-1px);
 	}
 `;
 
-function LatencyComponent({ click, counter }: LatencyComponentProps) {
+const StatusDot = styled.span<{ isLive: boolean }>`
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 8px;
+  background-color: ${({ isLive }) => (isLive ? "#ff4d4d" : "#888")};
+`;
+
+function LatencyComponent({ click, latencyCounter, isLive }: LatencyComponentProps) {
+	const formatLatency = () => {
+		if (!latencyCounter.value || latencyCounter.value < 0) {
+			return "Loading...";
+		}
+		return `${latencyCounter.value.toFixed(2)}s`;
+	};
+
 	return (
-		<Wrapper onClick={click}>
-			Latency: {!counter.value || counter.value < 0 ? "Loading..." : `${counter.value.toFixed(2)}s`}
-		</Wrapper>
+		<LatencyWrapper onClick={click}>
+			<StatusDot isLive={isLive.value} />
+			{isLive.value ? `Latency: ${formatLatency()}` : "OFFLINE"}
+		</LatencyWrapper>
 	);
 }
