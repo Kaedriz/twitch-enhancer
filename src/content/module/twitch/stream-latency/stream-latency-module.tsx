@@ -126,7 +126,7 @@ const StatusDot = styled.span<{ isLive: boolean }>`
 
 function LatencyComponent({ click, latencyCounter, isLive }: LatencyComponentProps) {
 	const formatLatency = () => {
-		if (!latencyCounter.value || latencyCounter.value < 0) {
+		if (latencyCounter.value === undefined || latencyCounter.value < 0) {
 			return "Loading...";
 		}
 		return `${latencyCounter.value.toFixed(2)}s`;
