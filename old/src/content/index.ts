@@ -14,11 +14,6 @@ import Extension from "./extension.ts";
 	await new Extension(config).start();
 })();
 
-declare global {
-	const __version__: string;
-	const __environment__: ExtensionEnvironment;
-}
-
 function getPlatform(): Platform {
 	const hostname = window.location.hostname.toLowerCase();
 	if (hostname.endsWith("twitch.tv")) return "twitch";

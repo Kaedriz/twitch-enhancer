@@ -1,0 +1,78 @@
+src/
+├── core/
+│   ├── platform.ts
+│   ├── module.ts
+│   ├── storage.ts
+│   ├── event-system.ts
+│   └── utils.ts
+├── services/
+│   └── storage/
+│       └── local-storage.strategy.ts
+├── platforms/
+│   ├── twitch/
+│   │   ├── twitch.platform.ts
+│   │   ├── twitch.storage.ts
+│   │   ├── twitch.events.ts
+│   │   ├── twitch.utils.ts
+│   │   └── modules/
+│   │       └── example-twitch.module.ts
+│   ├── kick/
+│   │   ├── kick.platform.ts
+│   │   ├── kick.storage.ts
+│   │   ├── kick.events.ts
+│   │   ├── kick.utils.ts
+│   │   └── modules/
+│   │       └── example-kick.module.ts
+│   └── common/
+│       ├── modules/
+│       │   └── example-common.module.ts
+│       ├── utils/
+│       │   ├── common.utils.ts
+│       │   ├── logger.ts
+│       │   └── react.utils.ts
+│       └── events/
+│           └── common-event-names.ts
+├── content.ts
+├── background.ts
+└── manifest.json
+
+
+v2
+
+src/
+├── core/
+│   ├── platform.ts         // Base platform interface/abstract class
+│   ├── module.ts           // Base module interface/abstract class
+│   ├── storage.ts          // Base storage interface/abstract class (defining methods)
+│   ├── event-system.ts     // Base event system (or interface)
+│   └── interfaces.ts       // Common interfaces used across the application
+├── shared/
+│   ├── utils/
+│   │   ├── common.utils.ts // Truly common utilities
+│   │   ├── logger.ts       // Logger implementation
+│   │   └── react.utils.ts  // React specific utilities if needed widely
+│   └── events/
+│       └── common-event-names.ts // Shared event names
+├── services/
+│   ├── storage/
+│   │   └── local-storage.strategy.ts // A concrete storage strategy
+│   └── // other shared services
+├── platforms/
+│   ├── twitch/
+│   │   ├── twitch.platform.ts // Twitch specific platform implementation
+│   │   ├── twitch.storage.ts  // Twitch specific storage implementation
+│   │   ├── twitch.events.ts   // Twitch specific event handling/mapping
+│   │   └── modules/
+│   │       └── example-twitch.module.ts // Twitch specific modules
+│   ├── kick/
+│   │   ├── kick.platform.ts   // Kick specific platform implementation
+│   │   ├── kick.storage.ts    // Kick specific storage implementation
+│   │   ├── kick.events.ts     // Kick specific event handling/mapping
+│   │   └── modules/
+│   │       └── example-kick.module.ts   // Kick specific modules
+│   └── // potentially other platforms
+├── modules/ // For common modules that work across platforms
+│   └── example-common.module.ts
+├── content.ts              // Application entry point for content scripts
+├── background.ts           // Application entry point for background script
+└── manifest.json
