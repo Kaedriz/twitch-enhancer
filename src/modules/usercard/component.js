@@ -66,7 +66,7 @@ const services = {
         };
     },
     xayo: async (username) => {
-        let data = await fetch(`https://wcapi.igor.ovh/user/xayo/${username}`);
+        let data = await fetch(`https://api.enhancer.at/xayo/${username}`);
         if (data.status != 200) return;
         data = await data.json();
         if (data.length < 1) return;

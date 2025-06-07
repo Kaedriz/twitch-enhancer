@@ -8,7 +8,9 @@ import { numberWithCommas } from '$Utils/number';
 
 Peeker.add(() => {
     if (window.location.href.includes('clips.twitch.tv')) return;
-    const viewersCount = document.querySelector('p[data-a-target="animated-channel-viewers-count"]')?.parentElement;
+    const viewersCount = document.querySelector(
+        'strong[data-a-target="animated-channel-viewers-count"]'
+    )?.parentElement;
     if (!viewersCount || !Peeker.canCreate('chattersCount', viewersCount)) return;
     return viewersCount;
 }, callback);
