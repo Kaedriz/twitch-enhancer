@@ -1,5 +1,5 @@
-import type { ComponentChildren } from "preact";
 import type { CommonEvents } from "$types/platforms/common.events.ts";
+import type { ComponentChildren } from "preact";
 
 export type TwitchEvents = {
 	"twitch:chatInitialized": (channelId: string) => void | Promise<void>;

@@ -1,3 +1,4 @@
+import type ReactUtils from "$shared/utils/react.utils.ts";
 import type {
 	Chat,
 	ChatControllerComponent,
@@ -10,8 +11,7 @@ import type {
 	PersistentPlayerComponent,
 	ScrollableChatComponent,
 	TwitchChatMessageComponent,
-} from "$types/shared/utils/twitch.utils.types.ts";
-import type ReactUtils from "$shared/utils/react.utils.ts";
+} from "$types/platforms/twitch/twitch.utils.types";
 
 export default class TwitchUtils {
 	constructor(protected readonly reactUtils: ReactUtils) {}
