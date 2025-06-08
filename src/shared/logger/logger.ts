@@ -14,26 +14,28 @@ export class Logger {
 
 	constructor(options: LoggerOptions = {}) {
 		const { context } = options;
-		this.prefix = context ? `${Logger.BASE_PREFIX} ${context}\x1B[0m` : `${Logger.BASE_PREFIX}\x1B[0m`;
+		this.prefix = context
+			? `${Logger.BASE_PREFIX} \x1B[38;2;128;128;128m[${context}]\x1B[0m`
+			: `${Logger.BASE_PREFIX}\x1B[0m`;
 	}
 
 	debug(...data: any[]): void {
-		if (this.IS_DEVELOPMENT) this.send("debug", ...data);
+		if (this.IS_DEVELOPMENT) this.sendLog("debug", ...data);
 	}
 
 	info(...data: any[]): void {
-		this.send("info", ...data);
+		this.sendLog("info", ...data);
 	}
 
 	warn(...data: any[]): void {
-		this.send("warn", ...data);
+		this.sendLog("warn", ...data);
 	}
 
 	error(...data: any[]): void {
-		this.send("error", ...data);
+		this.sendLog("error", ...data);
 	}
 
-	private send(logType: LogType, ...data: any[]): void {
+	private sendLog(logType: LogType, ...data: any[]): void {
 		console[logType](`${this.prefix} ${Logger.LOG_TYPE_PREFIX[logType]}`, ...data);
 	}
 }
