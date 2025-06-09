@@ -20,7 +20,10 @@
 		"baseUrl": ".",
 		"paths": {
 			"$types/*": ["./src/types/*"],
-			"$shared/*": ["./src/shared/*"]
+			"$shared/*": ["./src/shared/*"],
+			"assets": ["./public/assets/*"],
+			"react": ["node_modules/preact/compat"],
+			"react-dom": ["node_modules/preact/compat"]
 		}
 	},
 	"include": ["src", "types"],

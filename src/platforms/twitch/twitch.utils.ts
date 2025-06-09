@@ -38,7 +38,7 @@ export default class TwitchUtils {
 		return this.reactUtils.findReactChildren<MediaPlayerComponent>(
 			this.reactUtils.getReactInstance(document.querySelector(".persistent-player")),
 			(n) => !!n.stateNode?.props?.mediaPlayerInstance,
-			20,
+			200,
 		)?.stateNode.props.mediaPlayerInstance;
 	}
 
