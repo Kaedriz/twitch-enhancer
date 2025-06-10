@@ -1,9 +1,9 @@
+import QueueFactory from "$shared/queue/queue-factory.ts";
 import type { TwitchEvents } from "$types/platforms/twitch/twitch.events.types.ts";
-import type { ModuleConfig } from "$types/shared/module.types.ts";
 import type { TwitchChatMessage } from "$types/platforms/twitch/twitch.utils.types.ts";
+import type { ModuleConfig } from "$types/shared/module.types.ts";
 import type { QueueValue } from "$types/shared/queue/queue.types.ts";
 import { createNanoEvents } from "nanoevents";
-import QueueFactory from "$shared/queue/queue-factory.ts";
 import TwitchModule from "../../twitch.module.ts";
 import type ChatMessageListener from "./listener/chat-message-listener.ts";
 import SevenTVChatMessageListener from "./listener/seventv-chat-message-listener.ts";

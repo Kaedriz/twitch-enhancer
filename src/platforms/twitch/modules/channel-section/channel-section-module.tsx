@@ -1,9 +1,9 @@
+import EnhancerIcon from "$shared/components/icon/enhancer-icon.tsx";
 import type { TwitchEvents } from "$types/platforms/twitch/twitch.events.types.ts";
 import type { ModuleConfig } from "$types/shared/module.types.ts";
 import { render } from "preact";
 import styled from "styled-components";
 import TwitchModule from "../../twitch.module.ts";
-import EnhancerIcon from "$shared/components/icon/enhancer-icon.tsx";
 
 export default class ChannelSectionModule extends TwitchModule {
 	readonly config: ModuleConfig<TwitchEvents> = {
@@ -205,4 +205,4 @@ const LinkName = styled.div`
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-`; 
+`;
