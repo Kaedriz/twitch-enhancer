@@ -16,6 +16,9 @@ export default class QueueFactory<T extends QueueValue> {
 
 		return {
 			addByValue(value: T) {
+				if (!value.queueKey || typeof value.queueKey !== 'string') {
+					throw new Error('Invalid queueKey: must be a non-empty string');
+				}
 				const key = value.queueKey;
 				queue.set(key, { value, timestamp: Date.now() });
 			},
