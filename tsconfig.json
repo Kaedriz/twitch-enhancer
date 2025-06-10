@@ -19,8 +19,12 @@
 		"types": ["bun-types", "chrome", "preact"],
 		"baseUrl": ".",
 		"paths": {
+			"react": ["node_modules/preact/compat"],
+			"react-dom": ["node_modules/preact/compat"],
 			"$types/*": ["./src/types/*"],
-			"$shared/*": ["./src/shared/*"]
+			"$shared/*": ["./src/shared/*"],
+			"twitch/*": ["./src/platforms/twitch/*"],
+			"kick/*": ["./src/platformskick/*"]
 		}
 	},
 	"include": ["src", "types"],
