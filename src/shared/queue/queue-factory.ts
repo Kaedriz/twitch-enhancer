@@ -27,7 +27,8 @@ export default class QueueFactory<T extends QueueValue> {
 				const item = queue.get(key);
 				if (!item) return undefined;
 
-				if (expire > 0 && Date.now() - item.timestamp > expire) {
+				const isExpired = expire > 0 && Date.now() - item.timestamp > expire;
+				if (isExpired) {
 					queue.delete(key);
 					return undefined;
 				}
