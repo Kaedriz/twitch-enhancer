@@ -5,16 +5,19 @@ import type TwitchApi from "$twitch/apis/twitch.api.ts";
 import type { TwitchEvents } from "$types/platforms/twitch/twitch.events.types.ts";
 import type { Emitter } from "nanoevents";
 import type TwitchUtils from "./twitch.utils.ts";
+import type { TwitchStorage } from "$types/platforms/twitch/twitch.storage.types.ts";
+import type StorageRepository from "$shared/storage/storage-repository.ts";
 
-export default abstract class TwitchModule extends Module<TwitchEvents> {
+export default abstract class TwitchModule extends Module<TwitchEvents, TwitchStorage> {
 	constructor(
 		emitter: Emitter<TwitchEvents>,
+		storageRepository: StorageRepository<TwitchStorage>,
 		utilsRepository: UtilsRepository,
 		enhancerApi: EnhancerApi,
 		private readonly _twitchUtils: TwitchUtils,
 		private readonly _twitchApi: TwitchApi,
 	) {
-		super(emitter, utilsRepository, enhancerApi);
+		super(emitter, storageRepository, utilsRepository, enhancerApi);
 	}
 
 	protected twitchUtils() {

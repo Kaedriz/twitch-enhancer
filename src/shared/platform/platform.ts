@@ -8,10 +8,16 @@ import UtilsRepository from "$shared/utils/utils.repository.ts";
 import type { CommonEvents } from "$types/platforms/common.events.ts";
 import type { PlatformConfig } from "$types/shared/platform.types.ts";
 import type { Emitter } from "nanoevents";
+import StorageRepository from "$shared/storage/storage-repository.ts";
 
-export default abstract class Platform<TModule extends Module<TEvents>, TEvents extends CommonEvents> {
+export default abstract class Platform<
+	TModule extends Module<TEvents, TStorage>,
+	TEvents extends CommonEvents,
+	TStorage extends Record<string, any>,
+> {
 	protected readonly logger: Logger = new Logger({ context: "main" });
 	protected readonly emitter: Emitter<TEvents> = new EventEmitterFactory<TEvents>().create();
+	protected readonly storageRepository = new StorageRepository<TStorage>();
 	protected readonly utilsRepository: UtilsRepository = new UtilsRepository();
 	protected readonly enhancerApi;
 
@@ -42,7 +48,7 @@ export default abstract class Platform<TModule extends Module<TEvents>, TEvents 
 		this.logger.info(`Loaded ${modules.length} modules`);
 	}
 
-	private async registerModules(modules: Module<TEvents>[]) {
+	private async registerModules(modules: Module<TEvents, TStorage>[]) {
 		for (const module of modules) {
 			try {
 				module.setup();

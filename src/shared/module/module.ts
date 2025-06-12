@@ -4,13 +4,15 @@ import type UtilsRepository from "$shared/utils/utils.repository.ts";
 import type { CommonEvents } from "$types/platforms/common.events.ts";
 import type { ModuleConfig } from "$types/shared/module/module.types.ts";
 import type { Emitter } from "nanoevents";
+import type StorageRepository from "$shared/storage/storage-repository.ts";
 
-export default abstract class Module<Events extends CommonEvents> {
+export default abstract class Module<Events extends CommonEvents, Storage extends Record<string, any>> {
 	abstract readonly config: ModuleConfig<Events>;
 	protected logger!: Logger;
 
 	protected constructor(
 		protected readonly emitter: Emitter<Events>,
+		private readonly storageRepository: StorageRepository<Storage>,
 		private readonly utilsRepository: UtilsRepository,
 		private readonly _enhancerApi: EnhancerApi,
 	) {}
@@ -39,5 +41,10 @@ export default abstract class Module<Events extends CommonEvents> {
 	// APIs
 	protected enhancerApi() {
 		return this._enhancerApi;
+	}
+
+	// Storage
+	protected localStorage() {
+		return this.storageRepository.localStorage;
 	}
 }

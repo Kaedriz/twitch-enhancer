@@ -1,7 +1,7 @@
 import ExampleModule from "module/kick/example/example.module.ts";
 import type { EventEmitter } from "types/content/event/events.types.ts";
 import type Logger from "../../../shared/logger/logger.ts";
-import type StorageRepository from "../../../shared/storage/storage-repository.ts";
+import type StorageRepository from "../../../../../src/shared/storage/storage-repository.ts";
 import type ApiRepository from "../../api/api-repository.ts";
 import type UtilsRepository from "../../utils/utils-repository.ts";
 import ModuleRegisterer from "../module-registerer.ts";

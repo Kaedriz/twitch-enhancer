@@ -2,7 +2,7 @@ import Logger from "logger";
 import type { EventEmitter } from "types/content/event/events.types.ts";
 import type { ExtensionConfig } from "types/content/extension.ts";
 import UtilsRepository from "utils/utils-repository.ts";
-import StorageRepository from "../shared/storage/storage-repository.ts";
+import StorageRepository from "../../../src/shared/storage/storage-repository.ts";
 import ApiRepository from "./api/api-repository.ts";
 import { createEventsEmitter } from "./event/emitter.ts";
 import ModuleLoader from "./module/module-loader.ts";

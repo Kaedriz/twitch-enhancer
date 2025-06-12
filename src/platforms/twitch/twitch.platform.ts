@@ -11,8 +11,9 @@ import ExampleModule from "./modules/example/example.module.ts";
 import StreamLatencyModule from "./modules/stream-latency/stream-latency-module.tsx";
 import type TwitchModule from "./twitch.module.ts";
 import TwitchUtils from "./twitch.utils.ts";
+import type { TwitchStorage } from "$types/platforms/twitch/twitch.storage.types.ts";
 
-export default class TwitchPlatform extends Platform<TwitchModule, TwitchEvents> {
+export default class TwitchPlatform extends Platform<TwitchModule, TwitchEvents, TwitchStorage> {
 	constructor() {
 		super({ type: "twitch" });
 	}
@@ -22,20 +23,70 @@ export default class TwitchPlatform extends Platform<TwitchModule, TwitchEvents>
 
 	protected getModules(): TwitchModule[] {
 		return [
-			new ExampleModule(this.emitter, this.utilsRepository, this.enhancerApi, this.twitchUtils, this.twitchApi),
-			new StreamLatencyModule(this.emitter, this.utilsRepository, this.enhancerApi, this.twitchUtils, this.twitchApi),
-			new ClipDownloadModule(this.emitter, this.utilsRepository, this.enhancerApi, this.twitchUtils, this.twitchApi),
-			new ChatModule(this.emitter, this.utilsRepository, this.enhancerApi, this.twitchUtils, this.twitchApi),
-			new ChatCopyEmoteModule(this.emitter, this.utilsRepository, this.enhancerApi, this.twitchUtils, this.twitchApi),
-			new ChatHighlightUserModule(
+			new ExampleModule(
 				this.emitter,
+				this.storageRepository,
 				this.utilsRepository,
 				this.enhancerApi,
 				this.twitchUtils,
 				this.twitchApi,
 			),
-			new ChannelSectionModule(this.emitter, this.utilsRepository, this.enhancerApi, this.twitchUtils, this.twitchApi),
-			new ChatAttachmentsModule(this.emitter, this.utilsRepository, this.enhancerApi, this.twitchUtils, this.twitchApi),
+			new StreamLatencyModule(
+				this.emitter,
+				this.storageRepository,
+				this.utilsRepository,
+				this.enhancerApi,
+				this.twitchUtils,
+				this.twitchApi,
+			),
+			new ClipDownloadModule(
+				this.emitter,
+				this.storageRepository,
+				this.utilsRepository,
+				this.enhancerApi,
+				this.twitchUtils,
+				this.twitchApi,
+			),
+			new ChatModule(
+				this.emitter,
+				this.storageRepository,
+				this.utilsRepository,
+				this.enhancerApi,
+				this.twitchUtils,
+				this.twitchApi,
+			),
+			new ChatCopyEmoteModule(
+				this.emitter,
+				this.storageRepository,
+				this.utilsRepository,
+				this.enhancerApi,
+				this.twitchUtils,
+				this.twitchApi,
+			),
+			new ChatHighlightUserModule(
+				this.emitter,
+				this.storageRepository,
+				this.utilsRepository,
+				this.enhancerApi,
+				this.twitchUtils,
+				this.twitchApi,
+			),
+			new ChannelSectionModule(
+				this.emitter,
+				this.storageRepository,
+				this.utilsRepository,
+				this.enhancerApi,
+				this.twitchUtils,
+				this.twitchApi,
+			),
+			new ChatAttachmentsModule(
+				this.emitter,
+				this.storageRepository,
+				this.utilsRepository,
+				this.enhancerApi,
+				this.twitchUtils,
+				this.twitchApi,
+			),
 		];
 	}
 }
