@@ -1,17 +1,17 @@
+import { ChattersQuery } from "$twitch/apis/twitch-queries.ts";
 import type { ChattersResponse } from "$types/platforms/twitch/twitch.api.types.ts";
 import type { TwitchEvents } from "$types/platforms/twitch/twitch.events.types.ts";
-import type { ModuleConfig } from "$types/shared/module.types.ts";
+import { ModuleConfig, type TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 import { type Signal, signal } from "@preact/signals";
 import { render } from "preact";
 import styled from "styled-components";
-import { ChattersQuery } from "../../apis/twitch-queries.ts";
 import TwitchModule from "../../twitch.module.ts";
 
 export default class ChattersModule extends TwitchModule {
 	private static URL_CONFIG = (url: string) => !url.includes("clips.twitch.tv");
 	public static LOADING_VALUE = -1;
 
-	config: ModuleConfig<TwitchEvents> = {
+	config: TwitchModuleConfig = {
 		name: "chatters",
 		appliers: [
 			{

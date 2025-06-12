@@ -1,6 +1,7 @@
 import Platform from "$shared/platform/platform.ts";
+import TwitchApi from "$twitch/apis/twitch.api.ts";
+import ChatAttachmentsModule from "$twitch/modules/chat-attachments/chat-attachments-module.ts";
 import type { TwitchEvents } from "$types/platforms/twitch/twitch.events.types.ts";
-import TwitchApi from "./apis/twitch.api.ts";
 import ChannelSectionModule from "./modules/channel-section/channel-section-module.tsx";
 import ChatCopyEmoteModule from "./modules/chat-copy-emote/chat-copy-emote-module.tsx";
 import ChatHighlightUserModule from "./modules/chat-highlight-user/chat-highlight-user-module.tsx";
@@ -21,13 +22,20 @@ export default class TwitchPlatform extends Platform<TwitchModule, TwitchEvents>
 
 	protected getModules(): TwitchModule[] {
 		return [
-			new ExampleModule(this.emitter, this.utilsRepository, this.twitchUtils, this.twitchApi),
-			new StreamLatencyModule(this.emitter, this.utilsRepository, this.twitchUtils, this.twitchApi),
-			new ClipDownloadModule(this.emitter, this.utilsRepository, this.twitchUtils, this.twitchApi),
-			new ChatModule(this.emitter, this.utilsRepository, this.twitchUtils, this.twitchApi),
-			new ChatCopyEmoteModule(this.emitter, this.utilsRepository, this.twitchUtils, this.twitchApi),
-			new ChatHighlightUserModule(this.emitter, this.utilsRepository, this.twitchUtils, this.twitchApi),
-			new ChannelSectionModule(this.emitter, this.utilsRepository, this.twitchUtils, this.twitchApi),
+			new ExampleModule(this.emitter, this.utilsRepository, this.enhancerApi, this.twitchUtils, this.twitchApi),
+			new StreamLatencyModule(this.emitter, this.utilsRepository, this.enhancerApi, this.twitchUtils, this.twitchApi),
+			new ClipDownloadModule(this.emitter, this.utilsRepository, this.enhancerApi, this.twitchUtils, this.twitchApi),
+			new ChatModule(this.emitter, this.utilsRepository, this.enhancerApi, this.twitchUtils, this.twitchApi),
+			new ChatCopyEmoteModule(this.emitter, this.utilsRepository, this.enhancerApi, this.twitchUtils, this.twitchApi),
+			new ChatHighlightUserModule(
+				this.emitter,
+				this.utilsRepository,
+				this.enhancerApi,
+				this.twitchUtils,
+				this.twitchApi,
+			),
+			new ChannelSectionModule(this.emitter, this.utilsRepository, this.enhancerApi, this.twitchUtils, this.twitchApi),
+			new ChatAttachmentsModule(this.emitter, this.utilsRepository, this.enhancerApi, this.twitchUtils, this.twitchApi),
 		];
 	}
 }

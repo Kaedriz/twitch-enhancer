@@ -1,9 +1,8 @@
-import type { TwitchEvents } from "$types/platforms/twitch/twitch.events.types.ts";
-import type { ModuleConfig } from "$types/shared/module.types.ts";
+import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 import TwitchModule from "../../twitch.module.ts";
 
 export default class ChatHighlightUserModule extends TwitchModule {
-	readonly config: ModuleConfig<TwitchEvents> = {
+	readonly config: TwitchModuleConfig = {
 		name: "chat-highlight-user",
 		appliers: [
 			{

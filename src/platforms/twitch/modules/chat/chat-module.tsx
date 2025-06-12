@@ -1,9 +1,7 @@
 import QueueFactory from "$shared/queue/queue-factory.ts";
-import type { TwitchEvents } from "$types/platforms/twitch/twitch.events.types.ts";
 import type { TwitchChatMessage } from "$types/platforms/twitch/twitch.utils.types.ts";
-import type { ModuleConfig } from "$types/shared/module.types.ts";
+import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 import type { QueueValue } from "$types/shared/queue/queue.types.ts";
-import { createNanoEvents } from "nanoevents";
 import TwitchModule from "../../twitch.module.ts";
 import type ChatMessageListener from "./listener/chat-message-listener.ts";
 import SevenTVChatMessageListener from "./listener/seventv-chat-message-listener.ts";
@@ -20,7 +18,7 @@ export default class ChatModule extends TwitchModule {
 	private readonly queue = new QueueFactory<TwitchChatMessage & QueueValue>().create({ expire: 300 });
 	private type: "TWITCH" | "7TV" = "TWITCH";
 
-	readonly config: ModuleConfig<TwitchEvents> = {
+	readonly config: TwitchModuleConfig = {
 		name: "chat",
 		appliers: [
 			{
@@ -39,10 +37,9 @@ export default class ChatModule extends TwitchModule {
 		],
 	};
 
-	private initializeChannel(channelId: string) {
+	private async initializeChannel(channelId: string) {
 		try {
-			//TODO joinChannel should be called from enhancerApi, but it is not available in the content script
-			//this.enhancerApi().state.joinChannel(channelId);
+			await this.enhancerApi().joinChannel(channelId);
 			this.logger.info(`Joined channel ${channelId}`);
 		} catch (error) {
 			this.logger.error("Failed to join channel", error);

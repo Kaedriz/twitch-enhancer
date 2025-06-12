@@ -8,7 +8,7 @@ import {
 } from "module/twitch/watchtime/wachtime-card.tsx";
 
 import { render } from "preact";
-import type { EnhancerStreamerWatchTimeData } from "types/content/api/enhancer-api.types.ts";
+import type { EnhancerStreamerWatchTimeData } from "types/content/apis/enhancer-apis.types.ts";
 import type { ModuleConfig } from "types/content/module/module.types.ts";
 
 export default class WatchTimeModule extends Module {

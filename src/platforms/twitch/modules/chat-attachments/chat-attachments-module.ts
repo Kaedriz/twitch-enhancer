@@ -1,16 +1,16 @@
-import type ChatAttachmentHandler from "module/twitch/chat-attachments/handler/chat-attachment-handler.ts";
-import ImageChatAttachmentHandler from "module/twitch/chat-attachments/handler/image-chat-attachment-handler.ts";
-import type { TwitchChatMessageEvent } from "types/content/event/twitch-events.types.ts";
-import type { ModuleConfig } from "types/content/module/module.types.ts";
+import type ChatAttachmentHandler from "$shared/module/chat-attachments-handlers/chat-attachment-handler.ts";
+import ImageChatAttachmentHandler from "$shared/module/chat-attachments-handlers/image-chat-attachment-handler.ts";
+import TwitchModule from "$twitch/twitch.module.ts";
+import type { TwitchChatMessageEvent } from "$types/platforms/twitch/twitch.events.types.ts";
 import {
 	type BaseChatAttachmentData,
 	type ChatAttachmentData,
 	ChatAttachmentMessageType,
-} from "types/content/module/twitch/chat-attachment.types.ts";
-import Module from "../../module.ts";
+} from "$types/shared/module/chat-attachment/chat-attachment.types.ts";
+import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 
-export default class ChatAttachmentsModule extends Module {
-	config: ModuleConfig = {
+export default class ChatAttachmentsModule extends TwitchModule {
+	config: TwitchModuleConfig = {
 		name: "chat-attachments",
 		appliers: [
 			{
@@ -74,7 +74,7 @@ export default class ChatAttachmentsModule extends Module {
 		}
 	}
 
-	async init() {
+	async initialize() {
 		this.commonUtils().createGlobalStyle(`
 			.enhancer-chat-link {
 				display: block;

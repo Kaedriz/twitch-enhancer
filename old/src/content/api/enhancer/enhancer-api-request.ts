@@ -2,7 +2,7 @@ import type {
 	EnhancerBadgesResponseDto,
 	EnhancerChannelDto,
 	EnhancerStreamerWatchTimeData,
-} from "types/content/api/enhancer-api.types.ts";
+} from "types/content/apis/enhancer-apis.types.ts";
 import type { Platform } from "types/content/extension.ts";
 import type Logger from "../../../shared/logger/logger.ts";
 import type UtilsRepository from "../../utils/utils-repository.ts";

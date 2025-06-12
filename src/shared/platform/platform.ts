@@ -1,3 +1,4 @@
+import EnhancerApi from "$shared/apis/enhancer.api.ts";
 import { EventEmitterFactory } from "$shared/event/event-emitter.factory.ts";
 import { Logger } from "$shared/logger/logger.ts";
 import EventModuleApplier from "$shared/module/applier/event-module-applier.ts";
@@ -12,8 +13,11 @@ export default abstract class Platform<TModule extends Module<TEvents>, TEvents 
 	protected readonly logger: Logger = new Logger({ context: "main" });
 	protected readonly emitter: Emitter<TEvents> = new EventEmitterFactory<TEvents>().create();
 	protected readonly utilsRepository: UtilsRepository = new UtilsRepository();
+	protected readonly enhancerApi;
 
-	protected constructor(protected readonly config: PlatformConfig) {}
+	protected constructor(protected readonly config: PlatformConfig) {
+		this.enhancerApi = new EnhancerApi(config.type);
+	}
 
 	protected async initialize(): Promise<void> {}
 

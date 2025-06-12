@@ -1,5 +1,5 @@
 import type { CommonEvents } from "$types/platforms/common.events.ts";
-import type { SelectorModuleApplierConfig } from "$types/shared/module-applier.types.ts";
+import type { SelectorModuleApplierConfig } from "$types/shared/module/module-applier.types.ts";
 import type Module from "../module.ts";
 import ModuleApplier from "./module-applier.ts";
 

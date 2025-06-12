@@ -1,15 +1,15 @@
-import Module from "module/module.ts";
+import TwitchModule from "$twitch/twitch.module.ts";
+import type { TwitchChatMessagePopup } from "$types/platforms/twitch/twitch.events.types.ts";
+import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 import { h, render } from "preact";
 import { useEffect, useState } from "preact/hooks";
 import styled from "styled-components";
-import type { TwitchChatMessagePopup } from "types/content/event/twitch-events.types.ts";
-import type { ModuleConfig } from "types/content/module/module.types.ts";
 
-export default class ChatMessagePopupModule extends Module {
+export default class ChatMessagePopupModule extends TwitchModule {
 	static readonly TWITCHTV_CHAT_SELECTOR = ".chat-list--default";
 	static readonly SEVENTV_CHAT_SELECTOR = "main.seventv-chat-list";
 
-	config: ModuleConfig = {
+	config: TwitchModuleConfig = {
 		name: "message-popup",
 		appliers: [
 			{

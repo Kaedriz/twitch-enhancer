@@ -1,5 +1,5 @@
 import type Logger from "logger";
-import type { EnhancerResponseMap } from "types/content/api/enhancer-api.types.ts";
+import type { EnhancerResponseMap } from "types/content/apis/enhancer-apis.types.ts";
 import type EnhancerApiRequest from "./enhancer-api-request.ts";
 
 export default class EnhancerApiState {

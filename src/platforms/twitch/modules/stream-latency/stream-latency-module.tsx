@@ -1,5 +1,4 @@
-import type { TwitchEvents } from "$types/platforms/twitch/twitch.events.types.ts";
-import type { ModuleConfig } from "$types/shared/module.types.ts";
+import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 import { type Signal, signal } from "@preact/signals";
 import { render } from "preact";
 import styled from "styled-components";
@@ -9,7 +8,7 @@ export default class StreamLatencyModule extends TwitchModule {
 	private latencyCounter = {} as Signal<number>;
 	private isLiveState = {} as Signal<boolean>;
 
-	readonly config: ModuleConfig<TwitchEvents> = {
+	readonly config: TwitchModuleConfig = {
 		name: "stream-latency",
 		appliers: [
 			{

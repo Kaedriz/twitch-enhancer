@@ -1,6 +1,6 @@
 import type { Signal } from "@preact/signals";
 import styled from "styled-components";
-import type { EnhancerStreamerWatchTimeData } from "types/content/api/enhancer-api.types.ts";
+import type { EnhancerStreamerWatchTimeData } from "types/content/apis/enhancer-apis.types.ts";
 import { Loading } from "../../../../shared/components/loading/loading.tsx";
 
 // --- Shared Components & Helpers ---

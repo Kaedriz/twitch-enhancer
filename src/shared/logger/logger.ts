@@ -15,7 +15,7 @@ export class Logger {
 	constructor(options: LoggerOptions = {}) {
 		const { context } = options;
 		this.prefix = context
-			? `${Logger.BASE_PREFIX} \x1B[38;2;128;128;128m[${context}]\x1B[0m`
+			? `${Logger.BASE_PREFIX} \x1B[38;2;128;128;128m${context}\x1B[0m`
 			: `${Logger.BASE_PREFIX}\x1B[0m`;
 	}
 

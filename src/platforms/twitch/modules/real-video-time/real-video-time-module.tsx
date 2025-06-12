@@ -1,18 +1,18 @@
+import { VideoCreatedAtQuery } from "$twitch/apis/twitch-queries.ts";
+import TwitchModule from "$twitch/twitch.module.ts";
+import type { VideoCreatedAtResponse } from "$types/platforms/twitch/twitch.api.types.ts";
+import type { MediaPlayerInstance } from "$types/platforms/twitch/twitch.utils.types.ts";
+import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 import { type Signal, signal } from "@preact/signals";
-import Module from "module/module.ts";
 import { render } from "preact";
 import styled from "styled-components";
-import type { VideoCreatedAtResponse } from "types/content/api/twitch-api.types.ts";
-import type { ModuleConfig } from "types/content/module/module.types.ts";
-import type { MediaPlayerInstance } from "types/content/utils/twitch-utils.types.ts";
-import { VideoCreatedAtQuery } from "../../../api/twitch/twitch-queries.ts";
 
-export default class RealVideoTimeModule extends Module {
+export default class RealVideoTimeModule extends TwitchModule {
 	private static URL_CONFIG = (url: string) => {
 		return url.includes("/videos/") || url.includes("/video/");
 	};
 
-	config: ModuleConfig = {
+	config: TwitchModuleConfig = {
 		name: "real-video-time",
 		appliers: [
 			{
@@ -81,7 +81,7 @@ export default class RealVideoTimeModule extends Module {
 	}
 
 	private async getVideoTime(videoId: string) {
-		return this.apiRepository.twitchApi.gql<VideoCreatedAtResponse>(VideoCreatedAtQuery, {
+		return this.twitchApi().gql<VideoCreatedAtResponse>(VideoCreatedAtQuery, {
 			id: videoId,
 		});
 	}

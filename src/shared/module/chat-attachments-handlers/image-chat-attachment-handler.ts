@@ -1,9 +1,9 @@
-import ChatAttachmentHandler from "module/twitch/chat-attachments/handler/chat-attachment-handler.ts";
+import ChatAttachmentHandler from "$shared/module/chat-attachments-handlers/chat-attachment-handler.ts";
 import type {
 	AttachmentUrlParser,
 	BaseChatAttachmentData,
 	ChatAttachmentData,
-} from "types/content/module/twitch/chat-attachment.types.ts";
+} from "$types/shared/module/chat-attachment/chat-attachment.types.ts";
 
 export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 	static readonly MAX_FILE_SIZE = 10000000;
