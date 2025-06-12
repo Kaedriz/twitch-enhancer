@@ -4,11 +4,11 @@ import { Logger } from "$shared/logger/logger.ts";
 import EventModuleApplier from "$shared/module/applier/event-module-applier.ts";
 import SelectorModuleApplier from "$shared/module/applier/selector-module-applier.ts";
 import type Module from "$shared/module/module.ts";
+import StorageRepository from "$shared/storage/storage-repository.ts";
 import UtilsRepository from "$shared/utils/utils.repository.ts";
 import type { CommonEvents } from "$types/platforms/common.events.ts";
 import type { PlatformConfig } from "$types/shared/platform.types.ts";
 import type { Emitter } from "nanoevents";
-import StorageRepository from "$shared/storage/storage-repository.ts";
 
 export default abstract class Platform<
 	TModule extends Module<TEvents, TStorage>,
@@ -28,6 +28,7 @@ export default abstract class Platform<
 	protected async initialize(): Promise<void> {}
 
 	async start() {
+		await this.enhancerApi.initialize(); // TODO Retry if something bad happen :(
 		await this.initialize();
 		await this.loadModules();
 		this.logger.info(`Started ${this.config.type} extension`);

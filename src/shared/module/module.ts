@@ -1,10 +1,10 @@
 import type EnhancerApi from "$shared/apis/enhancer.api.ts";
 import { Logger } from "$shared/logger/logger.ts";
+import type StorageRepository from "$shared/storage/storage-repository.ts";
 import type UtilsRepository from "$shared/utils/utils.repository.ts";
 import type { CommonEvents } from "$types/platforms/common.events.ts";
 import type { ModuleConfig } from "$types/shared/module/module.types.ts";
 import type { Emitter } from "nanoevents";
-import type StorageRepository from "$shared/storage/storage-repository.ts";
 
 export default abstract class Module<Events extends CommonEvents, Storage extends Record<string, any>> {
 	abstract readonly config: ModuleConfig<Events>;

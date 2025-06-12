@@ -106,6 +106,25 @@ export default class EnhancerApi {
 		return data;
 	}
 
+	findUserBadgesForCurrentChannel(externalUserId: string) {
+		const globalBadges = this.getGlobalBadges();
+		const badges = this.getCurrentChannelBadges();
+
+		const userBadgesIds = [
+			...(globalBadges?.users.find((user) => user.externalId === externalUserId)?.badgesIds ?? []),
+			...(badges?.users.find((user) => user.externalId === externalUserId)?.badgesIds ?? []),
+		];
+		if (!userBadgesIds) return;
+		return [
+			...(globalBadges?.badges?.filter((badge) => userBadgesIds?.includes(badge.badgeId)) ?? []).sort(
+				(a, b) => b.priority - a.priority,
+			),
+			...(badges?.badges?.filter((badge) => userBadgesIds?.includes(badge.badgeId)) ?? []).sort(
+				(a, b) => b.priority - a.priority,
+			),
+		];
+	}
+
 	// Utility methods
 	getCurrentChannelId(): string {
 		return this.currentChannelId;
