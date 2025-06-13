@@ -25,7 +25,6 @@ export default class ChatHighlightUserModule extends TwitchModule {
 			...Array.from(element.querySelectorAll(".seventv-chat-message-body .mention-token")),
 		].filter((mention) => !mention.hasAttribute("enhancer-mention-user"));
 		if (mentions.length < 1) return;
-		console.log(mentions);
 		for (const mention of mentions) {
 			const mentionElement = mention as HTMLElement;
 			const username = mentionElement.textContent?.replace("@", "").toLowerCase() || "";
@@ -36,7 +35,6 @@ export default class ChatHighlightUserModule extends TwitchModule {
 	}
 
 	private highlightUserMentions(event: MouseEvent): void {
-		console.log(event);
 		const target = event.currentTarget as HTMLElement;
 		const username = target.getAttribute("enhancer-mention-user");
 		if (!username) return;
