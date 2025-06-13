@@ -4,6 +4,10 @@ import styled from "styled-components";
 import TwitchModule from "../../twitch.module.ts";
 
 export default class ClipDownloadModule extends TwitchModule {
+	private static URL_CONFIG = (url: string) => {
+		return url.includes("/clip/") || url.includes("clips.twitch.tv");
+	};
+
 	readonly config: TwitchModuleConfig = {
 		name: "clip-download",
 		appliers: [
@@ -12,17 +16,14 @@ export default class ClipDownloadModule extends TwitchModule {
 				key: "clip-download",
 				selectors: [".player-controls__left-control-group"],
 				callback: this.run.bind(this),
-				validateUrl: (url) => {
-					return url.includes("/clip/") || url.includes("clips.twitch.tv");
-				},
+				validateUrl: ClipDownloadModule.URL_CONFIG,
 				once: true,
 			},
 			{
 				type: "event",
 				event: "twitch:chatInitialized",
 				callback: () => {
-					const url = window.location.href;
-					if (!url.includes("/clip/") && !url.includes("clips.twitch.tv")) {
+					if (!ClipDownloadModule.URL_CONFIG(window.location.href)) {
 						const elements = document.querySelectorAll("#enhancer-clip-download");
 						elements.forEach((element) => element.remove());
 					}
