@@ -23,6 +23,17 @@ export default class RealVideoTimeModule extends TwitchModule {
 				validateUrl: RealVideoTimeModule.URL_CONFIG,
 				once: true,
 			},
+			{
+				type: "event",
+				event: "twitch:chatInitialized",
+				callback: () => {
+					if (!RealVideoTimeModule.URL_CONFIG(window.location.href)) {
+						const elements = document.querySelectorAll(".enhancer-real-video-time");
+						elements.forEach((element) => element.remove());
+					}
+				},
+				key: "real-video-time-url-validator",
+			},
 		],
 	};
 
