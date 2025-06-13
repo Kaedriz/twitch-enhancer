@@ -107,22 +107,29 @@ export default class ChatModule extends TwitchModule {
 
 	private async handleMessage(message: TwitchChatMessage) {
 		if (ChatModule.VALID_MESSAGE_TYPES.includes(message.type)) {
-			this.queue.addByValue({
-				...message,
-				queueKey: message.id,
-			});
+			if (message.id) {
+				this.queue.addByValue({
+					...message,
+					queueKey: message.id,
+				});
+			}
 			// Add backup message with nonce for paused chat in 7TV and re-rendering self messages in native chat
-			this.queue.addByValue({
-				...message,
-				queueKey: message.nonce,
-			});
+			if (message.nonce) {
+				this.queue.addByValue({
+					...message,
+					queueKey: message.nonce,
+				});
+			}
 		} else if (message.type === ChatModule.LINK_MESSAGE_ID) {
+			if (!message.nonce && !message.id) return;
 			const queueMessage = this.queue.getAndRemove(message.nonce);
 			if (!queueMessage) return;
-			this.queue.addByValue({
-				...queueMessage,
-				queueKey: message.id,
-			});
+			if (message.id) {
+				this.queue.addByValue({
+					...queueMessage,
+					queueKey: message.id,
+				});
+			}
 		}
 	}
 }
