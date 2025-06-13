@@ -121,7 +121,7 @@ export default class ChatModule extends TwitchModule {
 				});
 			}
 		} else if (message.type === ChatModule.LINK_MESSAGE_ID) {
-			if (!message.nonce) return;
+			if (!message.nonce && !message.id) return;
 			const queueMessage = this.queue.getAndRemove(message.nonce);
 			if (!queueMessage) return;
 			if (message.id) {
