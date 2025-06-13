@@ -114,7 +114,6 @@ export default class ChatModule extends TwitchModule {
 				});
 			}
 			// Add backup message with nonce for paused chat in 7TV and re-rendering self messages in native chat
-			this.logger.debug("normal msg", message);
 			if (message.nonce) {
 				this.queue.addByValue({
 					...message,
@@ -123,10 +122,7 @@ export default class ChatModule extends TwitchModule {
 			}
 		} else if (message.type === ChatModule.LINK_MESSAGE_ID) {
 			if (!message.nonce && !message.id) return;
-			this.logger.debug("nonce message", message.nonce, message.id, message);
-			this.logger.debug("values", this.queue.values());
 			const queueMessage = this.queue.getAndRemove(message.nonce);
-			this.logger.debug("nonce queue message", queueMessage);
 			if (!queueMessage) return;
 			if (message.id) {
 				this.queue.addByValue({
