@@ -1,7 +1,7 @@
 import QueueFactory from "$shared/queue/queue-factory.ts";
 import type { TwitchChatMessage } from "$types/platforms/twitch/twitch.utils.types.ts";
 import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
-import type { QueueValue } from "$types/shared/queue/queue.types.ts";
+import type { QueueValue } from "$types/shared/queue.types.ts";
 import TwitchModule from "../../twitch.module.ts";
 import type ChatMessageListener from "./listener/chat-message-listener.ts";
 import SevenTVChatMessageListener from "./listener/seventv-chat-message-listener.ts";
@@ -114,6 +114,7 @@ export default class ChatModule extends TwitchModule {
 				});
 			}
 			// Add backup message with nonce for paused chat in 7TV and re-rendering self messages in native chat
+			this.logger.debug("normal msg", message);
 			if (message.nonce) {
 				this.queue.addByValue({
 					...message,
@@ -122,7 +123,10 @@ export default class ChatModule extends TwitchModule {
 			}
 		} else if (message.type === ChatModule.LINK_MESSAGE_ID) {
 			if (!message.nonce && !message.id) return;
+			this.logger.debug("nonce message", message.nonce, message.id, message);
+			this.logger.debug("values", this.queue.values());
 			const queueMessage = this.queue.getAndRemove(message.nonce);
+			this.logger.debug("nonce queue message", queueMessage);
 			if (!queueMessage) return;
 			if (message.id) {
 				this.queue.addByValue({

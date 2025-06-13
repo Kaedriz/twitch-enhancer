@@ -1,41 +1,8 @@
-import type { QueueValue } from "$types/shared/queue/queue.types.ts";
-
-interface QueueOptions {
-	expire?: number;
-}
-
-interface Queue<T extends QueueValue> {
-	addByValue(value: T): void;
-	getAndRemove(key: string): T | undefined;
-}
+import {QueueConfig, QueueValue} from "$types/shared/queue.types.ts";
+import Queue from "$shared/queue/queue.ts";
 
 export default class QueueFactory<T extends QueueValue> {
-	create(options: QueueOptions = {}): Queue<T> {
-		const queue = new Map<string, { value: T; timestamp: number }>();
-		const expire = options.expire ?? 0;
-
-		return {
-			addByValue(value: T) {
-				if (!value.queueKey || typeof value.queueKey !== "string") {
-					throw new Error("Invalid queueKey: must be a non-empty string");
-				}
-				const key = value.queueKey;
-				queue.set(key, { value, timestamp: Date.now() });
-			},
-
-			getAndRemove(key: string): T | undefined {
-				const item = queue.get(key);
-				if (!item) return undefined;
-
-				const isExpired = expire > 0 && Date.now() - item.timestamp > expire;
-				if (isExpired) {
-					queue.delete(key);
-					return undefined;
-				}
-
-				queue.delete(key);
-				return item.value;
-			},
-		};
+	create(config: QueueConfig) {
+		return new Queue<T>(config);
 	}
 }
