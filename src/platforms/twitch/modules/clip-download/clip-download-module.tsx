@@ -17,6 +17,18 @@ export default class ClipDownloadModule extends TwitchModule {
 				},
 				once: true,
 			},
+			{
+				type: "event",
+				event: "twitch:chatInitialized",
+				callback: () => {
+					const url = window.location.href;
+					if (!url.includes("/clip/") && !url.includes("clips.twitch.tv")) {
+						const elements = document.querySelectorAll("#enhancer-clip-download");
+						elements.forEach((element) => element.remove());
+					}
+				},
+				key: "clip-download-url-validator",
+			},
 		],
 	};
 
