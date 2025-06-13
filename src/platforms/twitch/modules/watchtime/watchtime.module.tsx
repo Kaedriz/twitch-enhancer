@@ -27,7 +27,7 @@ export default class WatchTimeModule extends TwitchModule {
 			{
 				type: "selector",
 				selectors: [".viewer-card"],
-				callback: async (elements: Element[], key: string) => this.run(elements),
+				callback: async (elements: Element[]) => this.run(elements),
 				key: "watchtime-usercard",
 				once: true,
 			},
@@ -116,7 +116,7 @@ export default class WatchTimeModule extends TwitchModule {
 		this.isLoadingPopupVisible = false;
 		this.emitter.emit("twitch:chatPopupMessage", {
 			title: `Watchtime for ${username}`,
-			autoclose: 15,
+			autoclose: 10,
 			content: <WatchTimePopupMessage username={username} watchTime={data} />,
 		});
 	}
@@ -128,7 +128,7 @@ export default class WatchTimeModule extends TwitchModule {
 		this.isLoadingPopupVisible = false;
 		this.emitter.emit("twitch:chatPopupMessage", {
 			title: `Failed to fetch watchtime for ${username}`,
-			autoclose: 15,
+			autoclose: 10,
 			content: <WatchTimePopupErrorMessage />,
 		});
 	}

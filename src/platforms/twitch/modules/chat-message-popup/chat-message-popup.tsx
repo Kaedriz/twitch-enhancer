@@ -2,8 +2,8 @@ import TwitchModule from "$twitch/twitch.module.ts";
 import type { TwitchChatMessagePopup } from "$types/platforms/twitch/twitch.events.types.ts";
 import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 import { h, render } from "preact";
-import { useEffect, useState } from "preact/hooks";
 import styled from "styled-components";
+import { useState, useEffect, useRef } from "preact/hooks";
 
 export default class ChatMessagePopupModule extends TwitchModule {
 	static readonly TWITCHTV_CHAT_SELECTOR = ".chat-list--default";
@@ -128,30 +128,51 @@ const ContentArea = styled.div`
 `;
 
 export function MessagePopup({ title, content, autoclose, onClose }: TwitchChatMessagePopup) {
-	const [timeLeft, setTimeLeft] = useState(autoclose ? autoclose : 0);
-	const [progressWidth, setProgressWidth] = useState("100%");
+	const [timeLeft, setTimeLeft] = useState(autoclose || 0);
+	const intervalRef = useRef<NodeJS.Timeout | null>(null);
+	const startTimeRef = useRef<number | null>(null);
 
 	useEffect(() => {
-		if (!autoclose) return;
+		if (!autoclose || autoclose <= 0) {
+			return;
+		}
 
-		const interval = setInterval(() => {
-			setTimeLeft((prev) => {
-				if (prev <= 1) {
-					clearInterval(interval);
-					if (onClose) {
-						onClose();
-					}
-					return 0;
+		startTimeRef.current = Date.now();
+		setTimeLeft(autoclose);
+
+		intervalRef.current = setInterval(() => {
+			if (startTimeRef.current === null) {
+				return;
+			}
+
+			const elapsed = Math.floor((Date.now() - startTimeRef.current) / 1000);
+			const remaining = Math.max(0, autoclose - elapsed);
+
+			setTimeLeft(remaining - 1);
+
+			if (remaining === 0) {
+				if (intervalRef.current !== null) {
+					window.clearInterval(intervalRef.current);
 				}
+				onClose?.();
+			}
+		}, 100);
 
-				const newTime = prev - 1;
-				setProgressWidth(`${(newTime / autoclose) * 100}%`);
-				return newTime;
-			});
-		}, 1000);
-
-		return () => clearInterval(interval);
+		return () => {
+			if (intervalRef.current !== null) {
+				window.clearInterval(intervalRef.current);
+			}
+		};
 	}, [autoclose, onClose]);
+
+	const progressWidth = autoclose && timeLeft > 0 ? `${(timeLeft / autoclose) * 100}%` : "0%";
+
+	const handleClose = () => {
+		if (intervalRef.current !== null) {
+			clearInterval(intervalRef.current);
+		}
+		onClose?.();
+	};
 
 	return (
 		<PopupWrapper>
@@ -160,7 +181,7 @@ export function MessagePopup({ title, content, autoclose, onClose }: TwitchChatM
 					<Title>{title}</Title>
 					{autoclose && <AutocloseTimer>({timeLeft}s)</AutocloseTimer>}
 				</TitleArea>
-				<CloseButton type="button" onClick={onClose}>
+				<CloseButton type="button" onClick={handleClose}>
 					✕
 				</CloseButton>
 				{autoclose && <HeaderProgress width={progressWidth} />}

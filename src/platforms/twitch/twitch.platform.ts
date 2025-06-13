@@ -51,6 +51,8 @@ export default class TwitchPlatform extends Platform<TwitchModule, TwitchEvents,
 			new WatchTimeModule(...dependencies),
 			new ChatMessagePopupModule(...dependencies),
 			new RealVideoTimeModule(...dependencies),
+			new PinStreamerModule(...dependencies),
+			new WatchTimeModule(...dependencies),
 		];
 	}
 }
