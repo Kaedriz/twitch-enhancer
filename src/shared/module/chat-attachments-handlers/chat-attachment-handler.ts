@@ -1,8 +1,8 @@
+import type { Logger } from "$shared/logger/logger.ts";
 import type {
 	BaseChatAttachmentData,
 	ChatAttachmentData,
 } from "$types/shared/module/chat-attachment/chat-attachment.types.ts";
-import type { Logger } from "$shared/logger/logger.ts";
 
 export default abstract class ChatAttachmentHandler {
 	constructor(
