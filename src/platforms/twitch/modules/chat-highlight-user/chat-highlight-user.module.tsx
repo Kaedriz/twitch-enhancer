@@ -56,7 +56,7 @@ export default class ChatHighlightUserModule extends TwitchModule {
 	}
 
 	private removeHighlightedUserMentions(): void {
-		this.logger.debug("Removing highlighted messages");
+		this.logger.debug("Removing highlighted handlers");
 		document
 			.querySelectorAll(".enhancer-highlighted-user-message")
 			.forEach((message) => message.classList.remove("enhancer-highlighted-user-message"));

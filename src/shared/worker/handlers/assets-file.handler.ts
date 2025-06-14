@@ -1,4 +1,4 @@
-import { MessageHandler } from "$shared/worker/messages/message.handler.ts";
+import { MessageHandler } from "$shared/worker/handlers/message.handler.ts";
 import type { GetAssetsFilePayload, GetAssetsFileResponse } from "$types/shared/worker.types.ts";
 
 export class AssetsFileHandler extends MessageHandler {

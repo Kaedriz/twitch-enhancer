@@ -1,4 +1,4 @@
-import { MessageHandler } from "$shared/worker/messages/message.handler.ts";
+import { MessageHandler } from "$shared/worker/handlers/message.handler.ts";
 import type { PingResponse } from "$types/shared/worker.types.ts";
 
 export class PingHandler extends MessageHandler {

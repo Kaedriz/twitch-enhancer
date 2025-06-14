@@ -3,9 +3,9 @@ import type { TwitchChatMessage } from "$types/platforms/twitch/twitch.utils.typ
 import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 import type { QueueValue } from "$types/shared/queue.types.ts";
 import TwitchModule from "../../twitch.module.ts";
-import type ChatMessageListener from "./listener/chat-message-listener.ts";
-import SevenTVChatMessageListener from "./listener/seventv-chat-message-listener.ts";
-import TwitchChatMessageListener from "./listener/twitch-chat-message-listener.ts";
+import type ChatMessageListener from "./listener/chat-message.listener.ts";
+import SeventvChatMessageListener from "./listener/seventv-chat-message.listener.ts";
+import TwitchChatMessageListener from "./listener/twitch-chat-message.listener.ts";
 
 export default class ChatModule extends TwitchModule {
 	static readonly TWITCHTV_CHAT_SELECTOR = ".chat-scrollable-area__message-container";
@@ -54,7 +54,7 @@ export default class ChatModule extends TwitchModule {
 			this.listener = new TwitchChatMessageListener(this.logger, this.twitchUtils());
 		} else if (element.className.includes("seventv")) {
 			this.type = "7TV";
-			this.listener = new SevenTVChatMessageListener(this.logger, this.twitchUtils());
+			this.listener = new SeventvChatMessageListener(this.logger, this.twitchUtils());
 		}
 		this.listener.emitter.on("inject", () => this.logger.info(`Injected ${this.type} chat module`));
 		this.listener.emitter.on("message", (message) => this.handleMessage(message));
@@ -91,7 +91,7 @@ export default class ChatModule extends TwitchModule {
 						const id = seventvId ?? messageProps?.message.id;
 						if (!id) continue;
 						let message = this.queue.getAndRemove(id);
-						if (messageProps?.message.nonce && !message) message = this.queue.getAndRemove(messageProps?.message.nonce); // Handling re-rendering messages
+						if (messageProps?.message.nonce && !message) message = this.queue.getAndRemove(messageProps?.message.nonce); // Handling re-rendering handlers
 						if (!message) continue;
 						this.emitter.emit("twitch:chatMessage", {
 							element,
@@ -113,7 +113,7 @@ export default class ChatModule extends TwitchModule {
 					queueKey: message.id,
 				});
 			}
-			// Add backup message with nonce for paused chat in 7TV and re-rendering self messages in native chat
+			// Add backup message with nonce for paused chat in 7TV and re-rendering self handlers in native chat
 			if (message.nonce) {
 				this.queue.addByValue({
 					...message,

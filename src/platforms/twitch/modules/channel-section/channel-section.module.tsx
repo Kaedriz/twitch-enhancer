@@ -1,4 +1,5 @@
 import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
+import { type Signal, signal } from "@preact/signals";
 import { render } from "preact";
 import styled from "styled-components";
 import TwitchModule from "../../twitch.module.ts";
@@ -27,6 +28,9 @@ export default class ChannelSectionModule extends TwitchModule {
 			redirectUrl: "https://twitchtracker.com/",
 		},
 	];
+	private watchtimeCounter = {} as Signal<number>;
+	private currentChannelName: string | undefined;
+	private watchtimeInterval: NodeJS.Timeout | undefined;
 
 	private async run(elements: Element[]) {
 		for (const parentElement of elements) {
@@ -34,11 +38,12 @@ export default class ChannelSectionModule extends TwitchModule {
 			newElement.id = this.getId();
 			parentElement.appendChild(newElement);
 			const channelName = this.twitchUtils().getCurrentChannelByUrl();
+			this.currentChannelName = channelName;
 			if (!channelName) {
 				this.logger.warn("Error: Channel name not found");
 				continue;
 			}
-			const watchTime = this.getWatchTime(channelName);
+			await this.startWatchtimeUpdates();
 			const logo = await this.workerApi().send("getAssetsFile", {
 				path: "brand/logo.svg",
 			});
@@ -46,7 +51,7 @@ export default class ChannelSectionModule extends TwitchModule {
 				<ChannelInfoComponent
 					channelName={channelName}
 					sites={this.defaultSites}
-					watchTime={watchTime}
+					watchTime={this.watchtimeCounter}
 					logoUrl={logo?.url || "https://enhancer.at/assets/brand/logo.png"}
 				/>,
 				newElement,
@@ -54,10 +59,33 @@ export default class ChannelSectionModule extends TwitchModule {
 		}
 	}
 
-	private getWatchTime(channelName: string): number {
-		// This is a placeholder - implement actual watch time tracking
-		// You would likely get this from your extension's storage
-		return 42.5; // Example: 42.5 hours
+	private async updateWatchtime() {
+		if (!this.currentChannelName) return;
+		try {
+			this.watchtimeCounter.value = await this.getWatchTime(this.currentChannelName);
+			this.logger.debug("essa", this.watchtimeCounter.value);
+		} catch (error) {
+			console.error("Failed to fetch watch time:", error);
+		}
+	}
+
+	public async startWatchtimeUpdates() {
+		if (this.watchtimeInterval) {
+			clearInterval(this.watchtimeInterval);
+		}
+		await this.updateWatchtime();
+		this.watchtimeInterval = setInterval(async () => {
+			await this.updateWatchtime();
+		}, 1000);
+	}
+
+	private async getWatchTime(channelName: string): Promise<number> {
+		const watchtime = await this.workerApi().send("getWatchtime", {
+			platform: "twitch",
+			channel: channelName.toLowerCase(),
+		});
+		this.logger.debug(`got watchitme for ${channelName}`, watchtime?.time);
+		return watchtime?.time ?? 0;
 	}
 }
 
@@ -69,12 +97,13 @@ type Site = {
 interface ChannelInfoComponentProps {
 	channelName: string;
 	sites: Site[];
-	watchTime: number;
+	watchTime: Signal<number>;
 	logoUrl: string;
 }
 
 function ChannelInfoComponent({ channelName, sites, watchTime, logoUrl }: ChannelInfoComponentProps) {
-	const formatWatchTime = (hours: number) => {
+	const formatWatchTime = (time: number) => {
+		const hours = time === 0 ? 0 : time / 3600;
 		if (hours < 1) return `${Math.round(hours * 60)} minutes`;
 		if (hours < 10) return `${hours.toFixed(1)} hours`;
 		return `${Math.round(hours)} hours`;
@@ -87,16 +116,21 @@ function ChannelInfoComponent({ channelName, sites, watchTime, logoUrl }: Channe
 					<LogoContainer>
 						<img src={logoUrl} alt={"Enhancer Logo"} />
 					</LogoContainer>
-					<ChannelDetails>
+					<ChannelDetails
+						onClick={() => {
+							console.info("Enhancer", watchTime.value);
+						}}
+					>
 						<ChannelNameRow>
 							<ChannelName>{channelName}</ChannelName>
 							<RowText>—</RowText>
-							<RowText>You've watched this channel for {formatWatchTime(watchTime)}</RowText>
+							<RowText>
+								You've watched this channel for {watchTime.value} {"<-"} IDK WHY BUT IT DOES NOT UDPATE???
+							</RowText>
 						</ChannelNameRow>
 					</ChannelDetails>
 				</ChannelInfo>
 			</Header>
-
 			<Content>
 				<LinkGrid>
 					{sites.map((site) => {

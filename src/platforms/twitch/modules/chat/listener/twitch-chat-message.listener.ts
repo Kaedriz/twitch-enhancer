@@ -1,5 +1,5 @@
 import type { TwitchChatMessage } from "$types/platforms/twitch/twitch.utils.types.ts";
-import ChatMessageListener from "./chat-message-listener.ts";
+import ChatMessageListener from "./chat-message.listener.ts";
 
 export default class TwitchChatMessageListener extends ChatMessageListener {
 	inject() {

@@ -4,7 +4,10 @@ import type { Emitter } from "nanoevents";
 import type Module from "../module.ts";
 import ModuleApplier from "./module-applier.ts";
 
-export default class EventModuleApplier<Events extends CommonEvents> extends ModuleApplier<Events> {
+export default class EventModuleApplier<
+	Events extends CommonEvents,
+	Storage extends Record<string, any>,
+> extends ModuleApplier<Events, Storage> {
 	constructor(
 		logger: Logger,
 		protected readonly emitter: Emitter<Events>,
@@ -12,7 +15,7 @@ export default class EventModuleApplier<Events extends CommonEvents> extends Mod
 		super(logger);
 	}
 
-	async apply(module: Module<Events>) {
+	async apply(module: Module<Events, Storage>) {
 		for (const applier of module.config.appliers) {
 			if (applier.type === "event") {
 				// @ts-ignore Its needed, because of the try catch, we are just passing everything that comes to callback

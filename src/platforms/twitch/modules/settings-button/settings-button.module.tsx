@@ -31,7 +31,6 @@ export default class SettingsButtonModule extends TwitchModule {
 			.filter((element) => element.children.length > 0)
 			.map((element) => [...element.children].at(-1))
 			.filter((element) => element !== undefined) as Element[];
-		this.logger.debug("rendering settings as", this.getId());
 		const wrappers = this.commonUtils().createEmptyElements(this.getId(), properElements, "span");
 		const logo = await this.workerApi().send("getAssetsFile", {
 			path: "brand/logo-gray.svg",

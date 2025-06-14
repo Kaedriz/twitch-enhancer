@@ -34,8 +34,7 @@ export default class WorkerApi {
 	private startPing() {
 		this.pingInterval = window.setInterval(async () => {
 			try {
-				const response = await this.send("ping", undefined);
-				this.logger.debug("Ping response:", response);
+				await this.send("ping", undefined);
 			} catch (error) {
 				this.logger.error("Ping failed:", error);
 			}

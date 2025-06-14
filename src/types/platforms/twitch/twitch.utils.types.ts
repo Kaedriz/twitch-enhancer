@@ -50,7 +50,7 @@ export type MediaPlayerComponent = {
 };
 
 export type MediaPlayerInstance = {
-	core: { state: { liveLatency: number; ingestLatency: number } };
+	core: { state: { liveLatency: number; ingestLatency: number }; paused: boolean };
 	seekTo: (time: number) => void;
 	getPosition(): number;
 };

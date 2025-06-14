@@ -154,7 +154,6 @@ export default class ChattersModule extends TwitchModule {
 	}
 
 	private getOrCreateCounter(login: string, value: number) {
-		this.localStorage().getOrDefault("pinnedStreamers", []);
 		let counter = this.chattersCounters[login];
 		if (!counter) {
 			counter = signal(value);
@@ -173,7 +172,7 @@ export default class ChattersModule extends TwitchModule {
 
 	private async updateAllEmptyCounters() {
 		const emptyLogins = Object.entries(this.chattersCounters)
-			.filter(([login, counter]) => {
+			.filter(([_, counter]) => {
 				return counter.value === ChattersModule.LOADING_VALUE;
 			})
 			.map(([login]) => {

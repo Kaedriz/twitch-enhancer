@@ -3,10 +3,13 @@ import type { SelectorModuleApplierConfig } from "$types/shared/module/module-ap
 import type Module from "../module.ts";
 import ModuleApplier from "./module-applier.ts";
 
-export default class SelectorModuleApplier<Events extends CommonEvents> extends ModuleApplier<Events> {
+export default class SelectorModuleApplier<
+	Events extends CommonEvents,
+	Storage extends Record<string, any>,
+> extends ModuleApplier<Events, Storage> {
 	protected readonly appliers: SelectorModuleApplierRunner[] = [];
 
-	async apply(module: Module<Events>) {
+	async apply(module: Module<Events, Storage>) {
 		const selectorAppliers = module.config.appliers.filter(
 			(applier) => applier.type === "selector",
 		) as SelectorModuleApplierConfig[];
