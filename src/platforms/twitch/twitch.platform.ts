@@ -5,6 +5,7 @@ import ChatBadgesModule from "$twitch/modules/chat-badges/chat-badges-module.tsx
 import ChattersModule from "$twitch/modules/chatters/chatters.module.tsx";
 import PinStreamerModule from "$twitch/modules/pin-streamer/pin-streamer.module.tsx";
 import RealVideoTimeModule from "$twitch/modules/real-video-time/real-video-time-module.tsx";
+import SettingsButtonModule from "$twitch/modules/settings-button/settings-button.module.tsx";
 import WatchTimeModule from "$twitch/modules/watchtime/watchtime.module.tsx";
 import type { TwitchEvents } from "$types/platforms/twitch/twitch.events.types.ts";
 import type { TwitchStorage } from "$types/platforms/twitch/twitch.storage.types.ts";
@@ -54,6 +55,7 @@ export default class TwitchPlatform extends Platform<TwitchModule, TwitchEvents,
 			new RealVideoTimeModule(...dependencies),
 			new PinStreamerModule(...dependencies),
 			new WatchTimeModule(...dependencies),
+			new SettingsButtonModule(...dependencies),
 		];
 	}
 }
