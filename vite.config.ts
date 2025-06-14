@@ -42,6 +42,8 @@ export default defineConfig({
 			input: {
 				index: "src/index.ts",
 				inject: "src/inject.ts",
+				"worker.bridge": "src/shared/worker/worker.bridge.ts",
+				"worker.background": "src/shared/worker/worker.background.ts",
 			},
 		},
 	},

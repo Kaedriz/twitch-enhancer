@@ -15,14 +15,18 @@ export function getManifest() {
 		content_scripts: [
 			{
 				matches: ["*://*.twitch.tv/*", "*://*.kick.com/*"],
-				js: ["inject.js"],
+				js: ["inject.js", "worker.bridge.js"],
 			},
 		],
 		web_accessible_resources: [
 			{
 				matches: ["*://*.twitch.tv/*", "*://*.kick.com/*"],
-				resources: ["index.js", "index.js.map", "inject.js.map"],
+				resources: ["index.js", "index.js.map", "inject.js.map", "logger.js"],
 			},
 		],
+		background: {
+			service_worker: "worker.background.js",
+			type: "module",
+		},
 	};
 }

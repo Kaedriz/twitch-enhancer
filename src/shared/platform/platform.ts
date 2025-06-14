@@ -6,6 +6,7 @@ import SelectorModuleApplier from "$shared/module/applier/selector-module-applie
 import type Module from "$shared/module/module.ts";
 import StorageRepository from "$shared/storage/storage-repository.ts";
 import UtilsRepository from "$shared/utils/utils.repository.ts";
+import WorkerApi from "$shared/worker/worker.api.ts";
 import type { CommonEvents } from "$types/platforms/common.events.ts";
 import type { PlatformConfig } from "$types/shared/platform.types.ts";
 import type { Emitter } from "nanoevents";
@@ -20,6 +21,7 @@ export default abstract class Platform<
 	protected readonly storageRepository = new StorageRepository<TStorage>();
 	protected readonly utilsRepository: UtilsRepository = new UtilsRepository();
 	protected readonly enhancerApi;
+	protected readonly workerApi = new WorkerApi();
 
 	protected constructor(protected readonly config: PlatformConfig) {
 		this.enhancerApi = new EnhancerApi(config.type);
@@ -29,11 +31,16 @@ export default abstract class Platform<
 
 	async start() {
 		await this.enhancerApi.initialize(); // TODO Retry if something bad happen :(
+		this.workerApi.start();
 		await this.initialize();
 		await this.loadModules();
 		this.logger.info(`Started ${this.config.type} extension`);
 		// @ts-ignore tbh idk, it just works, typescript magic
 		this.emitter.emit("extension:start");
+		const response = await this.workerApi.send<{ url: string }>("getAssetsFile", {
+			path: "brand/logo.svg",
+		});
+		this.logger.debug("File:", response?.url);
 	}
 
 	private appliers = [
