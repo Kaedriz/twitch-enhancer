@@ -1,4 +1,4 @@
-import ExampleModule from "module/kick/example/example.module.ts";
+import ExampleModule from "module/kick/example/settings-button.module.ts";
 import type { EventEmitter } from "types/content/event/events.types.ts";
 import type StorageRepository from "../../../../../src/shared/storage/storage-repository.ts";
 import type Logger from "../../../shared/logger/logger.ts";

@@ -37,10 +37,6 @@ export default abstract class Platform<
 		this.logger.info(`Started ${this.config.type} extension`);
 		// @ts-ignore tbh idk, it just works, typescript magic
 		this.emitter.emit("extension:start");
-		const response = await this.workerApi.send<{ url: string }>("getAssetsFile", {
-			path: "brand/logo.svg",
-		});
-		this.logger.debug("File:", response?.url);
 	}
 
 	private appliers = [

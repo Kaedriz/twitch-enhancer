@@ -1,5 +1,5 @@
-import type { GetAssetsFilePayload, GetAssetsFileResponse } from "$types/shared/worker.types.ts";
 import { MessageHandler } from "$shared/worker/messages/message.handler.ts";
+import type { GetAssetsFilePayload, GetAssetsFileResponse } from "$types/shared/worker.types.ts";
 
 export class AssetsFileHandler extends MessageHandler {
 	async handle(payload: GetAssetsFilePayload): Promise<GetAssetsFileResponse> {

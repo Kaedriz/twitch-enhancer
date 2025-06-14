@@ -2,6 +2,7 @@ import type EnhancerApi from "$shared/apis/enhancer.api.ts";
 import { Logger } from "$shared/logger/logger.ts";
 import type StorageRepository from "$shared/storage/storage-repository.ts";
 import type UtilsRepository from "$shared/utils/utils.repository.ts";
+import type WorkerApi from "$shared/worker/worker.api.ts";
 import type { CommonEvents } from "$types/platforms/common.events.ts";
 import type { ModuleConfig } from "$types/shared/module/module.types.ts";
 import type { Emitter } from "nanoevents";
@@ -15,6 +16,7 @@ export default abstract class Module<Events extends CommonEvents, Storage extend
 		private readonly storageRepository: StorageRepository<Storage>,
 		private readonly utilsRepository: UtilsRepository,
 		private readonly _enhancerApi: EnhancerApi,
+		private readonly _workerApi: WorkerApi,
 	) {}
 
 	setup() {
@@ -29,7 +31,6 @@ export default abstract class Module<Events extends CommonEvents, Storage extend
 		return `enhancer-${this.config.name}`;
 	}
 
-	// Utils
 	protected commonUtils() {
 		return this.utilsRepository.commonUtils;
 	}
@@ -38,13 +39,15 @@ export default abstract class Module<Events extends CommonEvents, Storage extend
 		return this.utilsRepository.reactUtils;
 	}
 
-	// APIs
 	protected enhancerApi() {
 		return this._enhancerApi;
 	}
 
-	// Storage
 	protected localStorage() {
 		return this.storageRepository.localStorage;
+	}
+
+	protected workerApi() {
+		return this._workerApi;
 	}
 }

@@ -29,22 +29,30 @@ export default class ChannelSectionModule extends TwitchModule {
 		},
 	];
 
-	private run(elements: Element[]) {
-		elements.forEach((parentElement) => {
+	private async run(elements: Element[]) {
+		for (const parentElement of elements) {
 			const newElement = this.commonUtils().createElementByParent(this.getId(), "div", parentElement);
 			newElement.id = this.getId();
 			parentElement.appendChild(newElement);
 			const channelName = this.twitchUtils().getCurrentChannelByUrl();
 			if (!channelName) {
 				this.logger.warn("Error: Channel name not found");
-				return null;
+				continue;
 			}
 			const watchTime = this.getWatchTime(channelName);
+			const logo = await this.workerApi().send("getAssetsFile", {
+				path: "brand/logo.svg",
+			});
 			render(
-				<ChannelInfoComponent channelName={channelName} sites={this.defaultSites} watchTime={watchTime} />,
+				<ChannelInfoComponent
+					channelName={channelName}
+					sites={this.defaultSites}
+					watchTime={watchTime}
+					logoUrl={logo?.url || "https://enhancer.at/assets/brand/logo.png"}
+				/>,
 				newElement,
 			);
-		});
+		}
 	}
 
 	private getWatchTime(channelName: string): number {
@@ -63,9 +71,10 @@ interface ChannelInfoComponentProps {
 	channelName: string;
 	sites: Site[];
 	watchTime: number;
+	logoUrl: string;
 }
 
-function ChannelInfoComponent({ channelName, sites, watchTime }: ChannelInfoComponentProps) {
+function ChannelInfoComponent({ channelName, sites, watchTime, logoUrl }: ChannelInfoComponentProps) {
 	const formatWatchTime = (hours: number) => {
 		if (hours < 1) return `${Math.round(hours * 60)} minutes`;
 		if (hours < 10) return `${hours.toFixed(1)} hours`;
@@ -77,7 +86,7 @@ function ChannelInfoComponent({ channelName, sites, watchTime }: ChannelInfoComp
 			<Header>
 				<ChannelInfo>
 					<LogoContainer>
-						<EnhancerIcon />
+						<img src={logoUrl} alt={"Enhancer Logo"} />
 					</LogoContainer>
 					<ChannelDetails>
 						<ChannelNameRow>

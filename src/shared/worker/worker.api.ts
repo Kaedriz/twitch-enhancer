@@ -1,5 +1,11 @@
+// main-world/worker-api.ts
 import { Logger } from "$shared/logger/logger.ts";
-import type { ExtensionMessageDetail, ExtensionResponseDetail } from "$types/shared/worker.types.ts";
+import type {
+	ExtensionMessageDetail,
+	ExtensionResponseDetail,
+	WorkerAction,
+	WorkerApiActions,
+} from "$types/shared/worker.types.ts";
 
 export default class WorkerApi {
 	private readonly logger = new Logger({ context: "worker" });
@@ -28,7 +34,7 @@ export default class WorkerApi {
 	private startPing() {
 		this.pingInterval = window.setInterval(async () => {
 			try {
-				const response = await this.send("ping");
+				const response = await this.send("ping", undefined);
 				this.logger.debug("Ping response:", response);
 			} catch (error) {
 				this.logger.error("Ping failed:", error);
@@ -50,14 +56,22 @@ export default class WorkerApi {
 		}) as unknown as EventListener);
 	}
 
-	async send<T = any>(action: string, payload?: any): Promise<T | null> {
+	// Fully typed send method
+	async send<T extends WorkerAction>(
+		action: T,
+		...args: WorkerApiActions[T]["payload"] extends never ? [] : [WorkerApiActions[T]["payload"]]
+	): Promise<WorkerApiActions[T]["response"] | null> {
 		return new Promise((resolve) => {
 			const messageId = crypto.randomUUID();
 			this.pendingMessages.set(messageId, resolve);
+
+			const payload = args.length > 0 ? args[0] : undefined;
 			const event = new CustomEvent<ExtensionMessageDetail>("enhancer-message", {
 				detail: { messageId, action, payload },
 			});
+
 			this.element.dispatchEvent(event);
+
 			setTimeout(() => {
 				if (this.pendingMessages.has(messageId)) {
 					this.pendingMessages.delete(messageId);

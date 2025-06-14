@@ -1,8 +1,8 @@
-import type { WorkerAction } from "$types/shared/worker.types.ts";
+import type { Logger } from "$shared/logger/logger.ts";
+import { AssetsFileHandler } from "$shared/worker/messages/assets-file.handler.ts";
 import type { MessageHandler } from "$shared/worker/messages/message.handler.ts";
 import { PingHandler } from "$shared/worker/messages/ping.handler.ts";
-import { AssetsFileHandler } from "$shared/worker/messages/assets-file.handler.ts";
-import type { Logger } from "$shared/logger/logger.ts";
+import type { WorkerAction } from "$types/shared/worker.types.ts";
 
 export class HandlerRegistry {
 	private handlers = new Map<WorkerAction, MessageHandler>();
