@@ -1,4 +1,4 @@
-import type { RequestConfig, RequestResponse, WaitForConfig } from "$types/shared/utils/common.utils.types.ts";
+import type { WaitForConfig } from "$types/shared/utils/common.utils.types.ts";
 
 export default class CommonUtils {
 	static readonly UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -36,25 +36,12 @@ export default class CommonUtils {
 		return typeof url === "string" && url.startsWith("https://") && URL.canParse(url);
 	}
 
-	async request<T>(url: string, config: RequestConfig): Promise<RequestResponse<T>> {
-		const response = await fetch(url, {
-			method: config.method ?? "GET",
-			body: config.body ?? undefined,
-		});
-		const validateStatus = config.validateStatus ?? ((status: number): boolean => status === 200);
-		if (!validateStatus(response.status)) {
-			throw new UnexpectedStatusError(`Received status: ${response.status}`);
-		}
-		const responseType = config.responseType ?? "json";
-		const data = (responseType === "json" ? await response.json() : await response.text()) as T;
-		return { data, status: response.status, response };
-	}
-
 	async waitFor<T>(
 		predicate: () => Promise<T | undefined> | T | undefined,
 		callback: (result: T, retry: number) => Promise<void> | void,
 		config?: WaitForConfig,
 	) {
+		if (config?.initialDelay) await this.delay(config.initialDelay);
 		const retries = config?.maxRetries ?? 1;
 		for (let i = 0; i < retries; i++) {
 			const result = await predicate();
