@@ -1,5 +1,8 @@
-import type Logger from "logger";
-import type { BaseChatAttachmentData, ChatAttachmentData } from "types/content/module/twitch/chat-attachment.types.ts";
+import type {
+	BaseChatAttachmentData,
+	ChatAttachmentData,
+} from "$types/shared/module/chat-attachment/chat-attachment.types.ts";
+import type { Logger } from "$shared/logger/logger.ts";
 
 export default abstract class ChatAttachmentHandler {
 	constructor(

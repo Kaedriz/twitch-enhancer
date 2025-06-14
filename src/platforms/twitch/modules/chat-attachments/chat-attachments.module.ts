@@ -1,3 +1,4 @@
+import { HttpClient } from "$shared/http/http-client.ts";
 import type ChatAttachmentHandler from "$shared/module/chat-attachments-handlers/chat-attachment-handler.ts";
 import ImageChatAttachmentHandler from "$shared/module/chat-attachments-handlers/image-chat-attachment-handler.ts";
 import TwitchModule from "$twitch/twitch.module.ts";
@@ -21,6 +22,8 @@ export default class ChatAttachmentsModule extends TwitchModule {
 			},
 		],
 	};
+
+	private httpClient = new HttpClient();
 
 	private readonly chatAttachmentHandlers: ChatAttachmentHandler[] = [
 		new ImageChatAttachmentHandler(this.logger, () => {
@@ -64,9 +67,9 @@ export default class ChatAttachmentsModule extends TwitchModule {
 
 	private async getAttachmentData(url: URL) {
 		try {
-			const { response } = await this.commonUtils().request(url.href, {
+			const { response } = await this.httpClient.request(url.href, {
 				method: "HEAD",
-				responseType: "raw",
+				responseType: "text",
 			});
 			return { type: response.headers.get("Content-Type"), size: response.headers.get("Content-Length") };
 		} catch (error) {
