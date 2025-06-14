@@ -33,10 +33,8 @@ export default class ChannelSectionModule extends TwitchModule {
 	private watchtimeInterval: NodeJS.Timeout | undefined;
 
 	private async run(elements: Element[]) {
-		for (const parentElement of elements) {
-			const newElement = this.commonUtils().createElementByParent(this.getId(), "div", parentElement);
-			newElement.id = this.getId();
-			parentElement.appendChild(newElement);
+		const wrappers = this.commonUtils().createEmptyElements(this.getId(), elements, "div");
+		for (const wrapper of wrappers) {
 			const channelName = this.twitchUtils().getCurrentChannelByUrl();
 			this.currentChannelName = channelName;
 			if (!channelName) {
@@ -54,7 +52,7 @@ export default class ChannelSectionModule extends TwitchModule {
 					watchTime={this.watchtimeCounter}
 					logoUrl={logo?.url || "https://enhancer.at/assets/brand/logo.png"}
 				/>,
-				newElement,
+				wrapper,
 			);
 		}
 	}
@@ -63,13 +61,15 @@ export default class ChannelSectionModule extends TwitchModule {
 		if (!this.currentChannelName) return;
 		try {
 			this.watchtimeCounter.value = await this.getWatchTime(this.currentChannelName);
-			this.logger.debug("essa", this.watchtimeCounter.value);
 		} catch (error) {
 			console.error("Failed to fetch watch time:", error);
 		}
 	}
 
 	public async startWatchtimeUpdates() {
+		if (!("value" in this.watchtimeCounter)) {
+			this.watchtimeCounter = signal(0);
+		}
 		if (this.watchtimeInterval) {
 			clearInterval(this.watchtimeInterval);
 		}
@@ -84,7 +84,6 @@ export default class ChannelSectionModule extends TwitchModule {
 			platform: "twitch",
 			channel: channelName.toLowerCase(),
 		});
-		this.logger.debug(`got watchitme for ${channelName}`, watchtime?.time);
 		return watchtime?.time ?? 0;
 	}
 }
@@ -124,9 +123,7 @@ function ChannelInfoComponent({ channelName, sites, watchTime, logoUrl }: Channe
 						<ChannelNameRow>
 							<ChannelName>{channelName}</ChannelName>
 							<RowText>—</RowText>
-							<RowText>
-								You've watched this channel for {watchTime.value} {"<-"} IDK WHY BUT IT DOES NOT UDPATE???
-							</RowText>
+							<RowText>You've watched this channel for {formatWatchTime(watchTime.value)}</RowText>
 						</ChannelNameRow>
 					</ChannelDetails>
 				</ChannelInfo>

@@ -33,11 +33,10 @@ export default class LocalWatchtimeCounterModule extends TwitchModule {
 			if (!channelName) return;
 			const mediaPlayerInstance = this.twitchUtils().getMediaPlayerInstance();
 			if (mediaPlayerInstance && !mediaPlayerInstance.core.paused) {
-				const response = await this.workerApi().send("addWatchtime", {
+				await this.workerApi().send("addWatchtime", {
 					platform: "twitch",
 					channel: channelName,
 				});
-				this.logger.debug(`Updated wachtime on ${response?.id} to ${response?.time}`);
 			}
 		}, 5000);
 	}
