@@ -141,7 +141,7 @@ export default class ChattersModule extends TwitchModule {
 				this.updateTotalChattersCounter();
 				this.lastUpdatedAt = Date.now();
 			},
-			{ delay: 1000, maxRetries: 5 },
+			{ delay: 1000, maxRetries: 5, initialDelay: 30 },
 		);
 	}
 
