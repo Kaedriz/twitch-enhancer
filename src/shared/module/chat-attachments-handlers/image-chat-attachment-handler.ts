@@ -62,9 +62,13 @@ export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 		image.classList.add("enhancer-chat-image");
 		image.src = imageSource;
 		image.onload = () => {
+			const imageContainer = document.createElement("div");
+			imageContainer.classList.add("enhancer-chat-image-container");
+			imageContainer.appendChild(image);
+
 			element.href = this.parsePreviewUrl(data.url).href;
 			element.classList.add("enhancer-chat-link");
-			element.replaceChildren(image);
+			element.replaceChildren(imageContainer);
 			this.loadedCallback();
 		};
 		image.onerror = () => {
