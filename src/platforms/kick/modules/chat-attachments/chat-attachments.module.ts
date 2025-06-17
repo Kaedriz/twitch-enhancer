@@ -23,7 +23,7 @@ export default class ChatAttachmentsModule extends KickModule {
 		],
 	};
 
-	private httpClient = new HttpClient();
+	private readonly httpClient = new HttpClient();
 
 	private readonly chatAttachmentHandlers: ChatAttachmentHandler[] = [
 		new ImageChatAttachmentHandler(this.logger, () => {}),
@@ -66,7 +66,7 @@ export default class ChatAttachmentsModule extends KickModule {
 	}
 
 	private async getData(baseData: BaseChatAttachmentData): Promise<ChatAttachmentData> {
-		const attachmentData = await this.getAttachmentData(baseData.url);
+		const attachmentData = await this.getAttachmentData(ImageChatAttachmentHandler.parseUrl(baseData.url));
 		if (!attachmentData || !attachmentData.type || !attachmentData.size)
 			throw new Error("Couldn't get attachment data");
 		return { ...baseData, attachmentType: attachmentData.type, attachmentSize: Number.parseInt(attachmentData.size) };
@@ -74,10 +74,9 @@ export default class ChatAttachmentsModule extends KickModule {
 
 	private async getAttachmentData(url: URL) {
 		try {
-			const { response } = await this.commonUtils().request(url.href, {
-				//TODO to fix
+			const { response } = await this.httpClient.request(url.href, {
 				method: "HEAD",
-				responseType: "raw",
+				responseType: "text",
 			});
 			return { type: response.headers.get("Content-Type"), size: response.headers.get("Content-Length") };
 		} catch (error) {
@@ -90,12 +89,6 @@ export default class ChatAttachmentsModule extends KickModule {
 			.enhancer-chat-link {
 				display: inline-block;
 				text-decoration: none;
-			}
-			
-			.enhancer-chat-image-container {
-				display: inline-block;
-				margin: 0.5rem 0;
-				max-width: 100%;
 			}
 			
 			.enhancer-chat-image {

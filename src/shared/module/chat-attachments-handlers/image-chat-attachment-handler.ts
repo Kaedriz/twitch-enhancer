@@ -58,7 +58,7 @@ export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 	async handle(data: ChatAttachmentData) {
 		const element = data.messageElement as HTMLLinkElement;
 		const image = new Image();
-		const imageSource = this.parseUrl(data.url).href;
+		const imageSource = ImageChatAttachmentHandler.parseUrl(data.url).href;
 		image.classList.add("enhancer-chat-image");
 		image.src = imageSource;
 		image.onload = () => {
@@ -76,7 +76,7 @@ export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 		};
 	}
 
-	private parseUrl(url: URL): URL {
+	public static parseUrl(url: URL): URL {
 		return ImageChatAttachmentHandler.URL_PARSERS[url.host]?.(url) ?? url;
 	}
 

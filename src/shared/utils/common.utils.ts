@@ -56,20 +56,6 @@ export default class CommonUtils {
 		}
 	}
 
-	async request<T>(url: string, config: RequestConfig): Promise<RequestResponse<T>> {
-		const response = await fetch(url, {
-			method: config.method ?? "GET",
-			body: config.body ?? undefined,
-		});
-		const validateStatus = config.validateStatus ?? ((status: number): boolean => status === 200);
-		if (!validateStatus(response.status)) {
-			throw new UnexpectedStatusError(`Received status: ${response.status}`);
-		}
-		const responseType = config.responseType ?? "json";
-		const data = (responseType === "json" ? await response.json() : await response.text()) as T;
-		return { data, status: response.status, response, headers: response.headers };
-	}
-
 	async delay(ms: number) {
 		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
