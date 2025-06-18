@@ -46,8 +46,8 @@ export default class ChatAttachmentsModule extends KickModule {
 
 	private getBaseData(message: KickChatMessage): BaseChatAttachmentData | undefined {
 		const args = message.message.split(" ");
-		const firstWord = args.at(0);
-		const lastWord = args.at(-1);
+		const firstWord = args.at(0) || '';
+		const lastWord = args.at(-1) || '';
 
 		const messageElement = message.element.querySelector("a[href]");
 
