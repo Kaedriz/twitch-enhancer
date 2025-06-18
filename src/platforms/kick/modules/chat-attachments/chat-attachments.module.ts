@@ -2,7 +2,7 @@ import KickModule from "$kick/kick.module.ts";
 import { HttpClient } from "$shared/http/http-client.ts";
 import type ChatAttachmentHandler from "$shared/module/chat-attachments-handlers/chat-attachment-handler.ts";
 import ImageChatAttachmentHandler from "$shared/module/chat-attachments-handlers/image-chat-attachment-handler.ts";
-import type { KickChatMessage } from "$types/platforms/kick/kick.utils.types.ts";
+import type { ChatMessageElements } from "$types/platforms/kick/kick.utils.types.ts";
 import {
 	type BaseChatAttachmentData,
 	type ChatAttachmentData,
@@ -31,23 +31,22 @@ export default class ChatAttachmentsModule extends KickModule {
 		}),
 	];
 
-	private async handleMessage(message: KickChatMessage) {
+	private async handleMessage(message: ChatMessageElements) {
 		const baseData = this.getBaseData(message);
 		if (!baseData) return;
 		const chatAttachmentHandler = this.chatAttachmentHandlers.find((chatAttachmentHandler) =>
 			chatAttachmentHandler.validate(baseData),
 		);
-		const url = chatAttachmentHandler?.parseUrl(baseData.url);
-		if (url) baseData.url = url;
 		if (!chatAttachmentHandler) return;
+		baseData.url = chatAttachmentHandler?.parseUrl(baseData.url);
 		const data = await this.getData(baseData);
 		if (await chatAttachmentHandler.applies(data)) await chatAttachmentHandler.handle(data);
 	}
 
-	private getBaseData(message: KickChatMessage): BaseChatAttachmentData | undefined {
-		const args = message.message?.split(" ") ?? [];
-		const firstWord = args.at(0) || '';
-		const lastWord = args.at(-1) || '';
+	private getBaseData(message: ChatMessageElements): BaseChatAttachmentData | undefined {
+		const args = message.messageData.content?.split(" ") ?? [];
+		const firstWord = args.at(0) || "";
+		const lastWord = args.at(-1) || "";
 
 		const messageElement = message.element.querySelector("a[href]");
 

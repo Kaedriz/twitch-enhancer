@@ -10,7 +10,6 @@ export default class ExampleModule extends KickModule {
 				event: "extension:start",
 				callback: () => {
 					this.logger.debug("Example module loaded");
-					this.logger.debug("KickUtils:", this.kickUtils().getSigma());
 				},
 				key: "essa",
 			},

@@ -1,13 +1,6 @@
 import KickModule from "$kick/kick.module.ts";
-import type { KickChatMessage } from "$types/platforms/kick/kick.utils.types.ts";
+import type { ChatMessageElements, KickChatMessage } from "$types/platforms/kick/kick.utils.types.ts";
 import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
-
-interface ChatMessageElements {
-	username: string;
-	message: string;
-	timestamp: string;
-	element: Element;
-}
 
 export default class ChatModule extends KickModule {
 	readonly config: KickModuleConfig = {
@@ -26,25 +19,19 @@ export default class ChatModule extends KickModule {
 	private observer?: MutationObserver;
 
 	private extractMessageData(element: Element): ChatMessageElements | null {
-		const username = element.querySelector("button[title]")?.getAttribute("title")?.trim();
-		const message = element.querySelector("span.font-normal")?.textContent?.trim();
-		const timestamp = element.querySelector("span.text-neutral")?.textContent?.trim();
-
-		if (!username || !message || !timestamp) {
-			this.logger.warn("Incomplete chat message data", { username, message, timestamp });
-			return null;
-		}
-
-		return { username, message, timestamp, element };
+		const messageData = this.kickUtils().getMessageData(element);
+		if (!messageData) return null;
+		return {
+			messageData: messageData,
+			element: element,
+		};
 	}
 
 	private processMessage(element: Element): void {
 		try {
 			const messageData = this.extractMessageData(element);
 			if (!messageData) return;
-
-			const messageObj = messageData as unknown as KickChatMessage;
-			this.emitter.emit("kick:chatMessage", messageObj);
+			this.emitter.emit("kick:chatMessage", messageData);
 		} catch (err) {
 			this.logger.error("Failed to parse chat message", err);
 		}
