@@ -38,12 +38,15 @@ export default class ChatAttachmentsModule extends TwitchModule {
 			chatAttachmentHandler.validate(baseData),
 		);
 		if (!chatAttachmentHandler) return;
+		baseData.url = chatAttachmentHandler.parseUrl(baseData.url);
 		const data = await this.getData(baseData);
 		if (await chatAttachmentHandler.applies(data)) await chatAttachmentHandler.handle(data);
 	}
 
 	private getBaseData(message: TwitchChatMessageEvent): BaseChatAttachmentData | undefined {
-		const args = message.message.message.split(" ");
+		const messageText = message.message.message ?? message.message.messageBody;
+		if (!messageText) return;
+		const args = messageText.split(" ");
 		const links = [...message.element.querySelectorAll("a")] as Element[];
 		const firstWord = args.at(0);
 		const firstElement = links.at(0);

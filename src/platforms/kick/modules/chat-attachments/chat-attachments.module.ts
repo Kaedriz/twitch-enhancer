@@ -38,7 +38,7 @@ export default class ChatAttachmentsModule extends KickModule {
 			chatAttachmentHandler.validate(baseData),
 		);
 		if (!chatAttachmentHandler) return;
-		baseData.url = chatAttachmentHandler?.parseUrl(baseData.url);
+		baseData.url = chatAttachmentHandler.parseUrl(baseData.url);
 		const data = await this.getData(baseData);
 		if (await chatAttachmentHandler.applies(data)) await chatAttachmentHandler.handle(data);
 	}
