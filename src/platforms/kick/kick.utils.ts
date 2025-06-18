@@ -6,4 +6,11 @@ export default class KickUtils {
 	getSigma() {
 		return "sigma";
 	}
+
+	scrollChatToBottom() {
+		const chatElement = document.getElementById("chatroom-messages");
+		if (chatElement) {
+			chatElement.scrollTop = chatElement.scrollHeight;
+		}
+	}
 }

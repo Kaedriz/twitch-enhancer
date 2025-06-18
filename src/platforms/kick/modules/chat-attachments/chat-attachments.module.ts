@@ -26,7 +26,9 @@ export default class ChatAttachmentsModule extends KickModule {
 	private readonly httpClient = new HttpClient();
 
 	private readonly chatAttachmentHandlers: ChatAttachmentHandler[] = [
-		new ImageChatAttachmentHandler(this.logger, () => {}),
+		new ImageChatAttachmentHandler(this.logger, () => {
+			this.kickUtils().scrollChatToBottom();
+		}),
 	];
 
 	private async handleMessage(message: KickChatMessage) {
@@ -35,6 +37,8 @@ export default class ChatAttachmentsModule extends KickModule {
 		const chatAttachmentHandler = this.chatAttachmentHandlers.find((chatAttachmentHandler) =>
 			chatAttachmentHandler.validate(baseData),
 		);
+		const url = chatAttachmentHandler?.parseUrl(baseData.url);
+		if (url) baseData.url = url;
 		if (!chatAttachmentHandler) return;
 		const data = await this.getData(baseData);
 		if (await chatAttachmentHandler.applies(data)) await chatAttachmentHandler.handle(data);
@@ -66,7 +70,7 @@ export default class ChatAttachmentsModule extends KickModule {
 	}
 
 	private async getData(baseData: BaseChatAttachmentData): Promise<ChatAttachmentData> {
-		const attachmentData = await this.getAttachmentData(ImageChatAttachmentHandler.parseUrl(baseData.url));
+		const attachmentData = await this.getAttachmentData(baseData.url);
 		if (!attachmentData || !attachmentData.type || !attachmentData.size)
 			throw new Error("Couldn't get attachment data");
 		return { ...baseData, attachmentType: attachmentData.type, attachmentSize: Number.parseInt(attachmentData.size) };
@@ -87,16 +91,18 @@ export default class ChatAttachmentsModule extends KickModule {
 	async initialize() {
 		this.commonUtils().createGlobalStyle(`
 			.enhancer-chat-link {
-				display: inline-block;
+				display: block;
 				text-decoration: none;
+				width: 100%;
 			}
 			
 			.enhancer-chat-image {
-				min-height: 16px;
+				max-width: 100%;
 				max-height: 256px;
 				width: auto;
-				max-width: 100%;
+				height: auto;
 				display: block;
+				margin-top: 4px;
 			}`);
 	}
 }

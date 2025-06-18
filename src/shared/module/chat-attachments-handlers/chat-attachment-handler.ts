@@ -19,4 +19,8 @@ export default abstract class ChatAttachmentHandler {
 	async handle(data: ChatAttachmentData) {
 		throw new Error("Not implemented");
 	}
+
+	parseUrl(url: URL): URL {
+		throw new Error("Not implemented");
+	}
 }

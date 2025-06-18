@@ -55,10 +55,14 @@ export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 		return data.attachmentSize < ImageChatAttachmentHandler.MAX_FILE_SIZE;
 	}
 
+	public parseUrl(url: URL): URL {
+		return ImageChatAttachmentHandler.URL_PARSERS[url.host]?.(url) ?? url;
+	}
+
 	async handle(data: ChatAttachmentData) {
 		const element = data.messageElement as HTMLLinkElement;
 		const image = new Image();
-		const imageSource = ImageChatAttachmentHandler.parseUrl(data.url).href;
+		const imageSource = this.parseUrl(data.url).href;
 		image.classList.add("enhancer-chat-image");
 		image.src = imageSource;
 		image.onload = () => {
@@ -74,10 +78,6 @@ export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 		image.onerror = () => {
 			this.logger.warn("Failed to load image");
 		};
-	}
-
-	public static parseUrl(url: URL): URL {
-		return ImageChatAttachmentHandler.URL_PARSERS[url.host]?.(url) ?? url;
 	}
 
 	private parsePreviewUrl(url: URL): URL {
