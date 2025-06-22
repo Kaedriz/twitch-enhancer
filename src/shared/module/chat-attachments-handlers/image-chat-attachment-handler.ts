@@ -20,6 +20,7 @@ export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 		"i.imgur.com",
 		"i.nuuls.com",
 		"kappa.lol",
+		"files.igor.ovh",
 	];
 	static readonly URL_PARSERS: AttachmentUrlParser = {
 		"cdn.discordapp.com": (url) => {

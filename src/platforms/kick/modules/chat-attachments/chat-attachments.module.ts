@@ -2,7 +2,7 @@ import KickModule from "$kick/kick.module.ts";
 import { HttpClient } from "$shared/http/http-client.ts";
 import type ChatAttachmentHandler from "$shared/module/chat-attachments-handlers/chat-attachment-handler.ts";
 import ImageChatAttachmentHandler from "$shared/module/chat-attachments-handlers/image-chat-attachment-handler.ts";
-import type { ChatMessageElements } from "$types/platforms/kick/kick.utils.types.ts";
+import type { KickChatMessageEvent } from "$types/platforms/kick/kick.events.types.ts";
 import {
 	type BaseChatAttachmentData,
 	type ChatAttachmentData,
@@ -31,7 +31,7 @@ export default class ChatAttachmentsModule extends KickModule {
 		}),
 	];
 
-	private async handleMessage(message: ChatMessageElements) {
+	private async handleMessage(message: KickChatMessageEvent) {
 		const baseData = this.getBaseData(message);
 		if (!baseData) return;
 		const chatAttachmentHandler = this.chatAttachmentHandlers.find((chatAttachmentHandler) =>
@@ -43,7 +43,7 @@ export default class ChatAttachmentsModule extends KickModule {
 		if (await chatAttachmentHandler.applies(data)) await chatAttachmentHandler.handle(data);
 	}
 
-	private getBaseData(message: ChatMessageElements): BaseChatAttachmentData | undefined {
+	private getBaseData(message: KickChatMessageEvent): BaseChatAttachmentData | undefined {
 		const args = message.messageData.content?.split(" ") ?? [];
 		const firstWord = args.at(0) || "";
 		const lastWord = args.at(-1) || "";
@@ -70,6 +70,7 @@ export default class ChatAttachmentsModule extends KickModule {
 
 	private async getData(baseData: BaseChatAttachmentData): Promise<ChatAttachmentData> {
 		const attachmentData = await this.getAttachmentData(baseData.url);
+		this.logger.debug(attachmentData);
 		if (!attachmentData?.type || !attachmentData?.size || attachmentData === undefined)
 			throw new Error("Couldn't get attachment data");
 		return { ...baseData, attachmentType: attachmentData.type, attachmentSize: Number.parseInt(attachmentData.size) };

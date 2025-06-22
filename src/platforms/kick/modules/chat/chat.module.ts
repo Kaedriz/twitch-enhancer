@@ -1,5 +1,5 @@
 import KickModule from "$kick/kick.module.ts";
-import type { ChatMessageElements, KickChatMessage } from "$types/platforms/kick/kick.utils.types.ts";
+import { KickChatMessage, type KickChatMessageEvent } from "$types/platforms/kick/kick.events.types.ts";
 import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
 
 export default class ChatModule extends KickModule {
@@ -18,7 +18,7 @@ export default class ChatModule extends KickModule {
 
 	private observer?: MutationObserver;
 
-	private extractMessageData(element: Element): ChatMessageElements | null {
+	private getMessageData(element: Element): KickChatMessageEvent | null {
 		const messageData = this.kickUtils().getMessageData(element);
 		if (!messageData) return null;
 		return {
@@ -29,7 +29,7 @@ export default class ChatModule extends KickModule {
 
 	private processMessage(element: Element): void {
 		try {
-			const messageData = this.extractMessageData(element);
+			const messageData = this.getMessageData(element);
 			if (!messageData) return;
 			this.emitter.emit("kick:chatMessage", messageData);
 		} catch (err) {

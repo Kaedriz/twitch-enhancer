@@ -1,5 +1,5 @@
 import KickModule from "$kick/kick.module.ts";
-import type { ChatMessageElements } from "$types/platforms/kick/kick.utils.types.ts";
+import type { KickChatMessageEvent } from "$types/platforms/kick/kick.events.types.ts";
 import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
 import { render } from "preact";
 import styled from "styled-components";
@@ -17,7 +17,7 @@ export default class ChatBadgesModule extends KickModule {
 		],
 	};
 
-	private handleMessage({ messageData, element }: ChatMessageElements) {
+	private handleMessage({ messageData, element }: KickChatMessageEvent) {
 		const secondChild = element.firstElementChild?.firstElementChild;
 
 		if (!secondChild || secondChild.children.length < 3) {

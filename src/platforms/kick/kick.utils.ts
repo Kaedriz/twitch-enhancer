@@ -1,8 +1,10 @@
 import type ReactUtils from "$shared/utils/react.utils.ts";
-import type { KickChatMessageData } from "$types/platforms/kick/kick.utils.types.ts";
+
+import type { KickChatMessageData } from "$types/platforms/kick/kick.events.types.ts";
 
 export default class KickUtils {
 	constructor(protected readonly reactUtils: ReactUtils) {}
+
 	scrollChatToBottom() {
 		const chatElement = document.getElementById("chatroom-messages");
 		if (chatElement) {
