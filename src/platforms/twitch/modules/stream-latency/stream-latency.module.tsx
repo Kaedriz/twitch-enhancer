@@ -35,9 +35,6 @@ export default class StreamLatencyModule extends TwitchModule {
 		this.createLatencyCounter();
 		this.updateLatency();
 		setInterval(async () => this.updateLatency(), 1000);
-		this.emitter.on("twitch:settings:chatImagesSize", (value) => {
-			value;
-		});
 
 		wrappers.forEach((element: HTMLElement) => {
 			const header = document.querySelector("#chat-room-header-label") as HTMLElement | null;
