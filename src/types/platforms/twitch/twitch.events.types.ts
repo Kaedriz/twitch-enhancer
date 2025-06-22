@@ -17,7 +17,8 @@ export type TwitchChatMessage = {
 	isVip: boolean | undefined;
 	isFirstMsg: boolean | undefined;
 	isHistorical: boolean | undefined;
-	message: string;
+	message?: string;
+	messageBody?: string;
 	timestamp: number;
 	type: number;
 	createdAt: number;

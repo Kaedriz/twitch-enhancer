@@ -1,37 +1,37 @@
+import KickModule from "$kick/kick.module.ts";
 import { HttpClient } from "$shared/http/http-client.ts";
 import type ChatAttachmentHandler from "$shared/module/chat-attachments-handlers/chat-attachment-handler.ts";
 import ImageChatAttachmentHandler from "$shared/module/chat-attachments-handlers/image-chat-attachment-handler.ts";
-import TwitchModule from "$twitch/twitch.module.ts";
-import type { TwitchChatMessageEvent } from "$types/platforms/twitch/twitch.events.types.ts";
+import type { ChatMessageElements } from "$types/platforms/kick/kick.utils.types.ts";
 import {
 	type BaseChatAttachmentData,
 	type ChatAttachmentData,
 	ChatAttachmentMessageType,
 } from "$types/shared/module/chat-attachment/chat-attachment.types.ts";
-import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
+import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
 
-export default class ChatAttachmentsModule extends TwitchModule {
-	config: TwitchModuleConfig = {
+export default class ChatAttachmentsModule extends KickModule {
+	readonly config: KickModuleConfig = {
 		name: "chat-attachments",
 		appliers: [
 			{
 				type: "event",
-				key: "chat-attachments",
-				event: "twitch:chatMessage",
+				event: "kick:chatMessage",
 				callback: this.handleMessage.bind(this),
+				key: "chat-attachments",
 			},
 		],
 	};
 
-	private httpClient = new HttpClient();
+	private readonly httpClient = new HttpClient();
 
 	private readonly chatAttachmentHandlers: ChatAttachmentHandler[] = [
 		new ImageChatAttachmentHandler(this.logger, () => {
-			this.twitchUtils().unstuckScroll();
+			this.kickUtils().scrollChatToBottom();
 		}),
 	];
 
-	private async handleMessage(message: TwitchChatMessageEvent) {
+	private async handleMessage(message: ChatMessageElements) {
 		const baseData = this.getBaseData(message);
 		if (!baseData) return;
 		const chatAttachmentHandler = this.chatAttachmentHandlers.find((chatAttachmentHandler) =>
@@ -43,27 +43,34 @@ export default class ChatAttachmentsModule extends TwitchModule {
 		if (await chatAttachmentHandler.applies(data)) await chatAttachmentHandler.handle(data);
 	}
 
-	private getBaseData(message: TwitchChatMessageEvent): BaseChatAttachmentData | undefined {
-		const messageText = message.message.message ?? message.message.messageBody;
-		if (!messageText) return;
-		const args = messageText.split(" ");
-		const links = [...message.element.querySelectorAll("a")] as Element[];
-		const firstWord = args.at(0);
-		const firstElement = links.at(0);
-		const lastWord = args.at(-1);
-		const lastElement = links.at(-1);
+	private getBaseData(message: ChatMessageElements): BaseChatAttachmentData | undefined {
+		const args = message.messageData.content?.split(" ") ?? [];
+		const firstWord = args.at(0) || "";
+		const lastWord = args.at(-1) || "";
 
-		if (this.commonUtils().isValidUrl(firstWord) && firstElement) {
-			return { messageType: ChatAttachmentMessageType.FIRST, url: new URL(firstWord), messageElement: firstElement };
+		const messageElement = message.element.querySelector("a[href]");
+
+		if (!messageElement) return;
+
+		if (this.commonUtils().isValidUrl(firstWord)) {
+			return {
+				messageType: ChatAttachmentMessageType.FIRST,
+				url: new URL(firstWord),
+				messageElement,
+			};
 		}
-		if (this.commonUtils().isValidUrl(lastWord) && lastElement) {
-			return { messageType: ChatAttachmentMessageType.LAST, url: new URL(lastWord), messageElement: lastElement };
+		if (this.commonUtils().isValidUrl(lastWord)) {
+			return {
+				messageType: ChatAttachmentMessageType.LAST,
+				url: new URL(lastWord),
+				messageElement,
+			};
 		}
 	}
 
 	private async getData(baseData: BaseChatAttachmentData): Promise<ChatAttachmentData> {
 		const attachmentData = await this.getAttachmentData(baseData.url);
-		if (!attachmentData || !attachmentData.type || !attachmentData.size)
+		if (!attachmentData?.type || !attachmentData?.size || attachmentData === undefined)
 			throw new Error("Couldn't get attachment data");
 		return { ...baseData, attachmentType: attachmentData.type, attachmentSize: Number.parseInt(attachmentData.size) };
 	}
@@ -84,14 +91,17 @@ export default class ChatAttachmentsModule extends TwitchModule {
 		this.commonUtils().createGlobalStyle(`
 			.enhancer-chat-link {
 				display: block;
-				width: fit-content;
-				margin: 0.5rem 0;
+				text-decoration: none;
+				width: 100%;
 			}
 			
 			.enhancer-chat-image {
-				min-height: 16px;
+				max-width: 100%;
 				max-height: 256px;
-				width: 100%;
+				width: auto;
+				height: auto;
+				display: block;
+				margin-top: 4px;
 			}`);
 	}
 }

@@ -1,3 +1,4 @@
+import KickPlatform from "$kick/kick.platform.ts";
 import type { ExtensionEnvironment, ExtensionMetadata } from "$types/shared/extension.types.ts";
 import TwitchPlatform from "./platforms/twitch/twitch.platform.ts";
 
@@ -15,7 +16,7 @@ import TwitchPlatform from "./platforms/twitch/twitch.platform.ts";
 function getPlatform() {
 	const hostname = window.location.hostname.toLowerCase();
 	if (hostname.endsWith("twitch.tv")) return new TwitchPlatform();
-	// if (hostname.endsWith("kick.com")) return new ;
+	if (hostname.endsWith("kick.com")) return new KickPlatform();
 	throw Error(`Unsupported host name ${hostname} (${window.location.href})`);
 }
 
