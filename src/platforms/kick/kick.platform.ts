@@ -6,9 +6,10 @@ import ChatModule from "$kick/modules/chat/chat.module.ts";
 import ExampleModule from "$kick/modules/example/example.module.ts";
 import Platform from "$shared/platform/platform.ts";
 import type { KickEvents } from "$types/platforms/kick/kick.events.types.ts";
+import type { KickSettings } from "$types/platforms/kick/kick.settings.types.ts";
 import type { KickStorage } from "$types/platforms/kick/kick.storage.types.ts";
 
-export default class KickPlatform extends Platform<KickModule, KickEvents, KickStorage> {
+export default class KickPlatform extends Platform<KickModule, KickEvents, KickStorage, KickSettings> {
 	constructor() {
 		super({ type: "kick" });
 	}
@@ -19,6 +20,7 @@ export default class KickPlatform extends Platform<KickModule, KickEvents, KickS
 		const dependencies = [
 			this.emitter,
 			this.storageRepository,
+			this.settingsService,
 			this.utilsRepository,
 			this.enhancerApi,
 			this.workerApi,
