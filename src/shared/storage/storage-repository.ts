@@ -1,14 +1,9 @@
-import type Logger from "logger";
-import type { Platform } from "types/content/extension.ts";
-import LocalStorage from "./local-storage.ts";
+import LocalStorage from "$shared/storage/local-storage.ts";
 
-export default class StorageRepository {
-	readonly localStorage: LocalStorage;
+export default class StorageRepository<T extends Record<string, any>> {
+	readonly localStorage: LocalStorage<T>;
 
-	constructor(
-		private readonly logger: Logger,
-		platform: Platform,
-	) {
-		this.localStorage = new LocalStorage(this.logger, platform);
+	constructor() {
+		this.localStorage = new LocalStorage<T>();
 	}
 }

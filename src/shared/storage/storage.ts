@@ -1,17 +1,9 @@
-import type Logger from "logger";
+export default abstract class Storage<T extends Record<string, any>> {
+	constructor(protected readonly storageId = "enhancer") {}
 
-export default abstract class Storage<KeyMap> {
-	constructor(
-		protected readonly logger: Logger,
-		protected readonly storagePrefix: string,
-		protected readonly defaultValue?: KeyMap,
-	) {}
+	abstract save<K extends keyof T>(key: K, value: T[K]): Promise<void>;
 
-	async save(key: keyof KeyMap, value: KeyMap[keyof KeyMap]) {
-		throw new Error("Not implemented");
-	}
+	abstract get<K extends keyof T>(key: K): Promise<T[K] | undefined>;
 
-	async get(key: keyof KeyMap): Promise<KeyMap[keyof KeyMap] | undefined> {
-		throw new Error("Not implemented");
-	}
+	abstract getOrDefault<K extends keyof T>(key: K, defaultValue: T[K]): Promise<T[K]>;
 }

@@ -1,32 +1,68 @@
-import type { CoreStorageMap } from "types/shared/storage/storage.types.ts";
-import Storage from "./storage.ts";
+import Storage from "$shared/storage/storage.ts";
 
-export default class LocalStorage extends Storage<CoreStorageMap> {
-	private cache: CoreStorageMap | undefined;
+export default class LocalStorage<T extends Record<string, any>> extends Storage<T> {
+	private cache: T | undefined;
 
-	async save<K extends keyof CoreStorageMap>(key: K, value: CoreStorageMap[K]): Promise<void> {
-		const storage = this.getStorage();
+	async save<K extends keyof T>(key: K, value: T[K]): Promise<void> {
+		const storage = this.getMutableStorage();
 		storage[key] = value;
-		this.cache = storage;
-		localStorage.setItem(this.getId(), JSON.stringify(storage));
+		this.updateCacheAndPersist(storage);
 	}
 
-	async get<K extends keyof CoreStorageMap>(key: K): Promise<CoreStorageMap[K]> {
-		return this.getStorage()[key] as CoreStorageMap[K];
+	async get<K extends keyof T>(key: K): Promise<T[K] | undefined> {
+		const storage = this.getImmutableStorage();
+		return storage[key];
 	}
 
-	private getStorage(): CoreStorageMap {
-		if (this.cache) return this.cache;
-		const rawStorage = localStorage.getItem(this.getId());
+	async getOrDefault<K extends keyof T>(key: K, defaultValue: T[K]): Promise<T[K]> {
+		const existingValue = await this.get(key);
+		if (existingValue !== undefined) {
+			return existingValue;
+		}
+		await this.save(key, defaultValue);
+		return defaultValue;
+	}
+
+	private getMutableStorage(): T {
+		if (this.cache) {
+			return JSON.parse(JSON.stringify(this.cache)) as T;
+		}
+		const rawStorage = localStorage.getItem(this.storageId);
 		if (rawStorage) {
-			this.cache = JSON.parse(rawStorage) as CoreStorageMap;
+			try {
+				this.cache = JSON.parse(rawStorage) as T;
+				return JSON.parse(JSON.stringify(this.cache)) as T;
+			} catch (error) {
+				console.error("Failed to parse storage data:", error);
+				this.cache = {} as T;
+				return {} as T;
+			}
+		}
+		this.cache = {} as T;
+		return {} as T;
+	}
+
+	private getImmutableStorage(): T {
+		if (this.cache) {
 			return this.cache;
 		}
-		this.cache = this.defaultValue ?? ({} as CoreStorageMap);
+		const rawStorage = localStorage.getItem(this.storageId);
+		if (rawStorage) {
+			try {
+				this.cache = JSON.parse(rawStorage) as T;
+				return this.cache;
+			} catch (error) {
+				console.error("Failed to parse storage data:", error);
+				this.cache = {} as T;
+				return {} as T;
+			}
+		}
+		this.cache = {} as T;
 		return this.cache;
 	}
 
-	private getId(): string {
-		return `enhancer:${this.storagePrefix}`;
+	private updateCacheAndPersist(storage: T): void {
+		this.cache = storage;
+		localStorage.setItem(this.storageId, JSON.stringify(storage));
 	}
 }

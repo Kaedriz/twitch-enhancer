@@ -1,33 +1,41 @@
-import type { LogType } from "types/shared/logger/logger.types.ts";
+import type { LogType, LoggerOptions } from "$types/shared/logger.types.ts";
 
-export default class Logger {
-	static readonly LOGGER_PREFIX = "\x1B[1;38;2;145;71;255m[Enhancer]";
-	static readonly LOG_TYPE_PREFIX: Record<LogType, string> = {
+export class Logger {
+	private static readonly BASE_PREFIX = "\x1B[1;38;2;145;71;255mEnhancer";
+	private static readonly LOG_TYPE_PREFIX: Record<LogType, string> = {
 		debug: "\x1B[38;2;102;204;255mDEBUG\x1B[0m",
 		info: "\x1B[38;2;102;255;178mINFO\x1B[0m",
 		warn: "\x1B[38;2;255;215;102mWARN\x1B[0m",
 		error: "\x1B[38;2;255;99;99mERROR\x1B[0m",
 	};
+	private readonly IS_DEVELOPMENT = __environment__ === "development";
 
-	constructor(private readonly enableDebugLogs = false) {}
+	private readonly prefix: string;
 
-	debug(...data: any) {
-		if (this.enableDebugLogs) this.send("debug", ...data);
+	constructor(options: LoggerOptions = {}) {
+		const { context } = options;
+		this.prefix = context
+			? `${Logger.BASE_PREFIX} \x1B[38;2;128;128;128m${context}\x1B[0m`
+			: `${Logger.BASE_PREFIX}\x1B[0m`;
 	}
 
-	info(...data: any) {
-		this.send("info", ...data);
+	debug(...data: any[]): void {
+		if (this.IS_DEVELOPMENT) this.sendLog("debug", ...data);
 	}
 
-	warn(...data: any) {
-		this.send("warn", ...data);
+	info(...data: any[]): void {
+		this.sendLog("info", ...data);
 	}
 
-	error(...data: any) {
-		this.send("error", ...data);
+	warn(...data: any[]): void {
+		this.sendLog("warn", ...data);
 	}
 
-	private send(logType: LogType, ...data: any[]) {
-		console[logType](`${Logger.LOGGER_PREFIX} ${Logger.LOG_TYPE_PREFIX[logType]}`, ...data);
+	error(...data: any[]): void {
+		this.sendLog("error", ...data);
+	}
+
+	private sendLog(logType: LogType, ...data: any[]): void {
+		console[logType](`${this.prefix} ${Logger.LOG_TYPE_PREFIX[logType]}`, ...data);
 	}
 }
