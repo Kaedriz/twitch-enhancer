@@ -1,4 +1,5 @@
 import type { PlatformType } from "$types/shared/platform.types.ts";
+import type { PlatformSettings } from "$types/shared/worker/settings-worker.types.ts";
 
 export interface ExtensionMessageDetail {
 	messageId: string;
@@ -47,6 +48,18 @@ export interface GetWatchtimePayload {
 
 export interface WatchtimeResponse extends WatchtimeRecord {}
 
+export interface GetSettingsPayload {
+	platform: PlatformType;
+}
+
+export interface UpdateSettingsPayload {
+	platform: PlatformType;
+	settings: PlatformSettings;
+}
+
+export type GetSettingsResponse = PlatformSettings;
+export type UpdateSettingsResponse = { success: true };
+
 export interface WorkerApiActions {
 	ping: {
 		payload?: never;
@@ -63,6 +76,14 @@ export interface WorkerApiActions {
 	getWatchtime: {
 		payload: GetWatchtimePayload;
 		response: WatchtimeResponse | null;
+	};
+	getSettings: {
+		payload: GetSettingsPayload;
+		response: GetSettingsResponse;
+	};
+	updateSettings: {
+		payload: UpdateSettingsPayload;
+		response: UpdateSettingsResponse;
 	};
 }
 

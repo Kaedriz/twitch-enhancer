@@ -1,11 +1,11 @@
-import type { ExtensionMessageDetail, ExtensionResponseDetail } from "$types/shared/worker.types.ts";
+import type { ExtensionMessageDetail, ExtensionResponseDetail } from "$types/shared/worker/worker.types.ts";
 
 export default class WorkerBridge {
 	private bridgeElement: HTMLElement | null = null;
 
 	start() {
 		this.waitForBridgeElement();
-		this.log("WorkerApi bridge starting...");
+		this.log("WorkerService bridge starting...");
 	}
 
 	private waitForBridgeElement() {
@@ -34,7 +34,7 @@ export default class WorkerBridge {
 
 	private setupMessageListener() {
 		if (!this.bridgeElement) return;
-		this.log("WorkerApi bridge started!");
+		this.log("WorkerService bridge started!");
 		this.bridgeElement.addEventListener("enhancer-message", (async (event: CustomEvent<ExtensionMessageDetail>) => {
 			const { messageId, action, payload } = event.detail;
 			try {

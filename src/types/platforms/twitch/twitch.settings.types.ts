@@ -1,0 +1,11 @@
+import type { QuickAccessLink } from "$types/shared/components/settings.component.types.ts";
+
+export type TwitchSettings = {
+	chatImagesEnabled: boolean;
+	chatImagesSize: number;
+	quickAccessLinks: QuickAccessLink[];
+};
+
+export type TwitchSettingsEvents = {
+	[K in keyof TwitchSettings as `twitch:settings:${K & string}`]: (value: TwitchSettings[K]) => void | Promise<void>;
+};

@@ -5,10 +5,12 @@ import ChatBadgesModule from "$twitch/modules/chat-badges/chat-badges.module.tsx
 import ChattersModule from "$twitch/modules/chatters/chatters.module.tsx";
 import LocalWatchtimeCounterModule from "$twitch/modules/local-watchtime-counter/local-watchtime-counter.module.tsx";
 import PinStreamerModule from "$twitch/modules/pin-streamer/pin-streamer.module.tsx";
-import RealVideoTimeModule from "$twitch/modules/real-video-time/real-video-time-module.tsx";
+import RealVideoTimeModule from "$twitch/modules/real-video-time/real-video-time.module.tsx";
 import SettingsButtonModule from "$twitch/modules/settings-button/settings-button.module.tsx";
+import SettingsModule from "$twitch/modules/settings/settings.module.tsx";
 import WatchTimeModule from "$twitch/modules/watchtime/watchtime.module.tsx";
 import type { TwitchEvents } from "$types/platforms/twitch/twitch.events.types.ts";
+import type { TwitchSettings } from "$types/platforms/twitch/twitch.settings.types.ts";
 import type { TwitchStorage } from "$types/platforms/twitch/twitch.storage.types.ts";
 import ChannelSectionModule from "./modules/channel-section/channel-section.module.tsx";
 import ChatCopyEmoteModule from "./modules/chat-copy-emote/chat-copy-emote.module.tsx";
@@ -21,7 +23,7 @@ import StreamLatencyModule from "./modules/stream-latency/stream-latency.module.
 import type TwitchModule from "./twitch.module.ts";
 import TwitchUtils from "./twitch.utils.ts";
 
-export default class TwitchPlatform extends Platform<TwitchModule, TwitchEvents, TwitchStorage> {
+export default class TwitchPlatform extends Platform<TwitchModule, TwitchEvents, TwitchStorage, TwitchSettings> {
 	constructor() {
 		super({ type: "twitch" });
 	}
@@ -33,6 +35,7 @@ export default class TwitchPlatform extends Platform<TwitchModule, TwitchEvents,
 		const dependencies = [
 			this.emitter,
 			this.storageRepository,
+			this.settingsService,
 			this.utilsRepository,
 			this.enhancerApi,
 			this.workerApi,
@@ -58,6 +61,7 @@ export default class TwitchPlatform extends Platform<TwitchModule, TwitchEvents,
 			new WatchTimeModule(...dependencies),
 			new SettingsButtonModule(...dependencies),
 			new LocalWatchtimeCounterModule(...dependencies),
+			new SettingsModule(...dependencies),
 		];
 	}
 }

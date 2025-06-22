@@ -32,17 +32,15 @@ export default class SettingsButtonModule extends TwitchModule {
 			.map((element) => [...element.children].at(-1))
 			.filter((element) => element !== undefined) as Element[];
 		const wrappers = this.commonUtils().createEmptyElements(this.getId(), properElements, "span");
-		const logo = await this.workerApi().send("getAssetsFile", {
-			path: "brand/logo-gray.svg",
-		});
+		const logo = await this.commonUtils().getIcon(this.workerService(), "enhancer/logo-gray.svg");
 		wrappers.forEach((element) => {
 			element.style.order = "-1";
-			render(<SettingsButtonComponent onClick={this.openSettings.bind(this)} logoUrl={logo?.url || ""} />, element);
+			render(<SettingsButtonComponent onClick={this.openSettings.bind(this)} logoUrl={logo} />, element);
 		});
 	}
 
 	private openSettings() {
-		this.logger.debug("Open settings");
+		this.emitter.emit("extension:settings-open");
 	}
 }
 

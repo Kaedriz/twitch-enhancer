@@ -19,7 +19,9 @@ export type SelectorModuleApplierConfig = {
 } & CommonModuleApplierConfig;
 
 export type EventModuleApplierConfig<Events extends CommonEvents> = {
-	type: "event";
-	event: keyof Events;
-	callback: Events[keyof Events];
-} & Omit<CommonModuleApplierConfig, "cooldown">;
+	[K in keyof Events]: {
+		type: "event";
+		event: K;
+		callback: Events[K];
+	} & Omit<CommonModuleApplierConfig, "cooldown">;
+}[keyof Events];

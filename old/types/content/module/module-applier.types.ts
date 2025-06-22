@@ -1,5 +1,3 @@
-import type { EventsMap } from "types/content/event/events.types.ts";
-
 export type ModuleApplierConfig = SelectorModuleApplierConfig | EventModuleApplierConfig;
 
 export type CommonModuleApplierConfig = {
@@ -18,6 +16,6 @@ export type SelectorModuleApplierConfig = {
 
 export type EventModuleApplierConfig = {
 	type: "event";
-	event: keyof EventsMap;
-	callback: EventsMap[keyof EventsMap];
+	event: keyof CommonEvents;
+	callback: CommonEvents[keyof CommonEvents];
 } & Omit<CommonModuleApplierConfig, "cooldown">;

@@ -213,6 +213,6 @@ const ChattersComponent = ({
 	click: () => void;
 }) => (
 	<Wrapper onClick={click}>
-		({counter.value === ChattersModule.LOADING_VALUE ? "Loading..." : formatChatters(counter.value)})
+		({counter.value === ChattersModule.LOADING_VALUE ? "LoadingComponent..." : formatChatters(counter.value)})
 	</Wrapper>
 );

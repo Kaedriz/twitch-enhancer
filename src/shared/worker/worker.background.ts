@@ -1,15 +1,18 @@
 import { Logger } from "$shared/logger/logger.ts";
-import { HandlerRegistry } from "$shared/worker/handlers/handler.registry.ts";
+import { HandlerRegistry } from "$shared/worker/handler.registry.ts";
+import { SettingsService } from "$shared/worker/settings/settings-worker.service.ts";
 import { WatchtimeService } from "$shared/worker/watchtime/watchtime.service.ts";
 
 export default class WorkerBackground {
 	private readonly logger = new Logger({ context: "background" });
 	private readonly watchtimeService = new WatchtimeService();
-	private readonly handlerRegistry = new HandlerRegistry(this.logger, this.watchtimeService);
+	private readonly settingsService = new SettingsService();
+	private readonly handlerRegistry = new HandlerRegistry(this.logger, this.watchtimeService, this.settingsService);
 
 	async start() {
 		this.setupMessageListener();
 		await this.watchtimeService.initialize();
+		await this.settingsService.initialize();
 		this.logger.info("Background worker started");
 	}
 
