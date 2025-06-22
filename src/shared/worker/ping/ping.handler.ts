@@ -1,5 +1,5 @@
-import { MessageHandler } from "$shared/worker/handlers/message.handler.ts";
-import type { PingResponse } from "$types/shared/worker.types.ts";
+import { MessageHandler } from "$shared/worker/message.handler.ts";
+import type { PingResponse } from "$types/shared/worker/worker.types.ts";
 
 export class PingHandler extends MessageHandler {
 	async handle(): Promise<PingResponse> {

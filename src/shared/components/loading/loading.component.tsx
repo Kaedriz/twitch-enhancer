@@ -4,7 +4,7 @@ interface LoadingProps {
 	text: string;
 }
 
-export const Loading = ({ text }: LoadingProps) => {
+export const LoadingComponent = ({ text }: LoadingProps) => {
 	return (
 		<LoadingSpinnerWrapper>
 			<LoadingSpinner />

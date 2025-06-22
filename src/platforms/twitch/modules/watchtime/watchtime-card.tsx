@@ -1,4 +1,4 @@
-import { Loading } from "$shared/components/loading/loading.tsx";
+import { LoadingComponent } from "$shared/components/loading/loading.component.tsx";
 import type { EnhancerStreamerWatchTimeData } from "$types/apis/enhancer.apis.ts";
 import type { Signal } from "@preact/signals";
 import styled from "styled-components";
@@ -93,7 +93,7 @@ export const WatchTimeUserCard = ({ username, data, isLoading, isError }: UserCa
 	if (isLoading.value) {
 		return (
 			<UserCardWrapper>
-				<Loading text="Fetching data from xayo.pl..." />
+				<LoadingComponent text="Fetching data from xayo.pl..." />
 			</UserCardWrapper>
 		);
 	}
@@ -123,7 +123,7 @@ export const WatchTimeUserCard = ({ username, data, isLoading, isError }: UserCa
 // --- Popup Components ---
 
 export const WatchTimePopupLoadingMessage = () => {
-	return <Loading text="Fetching data from xayo.pl..." />;
+	return <LoadingComponent text="Fetching data from xayo.pl..." />;
 };
 
 const PopupErrorText = styled.div`

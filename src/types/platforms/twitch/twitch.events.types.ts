@@ -1,11 +1,13 @@
 import type { CommonEvents } from "$types/platforms/common.events.ts";
+import type { TwitchSettingsEvents } from "$types/platforms/twitch/twitch.settings.types.ts";
 import type { ComponentChildren } from "preact";
 
 export type TwitchEvents = {
 	"twitch:chatInitialized": (channelId: string) => void | Promise<void>;
 	"twitch:chatMessage": (message: TwitchChatMessageEvent) => void | Promise<void>;
 	"twitch:chatPopupMessage": (message: TwitchChatMessagePopup) => void | Promise<void>;
-} & CommonEvents;
+} & TwitchSettingsEvents &
+	CommonEvents;
 
 export type TwitchChatMessage = {
 	badges: Record<string, string>;

@@ -1,7 +1,7 @@
 import type { Logger } from "$shared/logger/logger.ts";
-import { MessageHandler } from "$shared/worker/handlers/message.handler.ts";
+import { MessageHandler } from "$shared/worker/message.handler.ts";
 import type { WatchtimeService } from "$shared/worker/watchtime/watchtime.service.ts";
-import type { AddWatchtimePayload, WatchtimeResponse } from "$types/shared/worker.types.ts";
+import type { AddWatchtimePayload, WatchtimeResponse } from "$types/shared/worker/worker.types.ts";
 
 export class AddWatchtimeHandler extends MessageHandler {
 	constructor(

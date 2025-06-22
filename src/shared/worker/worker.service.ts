@@ -1,13 +1,12 @@
-// main-world/worker-api.ts
 import { Logger } from "$shared/logger/logger.ts";
 import type {
 	ExtensionMessageDetail,
 	ExtensionResponseDetail,
 	WorkerAction,
 	WorkerApiActions,
-} from "$types/shared/worker.types.ts";
+} from "$types/shared/worker/worker.types.ts";
 
-export default class WorkerApi {
+export default class WorkerService {
 	private readonly logger = new Logger({ context: "worker" });
 	private readonly element: HTMLElement;
 	private pendingMessages = new Map<string, (response: any) => void>();
@@ -21,7 +20,7 @@ export default class WorkerApi {
 	start() {
 		this.setupMessageListener();
 		this.startPing();
-		this.logger.info("WorkerApi started");
+		this.logger.info("WorkerService started");
 	}
 
 	stop() {

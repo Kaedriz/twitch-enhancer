@@ -1,5 +1,7 @@
 import type { RequestConfig, RequestResponse } from "$types/shared/http-client.types.ts";
+import type WorkerService from "$shared/worker/worker.service.ts";
 import type { WaitForConfig } from "$types/shared/utils/common.utils.types.ts";
+import { defaultAllowedOrigins } from "vite";
 
 export default class CommonUtils {
 	static readonly UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
@@ -58,6 +60,11 @@ export default class CommonUtils {
 
 	async delay(ms: number) {
 		return new Promise((resolve) => setTimeout(resolve, ms));
+	}
+
+	async getIcon(workerApi: WorkerService, path: string, defaultPath = ""): Promise<string> {
+		const response = await workerApi.send("getAssetsFile", { path });
+		return response?.url || defaultPath;
 	}
 }
 

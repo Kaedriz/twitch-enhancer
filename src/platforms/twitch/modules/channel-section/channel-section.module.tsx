@@ -1,3 +1,4 @@
+import type { QuickAccessLink } from "$types/shared/components/settings.component.types.ts";
 import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 import { type Signal, signal } from "@preact/signals";
 import { render } from "preact";
@@ -5,6 +6,11 @@ import styled from "styled-components";
 import TwitchModule from "../../twitch.module.ts";
 
 export default class ChannelSectionModule extends TwitchModule {
+	private quickAccessLinks = {} as Signal<QuickAccessLink[]>;
+	private watchtimeCounter = {} as Signal<number>;
+	private currentChannelName: string | undefined;
+	private watchtimeInterval: NodeJS.Timeout | undefined;
+
 	readonly config: TwitchModuleConfig = {
 		name: "channel-info",
 		appliers: [
@@ -15,22 +21,21 @@ export default class ChannelSectionModule extends TwitchModule {
 				callback: this.run.bind(this),
 				once: true,
 			},
+			{
+				type: "event",
+				key: "chat-copy-emote",
+				event: "twitch:settings:quickAccessLinks",
+				callback: (quickAccessLinks) => {
+					this.quickAccessLinks.value = quickAccessLinks;
+				},
+			},
 		],
 	};
 
-	private defaultSites: Site[] = [
-		{
-			name: "Sullygnome",
-			redirectUrl: "https://sullygnome.com/channel/",
-		},
-		{
-			name: "TwitchTracker",
-			redirectUrl: "https://twitchtracker.com/",
-		},
-	];
-	private watchtimeCounter = {} as Signal<number>;
-	private currentChannelName: string | undefined;
-	private watchtimeInterval: NodeJS.Timeout | undefined;
+	async initialize() {
+		const quickAccessLinks = await this.settingsService().getSettingsKey("quickAccessLinks");
+		this.quickAccessLinks = signal(quickAccessLinks);
+	}
 
 	private async run(elements: Element[]) {
 		const wrappers = this.commonUtils().createEmptyElements(this.getId(), elements, "div");
@@ -42,15 +47,17 @@ export default class ChannelSectionModule extends TwitchModule {
 				continue;
 			}
 			await this.startWatchtimeUpdates();
-			const logo = await this.workerApi().send("getAssetsFile", {
-				path: "brand/logo.svg",
-			});
+			const logo = await this.commonUtils().getIcon(
+				this.workerService(),
+				"enhancer/logo.svg",
+				"https://enhancer.at/assets/brand/logo.png",
+			);
 			render(
 				<ChannelInfoComponent
 					channelName={channelName}
-					sites={this.defaultSites}
+					sites={this.quickAccessLinks}
 					watchTime={this.watchtimeCounter}
-					logoUrl={logo?.url || "https://enhancer.at/assets/brand/logo.png"}
+					logoUrl={logo}
 				/>,
 				wrapper,
 			);
@@ -80,7 +87,7 @@ export default class ChannelSectionModule extends TwitchModule {
 	}
 
 	private async getWatchTime(channelName: string): Promise<number> {
-		const watchtime = await this.workerApi().send("getWatchtime", {
+		const watchtime = await this.workerService().send("getWatchtime", {
 			platform: "twitch",
 			channel: channelName.toLowerCase(),
 		});
@@ -88,14 +95,9 @@ export default class ChannelSectionModule extends TwitchModule {
 	}
 }
 
-type Site = {
-	name: string;
-	redirectUrl: string;
-};
-
 interface ChannelInfoComponentProps {
 	channelName: string;
-	sites: Site[];
+	sites: Signal<QuickAccessLink[]>;
 	watchTime: Signal<number>;
 	logoUrl: string;
 }
@@ -130,14 +132,11 @@ function ChannelInfoComponent({ channelName, sites, watchTime, logoUrl }: Channe
 			</Header>
 			<Content>
 				<LinkGrid>
-					{sites.map((site) => {
-						const fullUrl = site.redirectUrl.endsWith("/")
-							? `${site.redirectUrl}${channelName}`
-							: `${site.redirectUrl}/${channelName}`;
-
+					{sites.value.map((site) => {
+						const fullUrl = site.url.replace("%username%", channelName);
 						return (
-							<LinkItem key={site.name} href={fullUrl} target="_blank" rel="noopener noreferrer">
-								<LinkName>{site.name}</LinkName>
+							<LinkItem key={site.title} href={fullUrl} target="_blank" rel="noopener noreferrer">
+								<LinkName>{site.title}</LinkName>
 							</LinkItem>
 						);
 					})}
