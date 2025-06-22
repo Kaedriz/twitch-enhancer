@@ -125,7 +125,6 @@ export default class EnhancerApi {
 		];
 	}
 
-	// Utility methods
 	getCurrentChannelId(): string {
 		return this.currentChannelId;
 	}

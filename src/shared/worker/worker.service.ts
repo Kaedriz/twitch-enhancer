@@ -54,7 +54,6 @@ export default class WorkerService {
 		}) as unknown as EventListener);
 	}
 
-	// Fully typed send method
 	async send<T extends WorkerAction>(
 		action: T,
 		...args: WorkerApiActions[T]["payload"] extends never ? [] : [WorkerApiActions[T]["payload"]]

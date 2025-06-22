@@ -105,7 +105,6 @@ export class SettingsDatabase {
 			const request = store.put(settingsRecord);
 
 			request.onsuccess = () => {
-				// Update cache
 				this.cache.set(platform, settings);
 				this.logger.debug(`Settings updated for platform: ${platform}`);
 				resolve();

@@ -27,7 +27,7 @@ export default class WatchTimeModule extends TwitchModule {
 			{
 				type: "selector",
 				selectors: [".viewer-card"],
-				callback: async (elements: Element[]) => this.run(elements),
+				callback: this.run.bind(this),
 				key: "watchtime-usercard",
 				once: true,
 			},
