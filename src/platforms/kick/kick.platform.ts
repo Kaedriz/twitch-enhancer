@@ -8,6 +8,7 @@ import Platform from "$shared/platform/platform.ts";
 import type { KickEvents } from "$types/platforms/kick/kick.events.types.ts";
 import type { KickSettings } from "$types/platforms/kick/kick.settings.types.ts";
 import type { KickStorage } from "$types/platforms/kick/kick.storage.types.ts";
+import NicknameCustomizationModule from "$kick/modules/nickname-customization/nickname-customization.module.ts";
 
 export default class KickPlatform extends Platform<KickModule, KickEvents, KickStorage, KickSettings> {
 	constructor() {
@@ -31,6 +32,7 @@ export default class KickPlatform extends Platform<KickModule, KickEvents, KickS
 			new ChatModule(...dependencies),
 			new ChatAttachmentsModule(...dependencies),
 			new ChatBadgesModule(...dependencies),
+			new NicknameCustomizationModule(...dependencies),
 		];
 	}
 }

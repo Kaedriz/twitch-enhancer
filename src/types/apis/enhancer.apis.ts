@@ -39,3 +39,15 @@ export type EnhancerStreamerWatchTimeData = {
 	streamer: string;
 	count: number;
 };
+
+export type EnhancerNicknameUser = {
+	userId: string;
+	externalId: string;
+	customNickname: string | null;
+	hasGlow: boolean;
+};
+
+export type EnhancerNicknamesResponseDto = {
+	channelId: string;
+	users: EnhancerNicknameUser[];
+};

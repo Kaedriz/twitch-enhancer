@@ -4,6 +4,7 @@ import ChatAttachmentsModule from "$twitch/modules/chat-attachments/chat-attachm
 import ChatBadgesModule from "$twitch/modules/chat-badges/chat-badges.module.tsx";
 import ChattersModule from "$twitch/modules/chatters/chatters.module.tsx";
 import LocalWatchtimeCounterModule from "$twitch/modules/local-watchtime-counter/local-watchtime-counter.module.tsx";
+import NicknameCustomizationModule from "$twitch/modules/nickname-customization/nickname-customization.module.tsx";
 import PinStreamerModule from "$twitch/modules/pin-streamer/pin-streamer.module.tsx";
 import RealVideoTimeModule from "$twitch/modules/real-video-time/real-video-time.module.tsx";
 import SettingsButtonModule from "$twitch/modules/settings-button/settings-button.module.tsx";
@@ -62,6 +63,7 @@ export default class TwitchPlatform extends Platform<TwitchModule, TwitchEvents,
 			new SettingsButtonModule(...dependencies),
 			new LocalWatchtimeCounterModule(...dependencies),
 			new SettingsModule(...dependencies),
+			new NicknameCustomizationModule(...dependencies),
 		];
 	}
 }
