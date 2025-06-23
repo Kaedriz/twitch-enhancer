@@ -48,22 +48,22 @@ export default class ChatAttachmentsModule extends KickModule {
 		const firstWord = args.at(0) || "";
 		const lastWord = args.at(-1) || "";
 
-		const messageElement = message.element.querySelector("a[href]");
+		const links = [...message.element.querySelectorAll("a[href]")];
+		const firstElement = links.at(0);
+		const lastElement = links.at(-1);
 
-		if (!messageElement) return;
-
-		if (this.commonUtils().isValidUrl(firstWord)) {
+		if (this.commonUtils().isValidUrl(firstWord) && firstElement) {
 			return {
 				messageType: ChatAttachmentMessageType.FIRST,
 				url: new URL(firstWord),
-				messageElement,
+				messageElement: firstElement,
 			};
 		}
-		if (this.commonUtils().isValidUrl(lastWord)) {
+		if (this.commonUtils().isValidUrl(lastWord) && lastElement) {
 			return {
 				messageType: ChatAttachmentMessageType.LAST,
 				url: new URL(lastWord),
-				messageElement,
+				messageElement: lastElement,
 			};
 		}
 	}
@@ -92,17 +92,14 @@ export default class ChatAttachmentsModule extends KickModule {
 		this.commonUtils().createGlobalStyle(`
 			.enhancer-chat-link {
 				display: block;
-				text-decoration: none;
-				width: 100%;
+				width: fit-content;
+				margin: 0.5rem 0;
 			}
 			
 			.enhancer-chat-image {
-				max-width: 100%;
+				min-height: 16px;
 				max-height: 256px;
-				width: auto;
-				height: auto;
-				display: block;
-				margin-top: 4px;
+				width: 100%;
 			}`);
 	}
 }
