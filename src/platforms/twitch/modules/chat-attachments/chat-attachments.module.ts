@@ -117,7 +117,6 @@ export default class ChatAttachmentsModule extends TwitchModule {
 	async initialize() {
 		this.maxFileSizeSignal.value = await this.settingsService().getSettingsKey("chatImagesSize");
 		this.imagesOnHoverSignal.value = await this.settingsService().getSettingsKey("chatImagesOnHover");
-		this.logger.debug("essa", this.imagesOnHoverSignal.value);
 
 		this.commonUtils().createGlobalStyle(`
 			.enhancer-chat-link {
