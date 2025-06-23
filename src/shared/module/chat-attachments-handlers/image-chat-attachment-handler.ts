@@ -1,12 +1,25 @@
+import type { Logger } from "$shared/logger/logger.ts";
 import ChatAttachmentHandler from "$shared/module/chat-attachments-handlers/chat-attachment-handler.ts";
 import type {
 	AttachmentUrlParser,
 	BaseChatAttachmentData,
 	ChatAttachmentData,
 } from "$types/shared/module/chat-attachment/chat-attachment.types.ts";
+import type { Signal } from "@preact/signals";
 
 export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
-	static readonly MAX_FILE_SIZE = 10000000;
+	private readonly MAX_FILE_SIZE_IN_MB;
+
+	constructor(
+		logger: Logger,
+		loadedCallback: () => void,
+		maxFileSizeInMb: Signal<number>,
+		private readonly imagesOnHover: Signal<boolean>,
+	) {
+		super(logger, loadedCallback);
+		this.MAX_FILE_SIZE_IN_MB = maxFileSizeInMb;
+	}
+
 	static readonly ALLOWED_HOSTS = [
 		"media.giphy.com",
 		"c.tenor.com",
@@ -53,7 +66,7 @@ export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 	}
 
 	async applies(data: ChatAttachmentData) {
-		return data.attachmentSize < ImageChatAttachmentHandler.MAX_FILE_SIZE;
+		return data.attachmentSize < this.MAX_FILE_SIZE_IN_MB.value * 1024 * 1024;
 	}
 
 	public parseUrl(url: URL): URL {
@@ -65,6 +78,9 @@ export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 		const image = new Image();
 		const imageSource = this.parseUrl(data.url).href;
 		image.classList.add("enhancer-chat-image");
+		if (this.imagesOnHover.value) {
+			image.classList.add("enhancer-chat-image-blurred");
+		}
 		image.src = imageSource;
 		image.onload = () => {
 			const imageContainer = document.createElement("div");

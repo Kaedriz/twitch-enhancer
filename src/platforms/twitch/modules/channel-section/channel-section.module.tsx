@@ -23,7 +23,7 @@ export default class ChannelSectionModule extends TwitchModule {
 			},
 			{
 				type: "event",
-				key: "chat-copy-emote",
+				key: "settings-quick-access-links",
 				event: "twitch:settings:quickAccessLinks",
 				callback: (quickAccessLinks) => {
 					this.quickAccessLinks.value = quickAccessLinks;

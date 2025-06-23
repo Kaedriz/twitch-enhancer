@@ -1,4 +1,4 @@
-import { EnhancerAboutComponent } from "$shared/components/settings/about.section.tsx";
+import { EnhancerAboutComponent } from "$shared/components/settings/about.component.tsx";
 import Settings, { SettingsOverlay } from "$shared/components/settings/settings.component.tsx";
 import { TWITCH_DEFAULT_SETTINGS } from "$twitch/twitch.constants.ts";
 import TwitchModule from "$twitch/twitch.module.ts";
@@ -68,14 +68,20 @@ export default class SettingsModule extends TwitchModule {
 				tabIndex: 1,
 			},
 			{
+				id: "chatImagesOnHover",
+				title: "Blur Images by Default",
+				description: "Images are blurred until you hover over them, revealing the full image.",
+				type: "toggle",
+				tabIndex: 1,
+			},
+			{
 				id: "chatImagesSize",
 				title: "Chat Image Size",
 				description: "Size of images in chat (in megabytes)",
 				type: "number",
 				tabIndex: 1,
-				min: 50,
-				max: 300,
-				step: 10,
+				min: 1,
+				step: 1,
 			},
 			{
 				id: "quickAccessLinks",

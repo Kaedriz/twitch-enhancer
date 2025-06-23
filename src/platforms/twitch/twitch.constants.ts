@@ -2,6 +2,7 @@ import type { TwitchSettings } from "$types/platforms/twitch/twitch.settings.typ
 
 export const TWITCH_DEFAULT_SETTINGS: TwitchSettings = {
 	chatImagesEnabled: false,
+	chatImagesOnHover: false,
 	chatImagesSize: 15,
 	quickAccessLinks: [
 		{ title: "TwitchTracker", url: "https://twitchtracker.com/%username%" },
