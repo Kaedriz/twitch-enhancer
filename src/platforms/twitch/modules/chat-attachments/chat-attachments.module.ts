@@ -1,6 +1,7 @@
 import { HttpClient } from "$shared/http/http-client.ts";
-import type ChatAttachmentHandler from "$shared/module/chat-attachments-handlers/chat-attachment-handler.ts";
-import ImageChatAttachmentHandler from "$shared/module/chat-attachments-handlers/image-chat-attachment-handler.ts";
+import type ChatAttachmentHandler from "$shared/module/chat-attachments/chat-attachment-handler.ts";
+import ImageChatAttachmentHandler from "$shared/module/chat-attachments/image-chat-attachment-handler.ts";
+import { ImageChatAttachmentConfig } from "$shared/module/chat-attachments/image-chat-attachment.config.ts";
 import TwitchModule from "$twitch/twitch.module.ts";
 import type { TwitchChatMessageEvent } from "$types/platforms/twitch/twitch.events.types.ts";
 import {
@@ -13,8 +14,9 @@ import { type Signal, signal } from "@preact/signals";
 
 export default class ChatAttachmentsModule extends TwitchModule {
 	private readonly httpClient = new HttpClient();
-	private maxFileSizeSignal = signal(1);
-	private imagesOnHoverSignal = signal(true);
+	private readonly imageAttachmentConfig = new ImageChatAttachmentConfig(this.settingsService(), () => {
+		this.twitchUtils().unstuckScroll();
+	});
 
 	config: TwitchModuleConfig = {
 		name: "chat-attachments",
@@ -29,9 +31,13 @@ export default class ChatAttachmentsModule extends TwitchModule {
 				type: "event",
 				key: "settings-chat-images-size",
 				event: "twitch:settings:chatImagesSize",
-				callback: (size) => {
-					this.maxFileSizeSignal.value = size;
-				},
+				callback: (size) => this.imageAttachmentConfig.updateMaxFileSize(size),
+			},
+			{
+				type: "event",
+				key: "settings-chat-images-on-hover",
+				event: "twitch:settings:chatImagesOnHover",
+				callback: (enabled) => this.imageAttachmentConfig.updateImagesOnHover(enabled),
 			},
 			{
 				type: "event",
@@ -41,27 +47,12 @@ export default class ChatAttachmentsModule extends TwitchModule {
 					this.isModuleEnabled = enabled;
 				},
 			},
-			{
-				type: "event",
-				key: "settings-chat-images-on-hover",
-				event: "twitch:settings:chatImagesOnHover",
-				callback: (enabled) => {
-					this.imagesOnHoverSignal.value = enabled;
-				},
-			},
 		],
 		isModuleEnabled: () => this.settingsService().getSettingsKey("chatImagesEnabled"),
 	};
 
 	private readonly chatAttachmentHandlers: ChatAttachmentHandler[] = [
-		new ImageChatAttachmentHandler(
-			this.logger,
-			() => {
-				this.twitchUtils().unstuckScroll();
-			},
-			this.maxFileSizeSignal,
-			this.imagesOnHoverSignal,
-		),
+		new ImageChatAttachmentHandler(this.logger, this.imageAttachmentConfig),
 	];
 
 	private async handleMessage(message: TwitchChatMessageEvent) {
@@ -115,9 +106,7 @@ export default class ChatAttachmentsModule extends TwitchModule {
 	}
 
 	async initialize() {
-		this.maxFileSizeSignal.value = await this.settingsService().getSettingsKey("chatImagesSize");
-		this.imagesOnHoverSignal.value = await this.settingsService().getSettingsKey("chatImagesOnHover");
-
+		await this.imageAttachmentConfig.initialize();
 		this.commonUtils().createGlobalStyle(`
 			.enhancer-chat-link {
 				display: block;

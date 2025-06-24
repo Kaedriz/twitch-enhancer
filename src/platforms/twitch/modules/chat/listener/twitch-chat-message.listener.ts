@@ -4,7 +4,7 @@ import ChatMessageListener from "./chat-message.listener.ts";
 export default class TwitchChatMessageListener extends ChatMessageListener {
 	inject() {
 		const messageHandlerAPI = this.twitchUtilsRepository.getChatController()?.props.messageHandlerAPI;
-		if (!messageHandlerAPI) throw new Error("Missing chat message chat-attachments-handlers");
+		if (!messageHandlerAPI) throw new Error("Missing chat message chat-attachments");
 		messageHandlerAPI.addMessageHandler((message: TwitchChatMessage) => {
 			this.emitter.emit("message", { ...message, createdAt: Date.now() });
 		});

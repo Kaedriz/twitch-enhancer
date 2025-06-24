@@ -1,5 +1,6 @@
 import type { Logger } from "$shared/logger/logger.ts";
-import ChatAttachmentHandler from "$shared/module/chat-attachments-handlers/chat-attachment-handler.ts";
+import ChatAttachmentHandler from "$shared/module/chat-attachments/chat-attachment-handler.ts";
+import type { ImageChatAttachmentConfig } from "$shared/module/chat-attachments/image-chat-attachment.config.ts";
 import {
 	type AttachmentUrlParser,
 	type BaseChatAttachmentData,
@@ -9,16 +10,11 @@ import {
 import type { Signal } from "@preact/signals";
 
 export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
-	private readonly MAX_FILE_SIZE_IN_MB;
-
 	constructor(
 		logger: Logger,
-		loadedCallback: () => void,
-		maxFileSizeInMb: Signal<number>,
-		private readonly imagesOnHover: Signal<boolean>,
+		private readonly config: ImageChatAttachmentConfig,
 	) {
-		super(logger, loadedCallback);
-		this.MAX_FILE_SIZE_IN_MB = maxFileSizeInMb;
+		super(logger);
 	}
 
 	static readonly ALLOWED_HOSTS = [
@@ -67,7 +63,7 @@ export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 	}
 
 	async applies(data: ChatAttachmentData) {
-		return data.attachmentSize < this.MAX_FILE_SIZE_IN_MB.value * 1024 * 1024;
+		return data.attachmentSize < this.config.maxFileSize.value * 1024 * 1024;
 	}
 
 	public parseUrl(url: URL): URL {
@@ -79,7 +75,7 @@ export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 		const image = new Image();
 		const imageSource = this.parseUrl(data.url).href;
 		image.classList.add("enhancer-chat-image");
-		if (this.imagesOnHover.value) {
+		if (this.config.imagesOnHover.value) {
 			image.classList.add("enhancer-chat-image-blurred");
 		}
 		image.src = imageSource;
@@ -87,7 +83,7 @@ export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 			element.href = this.parsePreviewUrl(data.url).href;
 			element.classList.add("enhancer-chat-link");
 			element.replaceChildren(image);
-			this.loadedCallback();
+			this.config.callback();
 		};
 		image.onerror = () => {
 			this.logger.warn("Failed to load image");

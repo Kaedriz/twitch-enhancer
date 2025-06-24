@@ -38,7 +38,7 @@
 // 			description: "Play soundbind",
 // 			helpText: "Plays sound from streamer binds",
 // 			permissionLevel: 0,
-// 			chat-attachments-handlers: (song) => {
+// 			chat-attachments: (song) => {
 // 				this.twitchUtils().getChat()?.props.onSendMessage(`${this.soundboardData?.command} ${song}`);
 // 			},
 // 			commandArgs: [
