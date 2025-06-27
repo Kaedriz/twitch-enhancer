@@ -4,11 +4,11 @@ import ChatAttachmentsModule from "$kick/modules/chat-attachments/chat-attachmen
 import ChatBadgesModule from "$kick/modules/chat-badges/chat-badges.module.tsx";
 import ChatModule from "$kick/modules/chat/chat.module.ts";
 import ExampleModule from "$kick/modules/example/example.module.ts";
+import NicknameCustomizationModule from "$kick/modules/nickname-customization/nickname-customization.module.ts";
 import Platform from "$shared/platform/platform.ts";
 import type { KickEvents } from "$types/platforms/kick/kick.events.types.ts";
 import type { KickSettings } from "$types/platforms/kick/kick.settings.types.ts";
 import type { KickStorage } from "$types/platforms/kick/kick.storage.types.ts";
-import NicknameCustomizationModule from "$kick/modules/nickname-customization/nickname-customization.module.ts";
 
 export default class KickPlatform extends Platform<KickModule, KickEvents, KickStorage, KickSettings> {
 	constructor() {

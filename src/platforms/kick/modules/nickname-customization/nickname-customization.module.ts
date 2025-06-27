@@ -16,29 +16,67 @@ export default class NicknameCustomizationModule extends KickModule {
 	};
 
 	private handleMessage({ messageData, element }: KickChatMessageEvent) {
-		const usernameEl =
-			element.querySelector(`[title='${messageData.sender.slug}']`) ??
-			(element.querySelector(".ntv__chat-message__username") as HTMLElement | null);
-		if (!usernameEl) return;
-		const usernameElement = usernameEl as HTMLElement;
-
 		const userCustom = this.enhancerApi().findUserNicknameForCurrentChannel(messageData.sender.id.toString());
 		if (!userCustom) return;
 
-		if (userCustom.customNickname) {
-			usernameElement.innerText = userCustom.customNickname;
+		if (this.kickUtils().isNTVInstalled()) {
+			const observer = new MutationObserver((mutations) => {
+				mutations.forEach((mutation) => {
+					if (userCustom.hasGlow) {
+						if (mutation.target instanceof HTMLElement && mutation.target.matches(".ntv__chat-message__username")) {
+							this.applyGlowEffect(mutation.target, messageData);
+						}
+
+						mutation.addedNodes.forEach((node) => {
+							if (node instanceof HTMLElement) {
+								const usernameElements = node.querySelectorAll<HTMLElement>(".ntv__chat-message__username");
+								usernameElements.forEach((usernameElement) => {
+									this.applyGlowEffect(usernameElement, messageData);
+								});
+							}
+						});
+					}
+				});
+			});
+
+			observer.observe(element, {
+				childList: true,
+				subtree: true,
+				attributes: true,
+				attributeOldValue: true,
+				characterData: true,
+				characterDataOldValue: true,
+			});
+
+			(element as any)._nicknameObserver = observer;
 		}
 
-		if (userCustom.hasGlow) {
-			const glowTarget = usernameElement;
-			const color =
-				glowTarget.style.color ||
-				(glowTarget.firstChild?.firstChild && (glowTarget.firstChild.firstChild as HTMLElement).style.color) ||
-				messageData.sender.identity.color ||
-				"white";
-			glowTarget.style.textShadow = `${color} 0 0 10px`;
-			glowTarget.style.color = color;
-			glowTarget.style.fontWeight = "bold";
-		}
+		const usernameElements: HTMLElement[] = Array.from(
+			element.querySelectorAll<HTMLElement>(`[title='${messageData.sender.slug}'], .ntv__chat-message__username`),
+		);
+
+		if (usernameElements.length === 0) return;
+
+		usernameElements.forEach((usernameElement) => {
+			if (userCustom.customNickname) {
+				usernameElement.innerText = userCustom.customNickname;
+			}
+
+			if (userCustom.hasGlow) {
+				this.applyGlowEffect(usernameElement, messageData);
+			}
+		});
+	}
+
+	private applyGlowEffect(usernameElement: HTMLElement, messageData: any) {
+		const color =
+			usernameElement.style.color ||
+			(usernameElement.firstChild?.firstChild && (usernameElement.firstChild.firstChild as HTMLElement).style.color) ||
+			messageData.sender.identity.color ||
+			"white";
+
+		usernameElement.style.textShadow = `${color} 0 0 10px`;
+		usernameElement.style.color = color;
+		usernameElement.style.fontWeight = "bold";
 	}
 }

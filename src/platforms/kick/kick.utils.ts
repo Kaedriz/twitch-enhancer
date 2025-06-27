@@ -25,4 +25,12 @@ export default class KickUtils {
 
 		return props.message;
 	}
+
+	isNTVInstalled(): boolean {
+		return !!(
+			document.querySelector(".ntv__chat-message__username") ||
+			document.querySelector(".ntv__chat-message__inner") ||
+			document.querySelector("[class*='ntv__']")
+		);
+	}
 }
