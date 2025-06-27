@@ -1,37 +1,37 @@
-import KickModule from "$kick/kick.module.ts";
 import { HttpClient } from "$shared/http/http-client.ts";
 import type ChatAttachmentHandler from "$shared/module/chat-attachments-handlers/chat-attachment-handler.ts";
 import ImageChatAttachmentHandler from "$shared/module/chat-attachments-handlers/image-chat-attachment-handler.ts";
-import type { KickChatMessageEvent } from "$types/platforms/kick/kick.events.types.ts";
+import TwitchModule from "$twitch/twitch.module.ts";
+import type { TwitchChatMessageEvent } from "$types/platforms/twitch/twitch.events.types.ts";
 import {
 	type BaseChatAttachmentData,
 	type ChatAttachmentData,
 	ChatAttachmentMessageType,
 } from "$types/shared/module/chat-attachment/chat-attachment.types.ts";
-import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
+import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 
-export default class ChatAttachmentsModule extends KickModule {
-	readonly config: KickModuleConfig = {
+export default class ChatAttachmentsModule extends TwitchModule {
+	config: TwitchModuleConfig = {
 		name: "chat-attachments",
 		appliers: [
 			{
 				type: "event",
-				event: "kick:chatMessage",
-				callback: this.handleMessage.bind(this),
 				key: "chat-attachments",
+				event: "twitch:chatMessage",
+				callback: this.handleMessage.bind(this),
 			},
 		],
 	};
 
-	private readonly httpClient = new HttpClient();
+	private httpClient = new HttpClient();
 
 	private readonly chatAttachmentHandlers: ChatAttachmentHandler[] = [
 		new ImageChatAttachmentHandler(this.logger, () => {
-			this.kickUtils().scrollChatToBottom();
+			this.twitchUtils().unstuckScroll();
 		}),
 	];
 
-	private async handleMessage(message: KickChatMessageEvent) {
+	private async handleMessage(message: TwitchChatMessageEvent) {
 		const baseData = this.getBaseData(message);
 		if (!baseData) return;
 		const chatAttachmentHandler = this.chatAttachmentHandlers.find((chatAttachmentHandler) =>
@@ -43,35 +43,27 @@ export default class ChatAttachmentsModule extends KickModule {
 		if (await chatAttachmentHandler.applies(data)) await chatAttachmentHandler.handle(data);
 	}
 
-	private getBaseData(message: KickChatMessageEvent): BaseChatAttachmentData | undefined {
-		const args = message.messageData.content?.split(" ") ?? [];
-		const firstWord = args.at(0) || "";
-		const lastWord = args.at(-1) || "";
-
-		const links = [...message.element.querySelectorAll("a[href]")];
+	private getBaseData(message: TwitchChatMessageEvent): BaseChatAttachmentData | undefined {
+		const messageText = message.message.message ?? message.message.messageBody;
+		if (!messageText) return;
+		const args = messageText.split(" ");
+		const links = [...message.element.querySelectorAll("a")] as Element[];
+		const firstWord = args.at(0);
 		const firstElement = links.at(0);
+		const lastWord = args.at(-1);
 		const lastElement = links.at(-1);
 
 		if (this.commonUtils().isValidUrl(firstWord) && firstElement) {
-			return {
-				messageType: ChatAttachmentMessageType.FIRST,
-				url: new URL(firstWord),
-				messageElement: firstElement,
-			};
+			return { messageType: ChatAttachmentMessageType.FIRST, url: new URL(firstWord), messageElement: firstElement };
 		}
 		if (this.commonUtils().isValidUrl(lastWord) && lastElement) {
-			return {
-				messageType: ChatAttachmentMessageType.LAST,
-				url: new URL(lastWord),
-				messageElement: lastElement,
-			};
+			return { messageType: ChatAttachmentMessageType.LAST, url: new URL(lastWord), messageElement: lastElement };
 		}
 	}
 
 	private async getData(baseData: BaseChatAttachmentData): Promise<ChatAttachmentData> {
 		const attachmentData = await this.getAttachmentData(baseData.url);
-		this.logger.debug(attachmentData);
-		if (!attachmentData?.type || !attachmentData?.size || attachmentData === undefined)
+		if (!attachmentData || !attachmentData.type || !attachmentData.size)
 			throw new Error("Couldn't get attachment data");
 		return { ...baseData, attachmentType: attachmentData.type, attachmentSize: Number.parseInt(attachmentData.size) };
 	}
