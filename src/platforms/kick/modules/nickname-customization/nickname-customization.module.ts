@@ -15,45 +15,13 @@ export default class NicknameCustomizationModule extends KickModule {
 		],
 	};
 
-	private handleMessage({ messageData, element }: KickChatMessageEvent) {
+	private handleMessage({ messageData, element, isNipahTv }: KickChatMessageEvent) {
 		const userCustom = this.enhancerApi().findUserNicknameForCurrentChannel(messageData.sender.id.toString());
 		if (!userCustom) return;
 
-		if (this.kickUtils().isNTVInstalled()) {
-			const observer = new MutationObserver((mutations) => {
-				mutations.forEach((mutation) => {
-					if (userCustom.hasGlow) {
-						if (mutation.target instanceof HTMLElement && mutation.target.matches(".ntv__chat-message__username")) {
-							this.applyGlowEffect(mutation.target, messageData);
-						}
-
-						mutation.addedNodes.forEach((node) => {
-							if (node instanceof HTMLElement) {
-								const usernameElements = node.querySelectorAll<HTMLElement>(".ntv__chat-message__username");
-								usernameElements.forEach((usernameElement) => {
-									this.applyGlowEffect(usernameElement, messageData);
-								});
-							}
-						});
-					}
-				});
-			});
-
-			observer.observe(element, {
-				childList: true,
-				subtree: true,
-				attributes: true,
-				attributeOldValue: true,
-				characterData: true,
-				characterDataOldValue: true,
-			});
-
-			(element as any)._nicknameObserver = observer;
-		}
-
-		const usernameElements: HTMLElement[] = Array.from(
-			element.querySelectorAll<HTMLElement>(`[title='${messageData.sender.slug}'], .ntv__chat-message__username`),
-		);
+		const usernameElements: HTMLElement[] = isNipahTv
+			? Array.from(element.querySelectorAll<HTMLElement>(".ntv__chat-message__username"))
+			: Array.from(element.querySelectorAll<HTMLElement>(`[title='${messageData.sender.slug}']`));
 
 		if (usernameElements.length === 0) return;
 

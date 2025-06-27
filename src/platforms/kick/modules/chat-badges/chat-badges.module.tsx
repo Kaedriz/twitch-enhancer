@@ -17,19 +17,27 @@ export default class ChatBadgesModule extends KickModule {
 		],
 	};
 
-	private handleMessage({ messageData, element }: KickChatMessageEvent) {
-		const secondChild = element.firstElementChild?.firstElementChild;
-
-		if (!secondChild || secondChild.children.length < 3) {
-			return;
-		}
-
+	private handleMessage({ messageData, element, isNipahTv }: KickChatMessageEvent) {
 		const userBadges = this.enhancerApi().findUserBadgesForCurrentChannel(messageData.sender.id.toString());
 
 		if (!userBadges?.length) return;
 
-		const children = secondChild.children;
-		const targetElement = children[children.length - 3];
+		let targetElement: Element;
+
+		if (isNipahTv) {
+			const badgesContainer = element.querySelector(".ntv__chat-message__badges");
+			if (!badgesContainer) return;
+			targetElement = badgesContainer;
+		} else {
+			const secondChild = element.firstElementChild?.firstElementChild;
+
+			if (!secondChild || secondChild.children.length < 3) {
+				return;
+			}
+
+			const children = secondChild.children;
+			targetElement = children[children.length - 3];
+		}
 
 		for (const badge of userBadges) {
 			const badgeWrapper = document.createElement("div");

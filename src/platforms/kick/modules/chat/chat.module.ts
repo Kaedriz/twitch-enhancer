@@ -17,6 +17,7 @@ export default class ChatModule extends KickModule {
 	};
 
 	private observer?: MutationObserver;
+	private nipahTvInstalled = false;
 
 	private getMessageData(element: Element): KickChatMessageEvent | null {
 		const messageData = this.kickUtils().getMessageData(element);
@@ -29,9 +30,21 @@ export default class ChatModule extends KickModule {
 
 	private processMessage(element: Element): void {
 		try {
-			const messageData = this.getMessageData(element);
-			if (!messageData) return;
-			this.emitter.emit("kick:chatMessage", messageData);
+			if (this.kickUtils().isNTVInstalled()) {
+				const messageData = this.getMessageData(element);
+				if (!messageData) return;
+				messageData.isNipahTv = true;
+				setTimeout(() => {
+					this.emitter.emit("kick:chatMessage", messageData);
+				}, 30);
+				return;
+			}
+
+			if (element.matches("div[data-index]")) {
+				const messageData = this.getMessageData(element);
+				if (!messageData) return;
+				this.emitter.emit("kick:chatMessage", messageData);
+			}
 		} catch (err) {
 			this.logger.error("Failed to parse chat message", err);
 		}
@@ -41,7 +54,7 @@ export default class ChatModule extends KickModule {
 		this.observer = new MutationObserver((mutations) => {
 			for (const mutation of mutations) {
 				for (const node of mutation.addedNodes) {
-					if (node instanceof HTMLElement && node.matches("div[data-index]")) {
+					if (node instanceof HTMLElement) {
 						this.processMessage(node);
 					}
 				}
@@ -49,12 +62,19 @@ export default class ChatModule extends KickModule {
 		});
 
 		this.observer.observe(chatRoom, { childList: true, subtree: true });
-		this.logger.debug("Chat observer started");
 	}
 
 	private async run([chatRoom]: Element[]): Promise<void> {
-		const messages = chatRoom.querySelectorAll("div[data-index]");
-		messages.forEach(this.processMessage.bind(this));
+		this.nipahTvInstalled = this.kickUtils().isNTVInstalled();
+
+		if (this.nipahTvInstalled) {
+			const nipahMessages = chatRoom.querySelectorAll(".ntv__chat-message");
+			nipahMessages.forEach(this.processMessage.bind(this));
+		} else {
+			const messages = chatRoom.querySelectorAll("div[data-index]");
+			messages.forEach(this.processMessage.bind(this));
+		}
+
 		this.setupMessageObserver(chatRoom);
 	}
 

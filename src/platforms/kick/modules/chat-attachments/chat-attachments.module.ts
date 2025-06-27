@@ -48,29 +48,52 @@ export default class ChatAttachmentsModule extends KickModule {
 		const firstWord = args.at(0) || "";
 		const lastWord = args.at(-1) || "";
 
-		const messageElement = message.element.querySelector("a[href]");
+		if (message.isNipahTv) {
+			const parts = message.element.querySelectorAll(".ntv__chat-message__inner .ntv__chat-message__part");
+			for (const part of Array.from(parts)) {
+				const link = part.querySelector("a[href]");
+				const href = link?.getAttribute("href");
+				if (href && this.commonUtils().isValidUrl(href)) {
+					return {
+						messageType: ChatAttachmentMessageType.FIRST,
+						url: new URL(href),
+						messageElement: link as HTMLElement,
+					};
+				}
+				const text = part.textContent?.trim() || "";
+				if (this.commonUtils().isValidUrl(text)) {
+					return {
+						messageType: ChatAttachmentMessageType.FIRST,
+						url: new URL(text),
+						messageElement: part as HTMLElement,
+					};
+				}
+			}
+			return;
+		}
 
-		if (!messageElement) return;
+		const links = [...message.element.querySelectorAll("a[href]")];
+		const firstElement = links.at(0);
+		const lastElement = links.at(-1);
 
-		if (this.commonUtils().isValidUrl(firstWord)) {
+		if (this.commonUtils().isValidUrl(firstWord) && firstElement) {
 			return {
 				messageType: ChatAttachmentMessageType.FIRST,
 				url: new URL(firstWord),
-				messageElement,
+				messageElement: firstElement,
 			};
 		}
-		if (this.commonUtils().isValidUrl(lastWord)) {
+		if (this.commonUtils().isValidUrl(lastWord) && lastElement) {
 			return {
 				messageType: ChatAttachmentMessageType.LAST,
 				url: new URL(lastWord),
-				messageElement,
+				messageElement: lastElement,
 			};
 		}
 	}
 
 	private async getData(baseData: BaseChatAttachmentData): Promise<ChatAttachmentData> {
 		const attachmentData = await this.getAttachmentData(baseData.url);
-		this.logger.debug(attachmentData);
 		if (!attachmentData?.type || !attachmentData?.size || attachmentData === undefined)
 			throw new Error("Couldn't get attachment data");
 		return { ...baseData, attachmentType: attachmentData.type, attachmentSize: Number.parseInt(attachmentData.size) };
@@ -92,17 +115,14 @@ export default class ChatAttachmentsModule extends KickModule {
 		this.commonUtils().createGlobalStyle(`
 			.enhancer-chat-link {
 				display: block;
-				text-decoration: none;
-				width: 100%;
+				width: fit-content;
+				margin: 0.5rem 0;
 			}
 			
 			.enhancer-chat-image {
-				max-width: 100%;
+				min-height: 16px;
 				max-height: 256px;
-				width: auto;
-				height: auto;
-				display: block;
-				margin-top: 4px;
+				width: 100%;
 			}`);
 	}
 }

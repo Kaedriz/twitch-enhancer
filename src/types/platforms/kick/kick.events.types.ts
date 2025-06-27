@@ -36,4 +36,5 @@ export type KickChatMessageData = {
 export type KickChatMessageEvent = {
 	messageData: KickChatMessageData;
 	element: Element;
+	isNipahTv?: boolean;
 };
