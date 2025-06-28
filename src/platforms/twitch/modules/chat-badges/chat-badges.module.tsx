@@ -33,6 +33,7 @@ export default class ChatBadgesModule extends TwitchModule {
 			badgeWrapper.style.marginRight = ".25em";
 			badgeWrapper.style.verticalAlign = "baseline";
 			badgeWrapper.style.display = "inline-block";
+			// TODO Make it Preact component?
 
 			// todo should it be 4x?
 			render(<Badge sourceUrl={badge.sources["4x"]} name={badge.name} />, badgeWrapper);

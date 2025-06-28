@@ -34,7 +34,7 @@ export type KickChatMessageData = {
 	};
 };
 export type KickChatMessageEvent = {
-	messageData: KickChatMessageData;
+	message: KickChatMessageData;
 	element: Element;
-	isNipahTv?: boolean;
+	isUsingNTV: boolean;
 };

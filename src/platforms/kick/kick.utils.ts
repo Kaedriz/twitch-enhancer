@@ -1,6 +1,7 @@
 import type ReactUtils from "$shared/utils/react.utils.ts";
 
 import type { KickChatMessageData } from "$types/platforms/kick/kick.events.types.ts";
+import type { ChatRoomComponent } from "$types/platforms/kick/kick.utils.types.ts";
 
 export default class KickUtils {
 	constructor(protected readonly reactUtils: ReactUtils) {}
@@ -26,11 +27,20 @@ export default class KickUtils {
 		return props.message;
 	}
 
-	isNTVInstalled(): boolean {
+	getChatRoomComponent(): ChatRoomComponent | undefined {
+		const element = document.querySelector("#chatroom-messages");
+		if (!element) return;
+		const instance = this.reactUtils.getReactInstance(element);
+		if (!instance) return;
+		return instance?.return?.memoizedProps;
+	}
+
+	isUsingNTV(element?: Element): boolean {
+		const elementToSerach = element ?? document;
 		return !!(
-			document.querySelector(".ntv__chat-message__username") ||
-			document.querySelector(".ntv__chat-message__inner") ||
-			document.querySelector("[class*='ntv__']")
+			elementToSerach.querySelector(".ntv__chat-message__username") ||
+			elementToSerach.querySelector(".ntv__chat-message__inner") ||
+			elementToSerach.querySelector("[class*='ntv__']")
 		);
 	}
 }

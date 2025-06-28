@@ -44,35 +44,14 @@ export default class ChatAttachmentsModule extends KickModule {
 	}
 
 	private getBaseData(message: KickChatMessageEvent): BaseChatAttachmentData | undefined {
-		const args = message.messageData.content?.split(" ") ?? [];
+		const args = message.message.content?.split(" ") ?? [];
 		const firstWord = args.at(0) || "";
 		const lastWord = args.at(-1) || "";
 
-		if (message.isNipahTv) {
-			const parts = message.element.querySelectorAll(".ntv__chat-message__inner .ntv__chat-message__part");
-			for (const part of Array.from(parts)) {
-				const link = part.querySelector("a[href]");
-				const href = link?.getAttribute("href");
-				if (href && this.commonUtils().isValidUrl(href)) {
-					return {
-						messageType: ChatAttachmentMessageType.FIRST,
-						url: new URL(href),
-						messageElement: link as HTMLElement,
-					};
-				}
-				const text = part.textContent?.trim() || "";
-				if (this.commonUtils().isValidUrl(text)) {
-					return {
-						messageType: ChatAttachmentMessageType.FIRST,
-						url: new URL(text),
-						messageElement: part as HTMLElement,
-					};
-				}
-			}
-			return;
-		}
+		const links = message.isUsingNTV
+			? [...message.element.querySelectorAll(".ntv__chat-message__inner .ntv__chat-message__part")]
+			: [...message.element.querySelectorAll("a[href]")];
 
-		const links = [...message.element.querySelectorAll("a[href]")];
 		const firstElement = links.at(0);
 		const lastElement = links.at(-1);
 

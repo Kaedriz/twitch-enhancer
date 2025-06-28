@@ -15,23 +15,22 @@ export default class NicknameCustomizationModule extends KickModule {
 		],
 	};
 
-	private handleMessage({ messageData, element, isNipahTv }: KickChatMessageEvent) {
-		const userCustom = this.enhancerApi().findUserNicknameForCurrentChannel(messageData.sender.id.toString());
-		if (!userCustom) return;
+	private handleMessage({ message, element }: KickChatMessageEvent) {
+		const usernameElements = [
+			...element.querySelectorAll<HTMLElement>(".ntv__chat-message__username"),
+			...element.querySelectorAll<HTMLElement>(`[title='${message.sender.slug}']`),
+		];
+		if (usernameElements.length < 1) return;
 
-		const usernameElements: HTMLElement[] = isNipahTv
-			? Array.from(element.querySelectorAll<HTMLElement>(".ntv__chat-message__username"))
-			: Array.from(element.querySelectorAll<HTMLElement>(`[title='${messageData.sender.slug}']`));
-
-		if (usernameElements.length === 0) return;
+		const userCustomization = this.enhancerApi().findUserNicknameForCurrentChannel(message.sender.id.toString());
+		if (!userCustomization) return;
 
 		usernameElements.forEach((usernameElement) => {
-			if (userCustom.customNickname) {
-				usernameElement.innerText = userCustom.customNickname;
+			if (userCustomization.customNickname) {
+				usernameElement.innerText = userCustomization.customNickname;
 			}
-
-			if (userCustom.hasGlow) {
-				this.applyGlowEffect(usernameElement, messageData);
+			if (userCustomization.hasGlow) {
+				this.applyGlowEffect(usernameElement, message);
 			}
 		});
 	}
@@ -42,7 +41,6 @@ export default class NicknameCustomizationModule extends KickModule {
 			(usernameElement.firstChild?.firstChild && (usernameElement.firstChild.firstChild as HTMLElement).style.color) ||
 			messageData.sender.identity.color ||
 			"white";
-
 		usernameElement.style.textShadow = `${color} 0 0 10px`;
 		usernameElement.style.color = color;
 		usernameElement.style.fontWeight = "bold";
