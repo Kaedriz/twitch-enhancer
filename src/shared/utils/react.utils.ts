@@ -1,12 +1,12 @@
 import type { ReactComponent } from "$types/shared/utils/react.utils.types.ts";
 
 export default class ReactUtils {
-	findReactParents<T>(
+	findReactParents<StateNode, MemoizedProps = any>(
 		node: any,
 		predicate: (node: any) => boolean,
 		maxDepth = 15,
 		depth = 0,
-	): ReactComponent<T> | null {
+	): ReactComponent<StateNode, MemoizedProps> | null {
 		let success = false;
 		try {
 			success = predicate(node);
@@ -22,12 +22,12 @@ export default class ReactUtils {
 		return null;
 	}
 
-	findReactChildren<T>(
+	findReactChildren<StateNode, MemoizedProps = any>(
 		node: any,
 		predicate: (node: any) => boolean,
 		maxDepth = 15,
 		depth = 0,
-	): ReactComponent<T> | null {
+	): ReactComponent<StateNode, MemoizedProps> | null {
 		let success = false;
 		try {
 			success = predicate(node);

@@ -20,13 +20,13 @@ const Header = styled.div`
 const Title = styled.h1`
 	color: #9147ff;
 	margin: 0 0 12px 0;
-	font-size: 3rem;
+	font-size: 30px;
 	font-weight: 700;
 	text-shadow: 0 0 20px rgba(145, 71, 255, 0.3);
 `;
 
 const Subtitle = styled.p`
-	font-size: 1.3rem;
+	font-size: 13px;
 	margin: 0 0 16px 0;
 	color: #e0e0e0;
 	opacity: 0.9;
@@ -38,7 +38,7 @@ const VersionBadge = styled.div`
 	color: #9147ff;
 	padding: 9px 22px;
 	border-radius: 20px;
-	font-size: 1.1rem;
+	font-size: 11px;
 	font-weight: 600;
 	border: 1px solid rgba(145, 71, 255, 0.3);
 `;
@@ -50,7 +50,7 @@ const Section = styled.div`
 const SectionTitle = styled.h2`
 	color: #9147ff;
 	margin: 0 0 20px 0;
-	font-size: 1.8rem;
+	font-size: 18px;
 	font-weight: 600;
 	display: flex;
 	align-items: center;
@@ -68,14 +68,14 @@ const SectionTitle = styled.h2`
 const SubSectionTitle = styled.h3`
 	margin: 26px 0 14px 0;
 	color: #fff;
-	font-size: 1.35rem;
+	font-size: 13.5px;
 	font-weight: 500;
 `;
 
 const Description = styled.p`
 	margin-bottom: 22px;
 	color: #ccc;
-	font-size: 1.1rem;
+	font-size: 11px;
 `;
 
 const ContributorGrid = styled.div`
@@ -90,7 +90,7 @@ const ContributorTag = styled.div`
 	border: 1px solid rgba(255, 255, 255, 0.1);
 	padding: 12px 16px;
 	border-radius: 8px;
-	font-size: 1.05rem;
+	font-size: 10px;
 	color: #e0e0e0;
 	text-align: center;
 	transition: all 0.2s ease;
@@ -123,7 +123,7 @@ const SocialLink = styled.a`
 	text-decoration: none;
 	display: flex;
 	align-items: center;
-	font-size: 1.1rem;
+	font-size: 11px;
 	padding: 15px 20px;
 	background: rgba(145, 71, 255, 0.05);
 	border: 1px solid rgba(145, 71, 255, 0.2);
@@ -147,7 +147,7 @@ const IconImage = styled.img`
 `;
 
 const SmallText = styled.p`
-	font-size: 0.95rem;
+	font-size: 10px;
 	color: #999;
 	margin: 26px 20px 0 20px;
 	text-align: center;
@@ -157,7 +157,7 @@ const SmallText = styled.p`
 const BugReportText = styled.p`
 	margin-bottom: 18px;
 	color: #ccc;
-	font-size: 1.1rem;
+	font-size: 11px;
 `;
 
 interface EnhancerAboutComponentProps {
