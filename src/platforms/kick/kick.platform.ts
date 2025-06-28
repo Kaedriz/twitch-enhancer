@@ -7,6 +7,7 @@ import ExampleModule from "$kick/modules/example/example.module.ts";
 import NicknameCustomizationModule from "$kick/modules/nickname-customization/nickname-customization.module.ts";
 import SettingsButtonModule from "$kick/modules/settings-button/settings-button.module.tsx";
 import SettingsModule from "$kick/modules/settings/settings.module.tsx";
+import StreamLatencyModule from "$kick/modules/stream-latency/stream-latency.module.tsx";
 import Platform from "$shared/platform/platform.ts";
 import type { KickEvents } from "$types/platforms/kick/kick.events.types.ts";
 import type { KickSettings } from "$types/platforms/kick/kick.settings.types.ts";
@@ -37,6 +38,7 @@ export default class KickPlatform extends Platform<KickModule, KickEvents, KickS
 			new SettingsButtonModule(...dependencies),
 			new SettingsModule(...dependencies),
 			new NicknameCustomizationModule(...dependencies),
+			new StreamLatencyModule(...dependencies),
 		];
 	}
 }
