@@ -1,7 +1,7 @@
 import KickModule from "$kick/kick.module.ts";
 import { KickChatMessage, type KickChatMessageEvent } from "$types/platforms/kick/kick.events.types.ts";
-import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
 import type { ChatRoomComponent } from "$types/platforms/kick/kick.utils.types.ts";
+import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
 
 export default class ChatModule extends KickModule {
 	readonly config: KickModuleConfig = {
@@ -20,6 +20,9 @@ export default class ChatModule extends KickModule {
 	private observer: MutationObserver | undefined;
 
 	private async run([chatRoom]: Element[]): Promise<void> {
+		[...chatRoom.querySelectorAll(".ntv__chat-message"), ...chatRoom.querySelectorAll("div[data-index]")].forEach(
+			(message) => this.handleMessage(message),
+		);
 		// TODO Join channel on enhancerApi
 		this.createObserver(chatRoom);
 	}
@@ -34,16 +37,16 @@ export default class ChatModule extends KickModule {
 	}
 
 	private async handleMessage(element: Element) {
-		// TODO When chat is paused everything is broken...
-		if (this.isChatPaused()) return;
 		try {
+			if (this.isMessageHandled(element)) return;
 			const messageData = this.getMessageData(element);
 			if (!messageData) return;
 			if (!element.matches("div[data-index]")) return;
+			this.markMessageAsHandled(element);
 			await this.commonUtils().delay(15); // Have to leave this delay, because NTV rendering can be disabled via NTV options
 			const isUsingNTV = this.kickUtils().isUsingNTV(element);
 			this.emitter.emit("kick:chatMessage", { ...messageData, isUsingNTV });
-			this.logger.debug("Sending message");
+			this.logger.debug("Sending message", messageData);
 		} catch (err) {
 			this.logger.error("Failed to parse chat message", err);
 		}
@@ -63,7 +66,11 @@ export default class ChatModule extends KickModule {
 		this.observer.observe(chatRoom, { childList: true, subtree: true });
 	}
 
-	private isChatPaused() {
-		return this.kickUtils().getChatRoomComponent()?.isPaused;
+	private isMessageHandled(element: Element) {
+		return element.hasAttribute("enhancer-handled");
+	}
+
+	private markMessageAsHandled(element: Element) {
+		element.setAttribute("enhancer-handled", "true");
 	}
 }
