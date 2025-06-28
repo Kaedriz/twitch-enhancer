@@ -1,13 +1,13 @@
+import KickModule from "$kick/kick.module.ts";
 import { EnhancerAboutComponent } from "$shared/components/settings/about.section.tsx";
 import Settings, { SettingsOverlay } from "$shared/components/settings/settings.component.tsx";
 import { TWITCH_DEFAULT_SETTINGS } from "$twitch/twitch.constants.ts";
+import type { KickSettings } from "$types/platforms/kick/kick.settings.types.ts";
 import type { TwitchSettings } from "$types/platforms/twitch/twitch.settings.types.ts";
 import type { SettingDefinition, TabDefinition } from "$types/shared/components/settings.component.types.ts";
 import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
 import { type Signal, signal } from "@preact/signals";
 import { render } from "preact";
-import KickModule from "$kick/kick.module.ts";
-import type { KickSettings } from "$types/platforms/kick/kick.settings.types.ts";
 
 export default class SettingsModule extends KickModule {
 	config: KickModuleConfig = {
