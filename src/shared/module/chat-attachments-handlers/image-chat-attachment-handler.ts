@@ -1,8 +1,9 @@
 import ChatAttachmentHandler from "$shared/module/chat-attachments-handlers/chat-attachment-handler.ts";
-import type {
-	AttachmentUrlParser,
-	BaseChatAttachmentData,
-	ChatAttachmentData,
+import {
+	type AttachmentUrlParser,
+	type BaseChatAttachmentData,
+	type ChatAttachmentData,
+	ChatAttachmentMessageType,
 } from "$types/shared/module/chat-attachment/chat-attachment.types.ts";
 
 export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
@@ -67,13 +68,9 @@ export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 		image.classList.add("enhancer-chat-image");
 		image.src = imageSource;
 		image.onload = () => {
-			const imageContainer = document.createElement("div");
-			imageContainer.classList.add("enhancer-chat-image-container");
-			imageContainer.appendChild(image);
-
 			element.href = this.parsePreviewUrl(data.url).href;
 			element.classList.add("enhancer-chat-link");
-			element.replaceChildren(imageContainer);
+			element.replaceChildren(image);
 			this.loadedCallback();
 		};
 		image.onerror = () => {
