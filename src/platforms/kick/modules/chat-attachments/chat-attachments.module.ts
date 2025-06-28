@@ -44,11 +44,14 @@ export default class ChatAttachmentsModule extends KickModule {
 	}
 
 	private getBaseData(message: KickChatMessageEvent): BaseChatAttachmentData | undefined {
-		const args = message.messageData.content?.split(" ") ?? [];
+		const args = message.message.content?.split(" ") ?? [];
 		const firstWord = args.at(0) || "";
 		const lastWord = args.at(-1) || "";
 
-		const links = [...message.element.querySelectorAll("a[href]")];
+		const links = message.isUsingNTV
+			? [...message.element.querySelectorAll(".ntv__chat-message__inner .ntv__chat-message__part")]
+			: [...message.element.querySelectorAll("a[href]")];
+
 		const firstElement = links.at(0);
 		const lastElement = links.at(-1);
 
@@ -70,7 +73,6 @@ export default class ChatAttachmentsModule extends KickModule {
 
 	private async getData(baseData: BaseChatAttachmentData): Promise<ChatAttachmentData> {
 		const attachmentData = await this.getAttachmentData(baseData.url);
-		this.logger.debug(attachmentData);
 		if (!attachmentData?.type || !attachmentData?.size || attachmentData === undefined)
 			throw new Error("Couldn't get attachment data");
 		return { ...baseData, attachmentType: attachmentData.type, attachmentSize: Number.parseInt(attachmentData.size) };

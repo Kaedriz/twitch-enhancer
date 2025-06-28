@@ -3,6 +3,7 @@ import { Logger } from "$shared/logger/logger.ts";
 import type {
 	EnhancerBadgesResponseDto,
 	EnhancerChannelDto,
+	EnhancerNicknamesResponseDto,
 	EnhancerStreamerWatchTimeData,
 } from "$types/apis/enhancer.apis.ts";
 import type { PlatformType } from "$types/shared/platform.types.ts";
@@ -20,10 +21,14 @@ export default class EnhancerApi {
 
 	private static readonly GLOBAL_CHANNEL_ID = "0";
 	private static readonly API_URL = "https://api.enhancer.at";
+	//private static readonly API_URL = "http://localhost:8080";
+
 	private static readonly CACHE_KEYS = {
 		GLOBAL_BADGES: "global-badges",
 		CHANNEL: (id: string) => `channel:${id}`,
 		BADGES: (id: string) => `badges:${id}`,
+		GLOBAL_NICKNAMES: "global-nicknames",
+		NICKNAMES: (id: string) => `nicknames:${id}`,
 	} as const;
 
 	private readonly logger = new Logger({ context: "enhancer-api" });
@@ -36,11 +41,18 @@ export default class EnhancerApi {
 
 		try {
 			const globalBadges = await this.fetchBadges(EnhancerApi.GLOBAL_CHANNEL_ID);
+			const globalNicknames = await this.fetchNicknames(EnhancerApi.GLOBAL_CHANNEL_ID);
 			if (globalBadges.ok) {
 				this.cache.set(EnhancerApi.CACHE_KEYS.GLOBAL_BADGES, globalBadges.data);
 				this.logger.debug("Global badges loaded successfully");
 			} else {
 				this.logger.warn("Failed to load global badges");
+			}
+			if (globalNicknames.ok) {
+				this.cache.set(EnhancerApi.CACHE_KEYS.GLOBAL_NICKNAMES, globalNicknames.data);
+				this.logger.debug("Global nicknames loaded successfully");
+			} else {
+				this.logger.warn("Failed to load global nicknames");
 			}
 		} catch (error) {
 			this.logger.error("Error initializing EnhancerApi:", error);
@@ -53,13 +65,15 @@ export default class EnhancerApi {
 		if (!channelId || channelId === this.currentChannelId) return;
 
 		try {
-			const [channelResult, badgesResult] = await Promise.allSettled([
+			const [channelResult, badgesResult, nicknamesResult] = await Promise.allSettled([
 				this.fetchChannel(channelId),
 				this.fetchBadges(channelId),
+				this.fetchNicknames(channelId),
 			]);
 
 			this.handleChannelResult(channelId, channelResult);
 			this.handleBadgesResult(channelId, badgesResult);
+			this.handleNicknamesResult(channelId, nicknamesResult);
 
 			this.currentChannelId = channelId;
 			this.logger.info(`Successfully joined channel: ${channelId}`);
@@ -77,8 +91,16 @@ export default class EnhancerApi {
 		return this.getCurrentChannelData(EnhancerApi.CACHE_KEYS.BADGES);
 	}
 
+	getCurrentChannelNicknames(): EnhancerNicknamesResponseDto | null {
+		return this.getCurrentChannelData(EnhancerApi.CACHE_KEYS.NICKNAMES);
+	}
+
 	getGlobalBadges(): EnhancerBadgesResponseDto | null {
 		return this.cache.get(EnhancerApi.CACHE_KEYS.GLOBAL_BADGES) ?? null;
+	}
+
+	getGlobalNicknames(): EnhancerNicknamesResponseDto | null {
+		return this.cache.get(EnhancerApi.CACHE_KEYS.GLOBAL_NICKNAMES) ?? null;
 	}
 
 	async getChannelById(channelId: string): Promise<EnhancerChannelDto | null> {
@@ -125,6 +147,16 @@ export default class EnhancerApi {
 		];
 	}
 
+	findUserNicknameForCurrentChannel(externalUserId: string) {
+		const globalNicknames = this.getGlobalNicknames();
+		const channelNicknames = this.getCurrentChannelNicknames();
+
+		const user =
+			channelNicknames?.users.find((user) => user.externalId === externalUserId) ||
+			globalNicknames?.users.find((user) => user.externalId === externalUserId);
+		return user || null;
+	}
+
 	getCurrentChannelId(): string {
 		return this.currentChannelId;
 	}
@@ -163,6 +195,18 @@ export default class EnhancerApi {
 		return { data, ok: status === 200, status };
 	}
 
+	private async fetchNicknames(channelId: string): Promise<ApiResponse<EnhancerNicknamesResponseDto>> {
+		const { data, status } = await this.httpClient.request<EnhancerNicknamesResponseDto>(
+			`${EnhancerApi.API_URL}/nickname/${this.platform}/${channelId}`,
+			{
+				method: "GET",
+				responseType: "json",
+				validateStatus: (status) => [200, 404].includes(status),
+			},
+		);
+		return { data, ok: status === 200, status };
+	}
+
 	private getCurrentChannelData<T>(keyFactory: (id: string) => string): T | null {
 		if (!this.currentChannelId) return null;
 		return this.cache.get(keyFactory(this.currentChannelId)) ?? null;
@@ -184,6 +228,17 @@ export default class EnhancerApi {
 			this.cache.set(EnhancerApi.CACHE_KEYS.BADGES(channelId), result.value.data);
 		} else {
 			this.logger.warn(`Failed to fetch badges for ${channelId}`);
+		}
+	}
+
+	private handleNicknamesResult(
+		channelId: string,
+		result: PromiseSettledResult<ApiResponse<EnhancerNicknamesResponseDto>>,
+	): void {
+		if (result.status === "fulfilled" && result.value.ok) {
+			this.cache.set(EnhancerApi.CACHE_KEYS.NICKNAMES(channelId), result.value.data);
+		} else {
+			this.logger.warn(`Failed to fetch nicknames for ${channelId}`);
 		}
 	}
 }
