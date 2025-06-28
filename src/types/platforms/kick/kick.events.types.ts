@@ -1,8 +1,10 @@
 import type { CommonEvents } from "$types/platforms/common.events.ts";
+import type { KickSettingsEvents } from "$types/platforms/kick/kick.settings.types.ts";
 
 export type KickEvents = {
 	"kick:chatMessage": (message: KickChatMessageEvent) => void | Promise<void>;
-} & CommonEvents;
+} & KickSettingsEvents &
+	CommonEvents;
 
 export type KickChatMessage = {
 	timestamp: number;

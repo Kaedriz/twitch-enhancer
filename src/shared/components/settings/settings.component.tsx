@@ -11,7 +11,7 @@ const SettingsContainer = styled.div`
 	border-radius: 15px;
 	border: 1px solid #232323;
 	position: relative;
-	font-family: "Roobert", "Tajawal", "Inter", "Helvetica Neue", Helvetica, Arial, sans-serifsans-serif, sans-serif !important;
+	font-family: "Inter", "Noto Sans Arabic", "Roobert", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
 `;
 
 const Gradient = styled.div`
@@ -105,7 +105,7 @@ const Header = styled.header`
 	justify-content: space-between;
 	padding: 15px;
 	color: white;
-	font-size: 1.5rem;
+	font-size: 14px;
 	border-bottom: 1px solid #161616;
 `;
 
@@ -156,13 +156,14 @@ const SettingInfo = styled.div`
 `;
 
 const SettingTitle = styled.div`
-	font-size: 1.4rem;
+	font-size: 14px;
 	color: white;
 	margin-bottom: 4px;
 `;
 
 const SettingDescription = styled.div`
-	color: #565656;
+	color: rgb(131 122 122);
+	font-size: 14px;
 `;
 
 const SettingControl = styled.div`
@@ -205,7 +206,7 @@ const TextInput = styled.input`
 	background: none;
 	border: 1px solid #232323;
 	color: white;
-	font-size: 1.1rem;
+	font-size: 11px;
 	border-radius: 7px;
 	padding: 10px;
 	min-width: 200px;
@@ -221,7 +222,7 @@ const Select = styled.select`
 	border-radius: 7px;
 	color: #565656;
 	border: 1px solid #232323;
-	font-size: 1.1rem;
+	font-size: 11px;
 	cursor: pointer;
 	min-width: 150px;
 `;
