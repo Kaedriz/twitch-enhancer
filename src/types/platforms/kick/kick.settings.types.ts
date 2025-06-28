@@ -1,3 +1,11 @@
-import type { PlatformSettings } from "$types/shared/worker/settings-worker.types.ts";
+import type { QuickAccessLink } from "$types/shared/components/settings.component.types.ts";
 
-export type KickSettings = PlatformSettings;
+export type KickSettings = {
+	chatImagesEnabled: boolean;
+	chatImagesSize: number;
+	quickAccessLinks: QuickAccessLink[];
+};
+
+export type TwitchSettingsEvents = {
+	[K in keyof KickSettings as `kick:settings:${K & string}`]: (value: KickSettings[K]) => void | Promise<void>;
+};
