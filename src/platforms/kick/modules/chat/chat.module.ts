@@ -1,5 +1,5 @@
 import KickModule from "$kick/kick.module.ts";
-import { KickChatMessage, type KickChatMessageEvent } from "$types/platforms/kick/kick.events.types.ts";
+import type { KickChatMessageEvent } from "$types/platforms/kick/kick.events.types.ts";
 import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
 
 export default class ChatModule extends KickModule {
@@ -16,52 +16,72 @@ export default class ChatModule extends KickModule {
 		],
 	};
 
-	private observer?: MutationObserver;
+	private observer: MutationObserver | undefined;
 
-	private getMessageData(element: Element): KickChatMessageEvent | null {
+	private async run([chatRoom]: Element[]): Promise<void> {
+		[...chatRoom.querySelectorAll(".ntv__chat-message"), ...chatRoom.querySelectorAll("div[data-index]")].forEach(
+			(message) => this.handleMessage(message),
+		);
+		await this.initializeChannel();
+		this.createObserver(chatRoom);
+	}
+
+	private async initializeChannel() {
+		const channelSection = this.kickUtils().getChannelSectionInfoComponent();
+		if (!channelSection) throw Error("Failed to find channel section component");
+		const channelId = channelSection.channelId.toString();
+		try {
+			await this.enhancerApi().joinChannel(channelId);
+			this.logger.info(`Joined channel ${channelId} (${channelSection.slug})`);
+		} catch (error) {
+			this.logger.error("Failed to join channel", error);
+		}
+	}
+
+	private getMessageData(element: Element): Omit<KickChatMessageEvent, "isUsingNTV"> | null {
 		const messageData = this.kickUtils().getMessageData(element);
 		if (!messageData) return null;
 		return {
-			messageData: messageData,
-			element: element,
+			message: messageData,
+			element,
 		};
 	}
 
-	private processMessage(element: Element): void {
+	private async handleMessage(element: Element) {
 		try {
+			if (this.isMessageHandled(element)) return;
 			const messageData = this.getMessageData(element);
 			if (!messageData) return;
-			this.emitter.emit("kick:chatMessage", messageData);
+			if (!element.matches("div[data-index]")) return;
+			this.markMessageAsHandled(element);
+			await this.commonUtils().delay(15); // Have to leave this delay, because NTV rendering can be disabled via NTV options
+			const isUsingNTV = this.kickUtils().isUsingNTV(element);
+			this.emitter.emit("kick:chatMessage", { ...messageData, isUsingNTV });
+			this.logger.debug("Sending message", messageData);
 		} catch (err) {
 			this.logger.error("Failed to parse chat message", err);
 		}
 	}
 
-	private setupMessageObserver(chatRoom: Element): void {
+	private createObserver(chatRoom: Element): void {
+		this.observer?.disconnect();
 		this.observer = new MutationObserver((mutations) => {
 			for (const mutation of mutations) {
 				for (const node of mutation.addedNodes) {
-					if (node instanceof HTMLElement && node.matches("div[data-index]")) {
-						this.processMessage(node);
+					if (node instanceof HTMLElement) {
+						this.handleMessage(node);
 					}
 				}
 			}
 		});
-
 		this.observer.observe(chatRoom, { childList: true, subtree: true });
-		this.logger.debug("Chat observer started");
 	}
 
-	private async run([chatRoom]: Element[]): Promise<void> {
-		const messages = chatRoom.querySelectorAll("div[data-index]");
-		messages.forEach(this.processMessage.bind(this));
-		this.setupMessageObserver(chatRoom);
+	private isMessageHandled(element: Element) {
+		return element.hasAttribute("enhancer-message-handled");
 	}
 
-	public unload(): void {
-		if (this.observer) {
-			this.observer.disconnect();
-			this.logger.debug("Chat observer disconnected");
-		}
+	private markMessageAsHandled(element: Element) {
+		element.setAttribute("enhancer-message-handled", "true");
 	}
 }

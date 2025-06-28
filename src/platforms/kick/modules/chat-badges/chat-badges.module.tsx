@@ -17,19 +17,14 @@ export default class ChatBadgesModule extends KickModule {
 		],
 	};
 
-	private handleMessage({ messageData, element }: KickChatMessageEvent) {
-		const secondChild = element.firstElementChild?.firstElementChild;
-
-		if (!secondChild || secondChild.children.length < 3) {
-			return;
-		}
-
-		const userBadges = this.enhancerApi().findUserBadgesForCurrentChannel(messageData.sender.id.toString());
-
+	private handleMessage({ message, element, isUsingNTV }: KickChatMessageEvent) {
+		const userBadges = this.enhancerApi().findUserBadgesForCurrentChannel(message.sender.id.toString());
 		if (!userBadges?.length) return;
 
-		const children = secondChild.children;
-		const targetElement = children[children.length - 3];
+		const badgesContainer = isUsingNTV
+			? element.querySelector(".ntv__chat-message__badges")
+			: element.querySelector(`button[title="${message.sender.username}"]`)?.parentElement;
+		if (!badgesContainer) return;
 
 		for (const badge of userBadges) {
 			const badgeWrapper = document.createElement("div");
@@ -37,10 +32,11 @@ export default class ChatBadgesModule extends KickModule {
 			badgeWrapper.style.marginRight = ".25em";
 			badgeWrapper.style.marginLeft = ".25em";
 			badgeWrapper.style.alignSelf = "center";
+			// TODO Make it Preact component?
 
 			render(<Badge sourceUrl={badge.sources["4x"]} name={badge.name} />, badgeWrapper);
 
-			targetElement.insertBefore(badgeWrapper, targetElement.firstChild);
+			badgesContainer.insertBefore(badgeWrapper, badgesContainer.firstChild);
 		}
 	}
 }

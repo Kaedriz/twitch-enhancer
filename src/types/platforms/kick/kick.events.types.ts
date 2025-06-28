@@ -36,6 +36,7 @@ export type KickChatMessageData = {
 	};
 };
 export type KickChatMessageEvent = {
-	messageData: KickChatMessageData;
+	message: KickChatMessageData;
 	element: Element;
+	isUsingNTV: boolean;
 };
