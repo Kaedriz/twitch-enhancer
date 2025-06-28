@@ -17,9 +17,8 @@ export default class SettingsButtonModule extends KickModule {
 		],
 	};
 
-	private async run(elements: Element[], key: string) {
-		// @ts-ignore
-		const menu = [...elements.at(0).children].at(-1);
+	private async run(elements: Element[]) {
+		const menu = elements.at(0)?.lastElementChild;
 		if (!menu) return;
 		const wrappers = this.commonUtils().createEmptyElements(this.getId(), [menu], "span");
 		const logo = await this.commonUtils().getIcon(this.workerService(), "enhancer/logo-gray.svg");

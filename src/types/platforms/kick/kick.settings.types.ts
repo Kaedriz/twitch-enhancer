@@ -6,6 +6,6 @@ export type KickSettings = {
 	quickAccessLinks: QuickAccessLink[];
 };
 
-export type TwitchSettingsEvents = {
+export type KickSettingsEvents = {
 	[K in keyof KickSettings as `kick:settings:${K & string}`]: (value: KickSettings[K]) => void | Promise<void>;
 };

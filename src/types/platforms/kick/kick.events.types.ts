@@ -1,9 +1,9 @@
 import type { CommonEvents } from "$types/platforms/common.events.ts";
-import type { TwitchSettingsEvents } from "$types/platforms/kick/kick.settings.types.ts";
+import type { KickSettingsEvents } from "$types/platforms/kick/kick.settings.types.ts";
 
 export type KickEvents = {
 	"kick:chatMessage": (message: KickChatMessageEvent) => void | Promise<void>;
-} & TwitchSettingsEvents &
+} & KickSettingsEvents &
 	CommonEvents;
 
 export type KickChatMessage = {
