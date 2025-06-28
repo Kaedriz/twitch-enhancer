@@ -67,10 +67,10 @@ export default class ChatModule extends KickModule {
 	}
 
 	private isMessageHandled(element: Element) {
-		return element.hasAttribute("enhancer-handled");
+		return element.hasAttribute("enhancer-message-handled");
 	}
 
 	private markMessageAsHandled(element: Element) {
-		element.setAttribute("enhancer-handled", "true");
+		element.setAttribute("enhancer-message-handled", "true");
 	}
 }
