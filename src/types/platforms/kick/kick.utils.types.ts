@@ -1,4 +1,4 @@
-export type ChatRoomComponent = {
-	isPaused: boolean;
-	// messages: any[]
+export type getChannelSectionInfoComponent = {
+	slug: string;
+	channelId: number;
 };

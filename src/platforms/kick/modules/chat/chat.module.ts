@@ -1,6 +1,5 @@
 import KickModule from "$kick/kick.module.ts";
-import { KickChatMessage, type KickChatMessageEvent } from "$types/platforms/kick/kick.events.types.ts";
-import type { ChatRoomComponent } from "$types/platforms/kick/kick.utils.types.ts";
+import type { KickChatMessageEvent } from "$types/platforms/kick/kick.events.types.ts";
 import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
 
 export default class ChatModule extends KickModule {
@@ -23,8 +22,20 @@ export default class ChatModule extends KickModule {
 		[...chatRoom.querySelectorAll(".ntv__chat-message"), ...chatRoom.querySelectorAll("div[data-index]")].forEach(
 			(message) => this.handleMessage(message),
 		);
-		// TODO Join channel on enhancerApi
+		await this.initializeChannel();
 		this.createObserver(chatRoom);
+	}
+
+	private async initializeChannel() {
+		const channelSection = this.kickUtils().getChannelSectionInfoComponent();
+		if (!channelSection) throw Error("Failed to find channel section component");
+		const channelId = channelSection.channelId.toString();
+		try {
+			await this.enhancerApi().joinChannel(channelId);
+			this.logger.info(`Joined channel ${channelId} (${channelSection.slug})`);
+		} catch (error) {
+			this.logger.error("Failed to join channel", error);
+		}
 	}
 
 	private getMessageData(element: Element): Omit<KickChatMessageEvent, "isUsingNTV"> | null {
