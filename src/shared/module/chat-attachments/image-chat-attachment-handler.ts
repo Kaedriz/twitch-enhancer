@@ -79,11 +79,11 @@ export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 			image.classList.add("enhancer-chat-image-blurred");
 		}
 		image.src = imageSource;
-		image.onload = () => {
+		image.onload = async () => {
 			element.href = this.parsePreviewUrl(data.url).href;
 			element.classList.add("enhancer-chat-link");
 			element.replaceChildren(image);
-			this.config.callback();
+			await this.config.callback();
 		};
 		image.onerror = () => {
 			this.logger.warn("Failed to load image");

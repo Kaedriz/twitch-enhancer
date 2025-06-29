@@ -1,9 +1,8 @@
+import { KICK_DEFAULT_SETTINGS } from "$kick/kick.constants.ts";
 import KickModule from "$kick/kick.module.ts";
-import { EnhancerAboutComponent } from "$shared/components/settings/about.section.tsx";
+import { EnhancerAboutComponent } from "$shared/components/settings/about.component.tsx";
 import Settings, { SettingsOverlay } from "$shared/components/settings/settings.component.tsx";
-import { TWITCH_DEFAULT_SETTINGS } from "$twitch/twitch.constants.ts";
 import type { KickSettings } from "$types/platforms/kick/kick.settings.types.ts";
-import type { TwitchSettings } from "$types/platforms/twitch/twitch.settings.types.ts";
 import type { SettingDefinition, TabDefinition } from "$types/shared/components/settings.component.types.ts";
 import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
 import { type Signal, signal } from "@preact/signals";
@@ -29,9 +28,9 @@ export default class SettingsModule extends KickModule {
 	};
 
 	private SETTINGS_TABS: TabDefinition[] = [];
-	private SETTING_DEFINITIONS: SettingDefinition<TwitchSettings>[] = [];
+	private SETTING_DEFINITIONS: SettingDefinition<KickSettings>[] = [];
 
-	private settingsSignal: Signal<KickSettings> = signal(TWITCH_DEFAULT_SETTINGS);
+	private settingsSignal: Signal<KickSettings> = signal(KICK_DEFAULT_SETTINGS);
 	private isOpenSignal: Signal<boolean> = signal(false);
 	private settingsContainer: HTMLDivElement | null = null;
 
@@ -69,14 +68,20 @@ export default class SettingsModule extends KickModule {
 				tabIndex: 1,
 			},
 			{
+				id: "chatImagesOnHover",
+				title: "Blur Images by Default",
+				description: "Images are blurred until you hover over them, revealing the full image.",
+				type: "toggle",
+				tabIndex: 1,
+			},
+			{
 				id: "chatImagesSize",
 				title: "Chat Image Size",
 				description: "Size of images in chat (in megabytes)",
 				type: "number",
 				tabIndex: 1,
-				min: 50,
-				max: 300,
-				step: 10,
+				min: 1,
+				step: 1,
 			},
 			{
 				id: "quickAccessLinks",
@@ -111,21 +116,18 @@ export default class SettingsModule extends KickModule {
 
 	private async loadSettings() {
 		try {
-			const settings = await this.workerService().send("getSettings", {
-				platform: "twitch",
-			});
-			if (!settings) throw Error("Failed to load settings from worker");
-			this.settingsSignal.value = { ...TWITCH_DEFAULT_SETTINGS, ...settings };
+			this.settingsSignal.value = { ...KICK_DEFAULT_SETTINGS, ...(await this.settingsService().getSettings()) };
 		} catch (error) {
 			console.error("Failed to load settings:", error);
 		}
 	}
 
-	private async saveSettings(settings: TwitchSettings, updatedKey: keyof TwitchSettings) {
+	private async saveSettings(settings: KickSettings, updatedKey: keyof KickSettings) {
 		try {
-			await this.workerService().send("updateSettings", { settings, platform: "twitch" });
+			await this.settingsService().updateSettings(settings);
 			this.settingsSignal.value = settings;
 			this.emitter.emit(`kick:settings:${updatedKey}`, settings[updatedKey]);
+			this.logger.debug(`Settings changed "${updatedKey}"`, settings[updatedKey]);
 		} catch (error) {
 			console.error("Failed to save settings:", error);
 		}

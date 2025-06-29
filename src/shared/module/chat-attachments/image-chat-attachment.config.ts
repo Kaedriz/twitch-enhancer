@@ -6,11 +6,11 @@ export class ImageChatAttachmentConfig {
 	readonly maxFileSize: Signal<number> = signal(1);
 	readonly imagesOnHover: Signal<boolean> = signal(true);
 	readonly isEnabled: Signal<boolean> = signal(false);
-	readonly callback: () => void;
+	readonly callback: () => Promise<void> | void;
 
 	constructor(
 		private settingsService: SettingsService<PlatformSettings>,
-		callback: () => void,
+		callback: () => Promise<void> | void,
 	) {
 		this.callback = callback;
 	}

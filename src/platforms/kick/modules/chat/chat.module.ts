@@ -27,12 +27,32 @@ export default class ChatModule extends KickModule {
 	}
 
 	private async initializeChannel() {
-		const channelSection = this.kickUtils().getChannelSectionInfoComponent();
-		if (!channelSection) throw Error("Failed to find channel section component");
-		const channelId = channelSection.channelId.toString();
+		let channelId: string | undefined;
+		await this.commonUtils().waitFor(
+			() => this.kickUtils().getChannelInfo(),
+			async (channelInfo) => {
+				channelId = channelInfo.channelId.toString();
+				return true;
+			},
+			{ maxRetries: 5, delay: 100 },
+		);
+		if (!channelId) {
+			try {
+				const chatRoom = this.kickUtils().getChannelChatRoomInfo();
+				if (!chatRoom) {
+					this.logger.error("Failed to find chat room component");
+					return;
+				}
+				const { data } = await this.kickApi().getChannel(chatRoom.slug);
+				channelId = data.id.toString();
+			} catch (error) {
+				this.logger.error("Failed to get channel data", error);
+			}
+		}
+		if (!channelId) return;
 		try {
 			await this.enhancerApi().joinChannel(channelId);
-			this.logger.info(`Joined channel ${channelId} (${channelSection.slug})`);
+			this.logger.debug(`Joined channel ${channelId}`);
 		} catch (error) {
 			this.logger.error("Failed to join channel", error);
 		}
@@ -49,6 +69,7 @@ export default class ChatModule extends KickModule {
 
 	private async handleMessage(element: Element) {
 		try {
+			// TODO Fix scroll, we need to check if check is paused if yes then we dont want to scroll it
 			if (this.isMessageHandled(element)) return;
 			const messageData = this.getMessageData(element);
 			if (!messageData) return;

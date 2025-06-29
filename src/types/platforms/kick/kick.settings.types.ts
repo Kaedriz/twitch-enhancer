@@ -2,6 +2,7 @@ import type { QuickAccessLink } from "$types/shared/components/settings.componen
 
 export type KickSettings = {
 	chatImagesEnabled: boolean;
+	chatImagesOnHover: boolean;
 	chatImagesSize: number;
 	quickAccessLinks: QuickAccessLink[];
 };

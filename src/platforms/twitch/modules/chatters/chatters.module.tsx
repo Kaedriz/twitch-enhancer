@@ -115,7 +115,7 @@ export default class ChattersModule extends TwitchModule {
 					userInfo.login.toLowerCase(),
 				);
 				const uniqueLogins = [...new Set([chatInfo.channelLogin.toLowerCase(), ...sharedLogins])];
-				if (uniqueLogins.length === 0) return;
+				if (uniqueLogins.length === 0) return true;
 
 				const logins =
 					loginsToUpdate.length > 0 ? uniqueLogins.filter((login) => loginsToUpdate.includes(login)) : uniqueLogins;
@@ -140,6 +140,7 @@ export default class ChattersModule extends TwitchModule {
 
 				this.updateTotalChattersCounter();
 				this.lastUpdatedAt = Date.now();
+				return true;
 			},
 			{ delay: 1000, maxRetries: 5, initialDelay: 30 },
 		);

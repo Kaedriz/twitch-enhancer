@@ -2,6 +2,7 @@ import KickModule from "$kick/kick.module.ts";
 import { HttpClient } from "$shared/http/http-client.ts";
 import type ChatAttachmentHandler from "$shared/module/chat-attachments/chat-attachment-handler.ts";
 import ImageChatAttachmentHandler from "$shared/module/chat-attachments/image-chat-attachment-handler.ts";
+import { ImageChatAttachmentConfig } from "$shared/module/chat-attachments/image-chat-attachment.config.ts";
 import type { KickChatMessageEvent } from "$types/platforms/kick/kick.events.types.ts";
 import {
 	type BaseChatAttachmentData,
@@ -11,6 +12,19 @@ import {
 import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
 
 export default class ChatAttachmentsModule extends KickModule {
+	private readonly httpClient = new HttpClient();
+	private readonly imageAttachmentConfig = new ImageChatAttachmentConfig(this.settingsService(), async () => {
+		const chatRoom = this.kickUtils().getChannelChatRoom();
+		if (!chatRoom) return;
+		if (!chatRoom.isPaused) {
+			chatRoom.setIsPaused(true);
+			await this.commonUtils().delay(10);
+			chatRoom.setIsPaused(false);
+		}
+	});
+
+	private static NTV_MESSAGE_SUFFIX = " 󠀡";
+
 	readonly config: KickModuleConfig = {
 		name: "chat-attachments",
 		appliers: [
@@ -20,18 +34,37 @@ export default class ChatAttachmentsModule extends KickModule {
 				callback: this.handleMessage.bind(this),
 				key: "chat-attachments",
 			},
+			{
+				type: "event",
+				key: "settings-chat-images-size",
+				event: "kick:settings:chatImagesSize",
+				callback: (size) => this.imageAttachmentConfig.updateMaxFileSize(size),
+			},
+			{
+				type: "event",
+				key: "settings-chat-images-on-hover",
+				event: "kick:settings:chatImagesOnHover",
+				callback: (enabled) => this.imageAttachmentConfig.updateImagesOnHover(enabled),
+			},
+			{
+				type: "event",
+				key: "settings-chat-images-enabled",
+				event: "kick:settings:chatImagesEnabled",
+				callback: (enabled) => {
+					this.logger.debug(enabled);
+					this.isModuleEnabled = enabled;
+				},
+			},
 		],
+		isModuleEnabled: () => this.settingsService().getSettingsKey("chatImagesEnabled"),
 	};
 
-	private readonly httpClient = new HttpClient();
-
 	private readonly chatAttachmentHandlers: ChatAttachmentHandler[] = [
-		new ImageChatAttachmentHandler(this.logger, () => {
-			this.kickUtils().scrollChatToBottom();
-		}),
+		new ImageChatAttachmentHandler(this.logger, this.imageAttachmentConfig),
 	];
 
 	private async handleMessage(message: KickChatMessageEvent) {
+		if (!this.isModuleEnabled) return;
 		const baseData = this.getBaseData(message);
 		if (!baseData) return;
 		const chatAttachmentHandler = this.chatAttachmentHandlers.find((chatAttachmentHandler) =>
@@ -44,13 +77,13 @@ export default class ChatAttachmentsModule extends KickModule {
 	}
 
 	private getBaseData(message: KickChatMessageEvent): BaseChatAttachmentData | undefined {
-		const args = message.message.content?.split(" ") ?? [];
+		const args = message.message.content?.replaceAll(ChatAttachmentsModule.NTV_MESSAGE_SUFFIX, "")?.split(" ") ?? [];
 		const firstWord = args.at(0) || "";
 		const lastWord = args.at(-1) || "";
 
-		const links = message.isUsingNTV
-			? [...message.element.querySelectorAll(".ntv__chat-message__inner .ntv__chat-message__part")]
-			: [...message.element.querySelectorAll("a[href]")];
+		const links = [
+			...message.element.querySelectorAll(`${message.isUsingNTV ? ".ntv__chat-message__inner " : ""}a[href]`),
+		];
 
 		const firstElement = links.at(0);
 		const lastElement = links.at(-1);
@@ -91,6 +124,7 @@ export default class ChatAttachmentsModule extends KickModule {
 	}
 
 	async initialize() {
+		await this.imageAttachmentConfig.initialize();
 		this.commonUtils().createGlobalStyle(`
 			.enhancer-chat-link {
 				display: block;

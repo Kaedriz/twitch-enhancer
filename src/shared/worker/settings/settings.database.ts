@@ -1,3 +1,4 @@
+import { KICK_DEFAULT_SETTINGS } from "$kick/kick.constants.ts";
 import { Logger } from "$shared/logger/logger.ts";
 import { TWITCH_DEFAULT_SETTINGS } from "$twitch/twitch.constants.ts";
 import type { PlatformType } from "$types/shared/platform.types.ts";
@@ -46,6 +47,8 @@ export class SettingsDatabase {
 		switch (platform) {
 			case "twitch":
 				return TWITCH_DEFAULT_SETTINGS;
+			case "kick":
+				return KICK_DEFAULT_SETTINGS;
 			default:
 				throw new Error(`Unknown platform: ${platform}`);
 		}
