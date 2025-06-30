@@ -1,8 +1,8 @@
-import { render } from "preact";
-import styled from "styled-components";
-import { signal, type Signal } from "@preact/signals";
 import KickModule from "$kick/kick.module.ts";
 import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
+import { type Signal, signal } from "@preact/signals";
+import { render } from "preact";
+import styled from "styled-components";
 
 const Wrapper = styled.span`
 	display: inline-flex;
@@ -18,7 +18,7 @@ function RealTimeComponent({ time }: { time: Signal<number> }) {
 	return <Wrapper>{formatTime(time.value)}</Wrapper>;
 }
 
-const formatTime = (ms: number) => ms < 0 ? "--:--:--" : new Date(ms).toLocaleTimeString('en-GB', { hour12: false });
+const formatTime = (ms: number) => (ms < 0 ? "--:--:--" : new Date(ms).toLocaleTimeString("en-GB", { hour12: false }));
 
 export default class RealVideoTimeModule extends KickModule {
 	static URL_CONFIG = (url: string) => url.includes("/videos/");
@@ -43,10 +43,10 @@ export default class RealVideoTimeModule extends KickModule {
 
 	private run() {
 		if (!RealVideoTimeModule.URL_CONFIG(window.location.href)) {
-			document.querySelector('.enhancer-real-video-time')?.remove();
+			document.querySelector(".enhancer-real-video-time")?.remove();
 			return;
 		}
-		if (document.querySelector('.enhancer-real-video-time')) return;
+		if (document.querySelector(".enhancer-real-video-time")) return;
 		const video = this.kickUtils().getVideoElement();
 		if (!video) return this.logger.warn("Video element not found");
 
@@ -56,10 +56,12 @@ export default class RealVideoTimeModule extends KickModule {
 
 		const wrap = document.createElement("span");
 		wrap.className = "enhancer-real-video-time";
-		const sib = video.parentElement && Array.from(video.parentElement.children).find(e => e !== video && e.tagName === "DIV");
-		const inner = sib && Array.from(sib.children).find(e => e.tagName === "DIV");
+		const sib =
+			video.parentElement && Array.from(video.parentElement.children).find((e) => e !== video && e.tagName === "DIV");
+		const inner = sib && Array.from(sib.children).find((e) => e.tagName === "DIV");
 
-		if (inner) inner.appendChild(wrap); else return;
+		if (inner) inner.appendChild(wrap);
+		else return;
 		render(<RealTimeComponent time={this.realTime} />, wrap);
 		if (!this.intervalId) {
 			this.intervalId = window.setInterval(() => this.updateRealTime(), 1000);
@@ -67,10 +69,27 @@ export default class RealVideoTimeModule extends KickModule {
 		}
 	}
 
+	private renderComponent() {
+		const video = this.kickUtils().getVideoElement();
+		if (!video) return;
+		const wrap = document.createElement("span");
+		wrap.className = "enhancer-real-video-time";
+		const sib =
+			video.parentElement && Array.from(video.parentElement.children).find((e) => e !== video && e.tagName === "DIV");
+		const inner = sib && Array.from(sib.children).find((e) => e.tagName === "DIV");
+
+		if (inner) {
+			inner.appendChild(wrap);
+			render(<RealTimeComponent time={this.realTime} />, wrap);
+		}
+	}
+
 	private updateRealTime() {
 		const video = this.kickUtils().getVideoElement();
 		if (!video || !this.videoCreatedAt) return;
-		this.run();
+		if (!document.querySelector(".enhancer-real-video-time")) {
+			this.renderComponent();
+		}
 		this.realTime.value = this.videoCreatedAt.getTime() + video.currentTime * 1000;
 	}
 }
