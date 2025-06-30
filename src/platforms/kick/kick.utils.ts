@@ -1,6 +1,10 @@
 import type ReactUtils from "$shared/utils/react.utils.ts";
 import type { KickChatMessageData } from "$types/platforms/kick/kick.events.types.ts";
-import type { getChannelSectionInfoComponent } from "$types/platforms/kick/kick.utils.types.ts";
+import type {
+	IsoDateProps,
+	VideoProgressProps,
+	getChannelSectionInfoComponent,
+} from "$types/platforms/kick/kick.utils.types.ts";
 
 export default class KickUtils {
 	constructor(protected readonly reactUtils: ReactUtils) {}
@@ -31,6 +35,24 @@ export default class KickUtils {
 			this.reactUtils.getReactInstance(document.querySelector("#channel-content")),
 			(n) => !!n?.memoizedProps.channelId && !!n?.memoizedProps.slug,
 		)?.memoizedProps;
+	}
+
+	getIsoDateProps() {
+		return this.reactUtils.findReactChildren<IsoDateProps>(
+			this.reactUtils.getReactInstance(document.querySelector("main")),
+			(n) => {
+				return !!n?.memoizedProps?.isoDate;
+			},
+			1000,
+		)?.memoizedProps;
+	}
+
+	getVideoElement() {
+		const videoElement = document.querySelector("video");
+		if (videoElement) {
+			return videoElement;
+		}
+		return null;
 	}
 
 	isUsingNTV(element?: Element): boolean {

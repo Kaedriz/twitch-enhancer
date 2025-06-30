@@ -5,6 +5,7 @@ import ChatBadgesModule from "$kick/modules/chat-badges/chat-badges.module.tsx";
 import ChatModule from "$kick/modules/chat/chat.module.ts";
 import ExampleModule from "$kick/modules/example/example.module.ts";
 import NicknameCustomizationModule from "$kick/modules/nickname-customization/nickname-customization.module.ts";
+import RealVideoTimeModule from "$kick/modules/real-video-time/real-video-time.module.tsx";
 import SettingsButtonModule from "$kick/modules/settings-button/settings-button.module.tsx";
 import SettingsModule from "$kick/modules/settings/settings.module.tsx";
 import Platform from "$shared/platform/platform.ts";
@@ -37,6 +38,7 @@ export default class KickPlatform extends Platform<KickModule, KickEvents, KickS
 			new SettingsButtonModule(...dependencies),
 			new SettingsModule(...dependencies),
 			new NicknameCustomizationModule(...dependencies),
+			new RealVideoTimeModule(...dependencies),
 		];
 	}
 }
