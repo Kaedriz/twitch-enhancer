@@ -80,7 +80,8 @@ export default class RealVideoTimeModule extends KickModule {
 
 		if (inner) {
 			inner.appendChild(wrap);
-			render(<RealTimeComponent time={this.realTime} />, wrap);
+			if (this.realTime) render(<RealTimeComponent time={this.realTime} />, wrap);
+			else this.logger.warn("Real time object not initialized");
 		}
 	}
 
