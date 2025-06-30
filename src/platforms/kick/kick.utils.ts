@@ -2,6 +2,7 @@ import type ReactUtils from "$shared/utils/react.utils.ts";
 import type { KickChatMessageData } from "$types/platforms/kick/kick.events.types.ts";
 import type {
 	IsoDateProps,
+	StreamStatusProps,
 	VideoProgressProps,
 	getChannelSectionInfoComponent,
 } from "$types/platforms/kick/kick.utils.types.ts";
@@ -53,6 +54,28 @@ export default class KickUtils {
 			return videoElement;
 		}
 		return null;
+	}
+
+	getVideoProgressProps() {
+		return this.reactUtils.findReactChildren<VideoProgressProps>(
+			this.reactUtils.getReactInstance(document.querySelector("#injected-embedded-channel-player-video")),
+			(n) => {
+				const props = n?.memoizedProps;
+				return props?.durationInMs && props?.currentProgressInMs && props?.loadedInMs;
+			},
+			1000,
+		)?.memoizedProps;
+	}
+
+	getStreamStatusProps() {
+		return this.reactUtils.findReactChildren<StreamStatusProps>(
+			this.reactUtils.getReactInstance(document.querySelector("#injected-embedded-channel-player-video")),
+			(n) => {
+				const props = n?.memoizedProps;
+				return props?.isLive !== undefined && props?.isPlaying !== undefined;
+			},
+			1000,
+		)?.memoizedProps;
 	}
 
 	isUsingNTV(element?: Element): boolean {

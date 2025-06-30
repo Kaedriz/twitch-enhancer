@@ -12,3 +12,8 @@ export type VideoProgressProps = {
 	currentProgressInMs: number;
 	loadedInMs: number;
 };
+
+export type StreamStatusProps = {
+	isLive: boolean;
+	isPlaying: boolean;
+};
