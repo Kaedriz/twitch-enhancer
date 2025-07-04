@@ -64,7 +64,7 @@ export default class ChatAttachmentsModule extends KickModule {
 	];
 
 	private async handleMessage(message: KickChatMessageEvent) {
-		this.logger.debug("essa");
+		this.logger.debug("Handling chat message event");
 		if (!this.isModuleEnabled) return;
 		const baseData = this.getBaseData(message);
 		if (!baseData) return;
