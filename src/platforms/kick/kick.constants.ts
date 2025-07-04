@@ -1,6 +1,6 @@
-import type { TwitchSettings } from "$types/platforms/twitch/twitch.settings.types.ts";
+import type { KickSettings } from "$types/platforms/kick/kick.settings.types.ts";
 
-export const TWITCH_DEFAULT_SETTINGS: TwitchSettings = {
+export const KICK_DEFAULT_SETTINGS: KickSettings = {
 	chatImagesEnabled: false,
 	chatImagesOnHover: false,
 	chatImagesSize: 15,

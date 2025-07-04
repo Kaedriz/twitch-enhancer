@@ -60,7 +60,7 @@ export default abstract class Platform<
 	private async registerModules(modules: Module<TEvents, TStorage, TSettings>[]) {
 		for (const module of modules) {
 			try {
-				module.setup();
+				await module.setup();
 				await module.initialize();
 				for (const moduleAppliers of this.appliers) {
 					await moduleAppliers.apply(module);

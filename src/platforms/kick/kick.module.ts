@@ -1,3 +1,4 @@
+import type KickApi from "$kick/apis/kick.api.ts";
 import type KickUtils from "$kick/kick.utils.ts";
 import type EnhancerApi from "$shared/apis/enhancer.api.ts";
 import Module from "$shared/module/module.ts";
@@ -19,11 +20,16 @@ export default abstract class KickModule extends Module<KickEvents, KickStorage,
 		enhancerApi: EnhancerApi,
 		workerApi: WorkerService,
 		private readonly _kickUtils: KickUtils,
+		private readonly _kickApi: KickApi,
 	) {
 		super(emitter, storageRepository, settingsService, utilsRepository, enhancerApi, workerApi);
 	}
 
 	protected kickUtils() {
 		return this._kickUtils;
+	}
+
+	protected kickApi() {
+		return this._kickApi;
 	}
 }

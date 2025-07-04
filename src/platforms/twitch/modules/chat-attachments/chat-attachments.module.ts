@@ -1,6 +1,7 @@
 import { HttpClient } from "$shared/http/http-client.ts";
-import type ChatAttachmentHandler from "$shared/module/chat-attachments-handlers/chat-attachment-handler.ts";
-import ImageChatAttachmentHandler from "$shared/module/chat-attachments-handlers/image-chat-attachment-handler.ts";
+import type ChatAttachmentHandler from "$shared/module/chat-attachments/chat-attachment-handler.ts";
+import ImageChatAttachmentHandler from "$shared/module/chat-attachments/image-chat-attachment-handler.ts";
+import { ImageChatAttachmentConfig } from "$shared/module/chat-attachments/image-chat-attachment.config.ts";
 import TwitchModule from "$twitch/twitch.module.ts";
 import type { TwitchChatMessageEvent } from "$types/platforms/twitch/twitch.events.types.ts";
 import {
@@ -9,8 +10,14 @@ import {
 	ChatAttachmentMessageType,
 } from "$types/shared/module/chat-attachment/chat-attachment.types.ts";
 import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
+import { type Signal, signal } from "@preact/signals";
 
 export default class ChatAttachmentsModule extends TwitchModule {
+	private readonly httpClient = new HttpClient();
+	private readonly imageAttachmentConfig = new ImageChatAttachmentConfig(this.settingsService(), () => {
+		this.twitchUtils().unstuckScroll();
+	});
+
 	config: TwitchModuleConfig = {
 		name: "chat-attachments",
 		appliers: [
@@ -20,18 +27,36 @@ export default class ChatAttachmentsModule extends TwitchModule {
 				event: "twitch:chatMessage",
 				callback: this.handleMessage.bind(this),
 			},
+			{
+				type: "event",
+				key: "settings-chat-images-size",
+				event: "twitch:settings:chatImagesSize",
+				callback: (size) => this.imageAttachmentConfig.updateMaxFileSize(size),
+			},
+			{
+				type: "event",
+				key: "settings-chat-images-on-hover",
+				event: "twitch:settings:chatImagesOnHover",
+				callback: (enabled) => this.imageAttachmentConfig.updateImagesOnHover(enabled),
+			},
+			{
+				type: "event",
+				key: "settings-chat-images-enabled",
+				event: "twitch:settings:chatImagesEnabled",
+				callback: (enabled) => {
+					this.isModuleEnabled = enabled;
+				},
+			},
 		],
+		isModuleEnabled: () => this.settingsService().getSettingsKey("chatImagesEnabled"),
 	};
 
-	private httpClient = new HttpClient();
-
 	private readonly chatAttachmentHandlers: ChatAttachmentHandler[] = [
-		new ImageChatAttachmentHandler(this.logger, () => {
-			this.twitchUtils().unstuckScroll();
-		}),
+		new ImageChatAttachmentHandler(this.logger, this.imageAttachmentConfig),
 	];
 
 	private async handleMessage(message: TwitchChatMessageEvent) {
+		if (!this.isModuleEnabled) return;
 		const baseData = this.getBaseData(message);
 		if (!baseData) return;
 		const chatAttachmentHandler = this.chatAttachmentHandlers.find((chatAttachmentHandler) =>
@@ -81,6 +106,7 @@ export default class ChatAttachmentsModule extends TwitchModule {
 	}
 
 	async initialize() {
+		await this.imageAttachmentConfig.initialize();
 		this.commonUtils().createGlobalStyle(`
 			.enhancer-chat-link {
 				display: block;
@@ -92,6 +118,15 @@ export default class ChatAttachmentsModule extends TwitchModule {
 				min-height: 16px;
 				max-height: 256px;
 				width: 100%;
+				transition: filter 0.3s ease-in-out;
+			}
+			
+			.enhancer-chat-image-blurred {
+				filter: blur(5px);
+			}
+
+			.enhancer-chat-image-blurred:hover {
+				filter: blur(0);
 			}`);
 	}
 }

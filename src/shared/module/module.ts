@@ -26,10 +26,13 @@ export default abstract class Module<
 		private readonly _workerService: WorkerService,
 	) {}
 
-	setup() {
+	protected isModuleEnabled = true;
+
+	async setup() {
 		// As abstract property values are not accessible during constructor execution,
 		// the logger instance is initialized here using an alternative method.
 		this.logger = new Logger({ context: `module:${this.config.name}` });
+		if (this.config.isModuleEnabled) this.isModuleEnabled = await this.config.isModuleEnabled();
 	}
 
 	async initialize(): Promise<void> {}
