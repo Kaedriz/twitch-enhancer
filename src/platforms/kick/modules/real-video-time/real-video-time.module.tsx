@@ -4,8 +4,116 @@ import { type Signal, signal } from "@preact/signals";
 import { render } from "preact";
 import styled from "styled-components";
 
-const Wrapper = styled.span`
-	display: inline-flex;
+export default class RealVideoTimeModule extends KickModule {
+	config: KickModuleConfig = {
+		name: "real-video-time",
+		appliers: [
+			{
+				type: "selector",
+				key: "real-video-time",
+				selectors: ["#injected-embedded-channel-player-video"],
+				callback: this.run.bind(this),
+				once: true,
+			},
+		],
+	};
+
+	private timeCounter = signal(-1);
+	private visibilitySignal = signal(true);
+	private videoCreatedAt: Date | undefined;
+	private timeInterval: NodeJS.Timeout | undefined;
+
+	private run(elements: Element[]) {
+		const video = document.querySelector<HTMLVideoElement>("video");
+		if (!video) return;
+		this.tryGetVideoCreatedAt();
+		this.updateTime(video);
+		this.createTimeInterval(video);
+		elements.forEach((element) => {
+			const htmlElement = element as HTMLElement;
+			htmlElement.addEventListener("mouseenter", async () => {
+				await this.commonUtils().delay(25);
+				this.updateVisibility();
+				this.runOnHover(element);
+			});
+			htmlElement.addEventListener("click", async () => {
+				await this.commonUtils().delay(25);
+				this.updateVisibility();
+				const video = document.querySelector("video");
+				if (video) this.updateTime(video);
+			});
+		});
+	}
+
+	private runOnHover(player: Element) {
+		if (player.querySelector(`#${this.getId()}`)) return;
+		const element = player.querySelector(".z-controls");
+		if (!element || !element.firstElementChild) return;
+		const wrapper = document.createElement("div");
+		wrapper.id = this.getId();
+		wrapper.classList.add("enhancer-video-real-time-wrapper");
+		render(
+			<RealTimeComponent
+				formatTime={this.commonUtils().timeToHHMMSS}
+				visibility={this.visibilitySignal}
+				time={this.timeCounter}
+			/>,
+			wrapper,
+		);
+		element.firstElementChild.after(wrapper);
+	}
+
+	private createTimeInterval(video: HTMLVideoElement) {
+		if (this.timeInterval) clearInterval(this.timeInterval);
+		this.timeInterval = setInterval(() => this.updateTime(video), 1000);
+	}
+
+	private updateVisibility() {
+		const streamStatus = this.kickUtils().getStreamStatusProps();
+		this.visibilitySignal.value = window.location.href.includes("/videos/") || streamStatus?.isLive === false;
+	}
+
+	private updateTime(video: HTMLVideoElement) {
+		this.updateVisibility();
+		const time = this.getCurrentRealVideoTime(video);
+		if (!time) return;
+		this.timeCounter.value = time;
+	}
+
+	private tryGetVideoCreatedAt() {
+		const videoCreatedAt = this.kickUtils().getIsoDateProps();
+		if (videoCreatedAt) this.videoCreatedAt = new Date(videoCreatedAt.isoDate);
+	}
+
+	private getCurrentRealVideoTime(video: HTMLVideoElement) {
+		if (this.videoCreatedAt) return this.videoCreatedAt.getTime() + video.currentTime * 1000;
+
+		const videoProgress = this.kickUtils().getVideoProgressProps();
+		if (!videoProgress) return;
+		const currentTime = Date.now();
+		const timeOffset = videoProgress.durationInMs - videoProgress.currentProgressInMs;
+		return currentTime - timeOffset;
+	}
+
+	async initialize() {
+		this.commonUtils().createGlobalStyle(`
+			.enhancer-video-real-time-wrapper {
+				flex-grow: 1;
+				dispaly: flex;
+				align-items: center;
+			}
+		`);
+	}
+}
+
+interface RealVideoTimeComponentProps {
+	time: Signal<number>;
+	visibility: Signal<boolean>;
+	formatTime: (timeInSeconds: number) => string;
+}
+
+const Wrapper = styled.span<{ isVisible: boolean }>`
+	display: ${(props) => (props.isVisible ? "inline-flex" : "none")};
 	align-items: center;
 	justify-content: flex-start;
 	color: #efeff1;
@@ -14,150 +122,6 @@ const Wrapper = styled.span`
 	font-weight: bold;
 `;
 
-function RealTimeComponent({ time }: { time: Signal<number> }) {
-	return <Wrapper>{formatTime(time.value)}</Wrapper>;
-}
-
-const formatTime = (ms: number) => (ms < 0 ? "--:--:--" : new Date(ms).toLocaleTimeString("en-GB", { hour12: false }));
-
-export default class RealVideoTimeModule extends KickModule {
-	static URL_CONFIG = (url: string) => url.includes("/videos/") || url.includes("/");
-
-	config: KickModuleConfig = {
-		name: "real-video-time",
-		appliers: [
-			{
-				type: "selector",
-				key: "real-video-time",
-				selectors: ["main"],
-				callback: this.run.bind(this),
-				validateUrl: RealVideoTimeModule.URL_CONFIG,
-				once: true,
-			},
-		],
-	};
-
-	private realTime = signal(-1);
-	private intervalId: number | null = null;
-	private streamStatusCheckId: number | null = null;
-	private videoCreatedAt: Date | null = null;
-	private isVideoPage = false;
-
-	private run() {
-		if (document.querySelector(".enhancer-real-video-time")) return;
-
-		this.isVideoPage = window.location.href.includes("/videos/");
-
-		if (this.isVideoPage) {
-			this.handleVideoPage();
-		} else {
-			this.handleStreamPage();
-		}
-	}
-
-	private handleVideoPage() {
-		const video = this.kickUtils().getVideoElement();
-		if (!video) return this.logger.warn("Video element not found");
-
-		const iso = this.kickUtils().getIsoDateProps();
-		if (iso?.isoDate) this.videoCreatedAt = new Date(iso.isoDate);
-		else if (!this.videoCreatedAt) return this.logger.warn("Video creation time not found");
-
-		this.renderComponent();
-		if (!this.intervalId) {
-			this.intervalId = window.setInterval(() => this.updateRealTime(), 1000);
-			this.updateRealTime();
-		}
-	}
-
-	private handleStreamPage() {
-		const streamStatus = this.kickUtils().getStreamStatusProps();
-		if (!streamStatus || streamStatus.isLive) {
-			document.querySelector(".enhancer-real-video-time")?.remove();
-			if (this.intervalId) {
-				clearInterval(this.intervalId);
-				this.intervalId = null;
-			}
-			if (!this.streamStatusCheckId) {
-				this.streamStatusCheckId = window.setInterval(() => this.checkStreamStatus(), 5000);
-			}
-			return;
-		}
-
-		if (this.streamStatusCheckId) {
-			clearInterval(this.streamStatusCheckId);
-			this.streamStatusCheckId = null;
-		}
-
-		const video = this.kickUtils().getVideoElement();
-		if (!video) return this.logger.warn("Video element not found");
-
-		this.renderComponent();
-		if (!this.intervalId) {
-			this.intervalId = window.setInterval(() => this.updateRealTime(), 1000);
-			this.updateRealTime();
-		}
-	}
-
-	private checkStreamStatus() {
-		const streamStatus = this.kickUtils().getStreamStatusProps();
-		if (streamStatus && !streamStatus.isLive) {
-			this.handleStreamPage();
-		} else if (streamStatus?.isLive) {
-			document.querySelector(".enhancer-real-video-time")?.remove();
-			if (this.intervalId) {
-				clearInterval(this.intervalId);
-				this.intervalId = null;
-			}
-		}
-	}
-
-	private renderComponent() {
-		const video = this.kickUtils().getVideoElement();
-		if (!video) return;
-		const wrap = document.createElement("span");
-		wrap.className = "enhancer-real-video-time";
-		const sib =
-			video.parentElement && Array.from(video.parentElement.children).find((e) => e !== video && e.tagName === "DIV");
-		const inner = sib && Array.from(sib.children).find((e) => e.tagName === "DIV");
-
-		if (inner) {
-			inner.appendChild(wrap);
-			if (this.realTime) render(<RealTimeComponent time={this.realTime} />, wrap);
-			else this.logger.warn("Real time object not initialized");
-		}
-	}
-
-	private updateRealTime() {
-		const video = this.kickUtils().getVideoElement();
-		if (!video) return;
-
-		if (!this.isVideoPage) {
-			const streamStatus = this.kickUtils().getStreamStatusProps();
-			if (streamStatus?.isLive) {
-				document.querySelector(".enhancer-real-video-time")?.remove();
-				if (this.intervalId) {
-					clearInterval(this.intervalId);
-					this.intervalId = null;
-				}
-				return;
-			}
-		}
-
-		if (!document.querySelector(".enhancer-real-video-time")) {
-			this.renderComponent();
-		}
-
-		if (this.isVideoPage) {
-			if (!this.videoCreatedAt) return;
-			this.realTime.value = this.videoCreatedAt.getTime() + video.currentTime * 1000;
-		} else {
-			const videoProgress = this.kickUtils().getVideoProgressProps();
-			if (!videoProgress) return;
-
-			const currentTime = Date.now();
-			const timeOffset = videoProgress.durationInMs - videoProgress.currentProgressInMs;
-			this.realTime.value = currentTime - timeOffset;
-		}
-	}
+function RealTimeComponent({ time, visibility, formatTime }: RealVideoTimeComponentProps) {
+	return <Wrapper isVisible={visibility.value}>{formatTime(time.value)}</Wrapper>;
 }

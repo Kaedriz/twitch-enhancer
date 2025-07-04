@@ -28,7 +28,7 @@ export default class KickUtils {
 	}
 
 	getIsoDateProps() {
-		return this.reactUtils.findReactChildren<IsoDateProps>(
+		return this.reactUtils.findReactChildren<never, IsoDateProps>(
 			this.reactUtils.getReactInstance(document.querySelector("main")),
 			(n) => {
 				return !!n?.memoizedProps?.isoDate;
@@ -57,7 +57,7 @@ export default class KickUtils {
 	}
 
 	getStreamStatusProps() {
-		return this.reactUtils.findReactChildren<StreamStatusProps>(
+		return this.reactUtils.findReactChildren<never, StreamStatusProps>(
 			this.reactUtils.getReactInstance(document.querySelector("#injected-embedded-channel-player-video")),
 			(n) => {
 				const props = n?.memoizedProps;

@@ -48,7 +48,7 @@ export default class RealVideoTimeModule extends TwitchModule {
 		await this.updateCurrentVideo();
 		const wrappers = this.commonUtils().createEmptyElements(this.getId(), elements, "span");
 		wrappers.forEach((element) => {
-			render(<RealTimeComponent time={this.timeCounter} />, element);
+			render(<RealTimeComponent formatTime={this.commonUtils().timeToHHMMSS} time={this.timeCounter} />, element);
 		});
 		this.updateTime();
 		if (this.timeInterval) {
@@ -100,6 +100,7 @@ export default class RealVideoTimeModule extends TwitchModule {
 
 interface RealVideoTimeComponentProps {
 	time: Signal<number>;
+	formatTime: (timeInSeconds: number) => string;
 }
 
 const Wrapper = styled.span`
@@ -115,14 +116,6 @@ const Wrapper = styled.span`
 	vertical-align: middle;
 `;
 
-function RealTimeComponent({ time }: RealVideoTimeComponentProps) {
-	return <Wrapper>{formatTimestampToHHMMSS(time.value)}</Wrapper>;
-}
-
-function formatTimestampToHHMMSS(timestampMs: number): string {
-	const date = new Date(timestampMs);
-	const hours = date.getHours().toString().padStart(2, "0");
-	const minutes = date.getMinutes().toString().padStart(2, "0");
-	const seconds = date.getSeconds().toString().padStart(2, "0");
-	return `${hours}:${minutes}:${seconds}`;
+function RealTimeComponent({ time, formatTime }: RealVideoTimeComponentProps) {
+	return <Wrapper>{formatTime(time.value)}</Wrapper>;
 }
