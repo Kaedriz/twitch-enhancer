@@ -99,7 +99,7 @@ export default class RealVideoTimeModule extends KickModule {
 		this.commonUtils().createGlobalStyle(`
 			.enhancer-video-real-time-wrapper {
 				flex-grow: 1;
-				dispaly: flex;
+				display: flex;
 				align-items: center;
 			}
 		`);
