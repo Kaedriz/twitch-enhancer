@@ -41,21 +41,24 @@ export default class CommonUtils {
 
 	async waitFor<T>(
 		predicate: () => Promise<T | undefined> | T | undefined,
-		callback: (result: T, retry: number) => Promise<void> | void,
+		callback: (result: T, retry: number) => Promise<boolean> | boolean,
 		config?: WaitForConfig,
-	) {
+	): Promise<boolean> {
 		if (config?.initialDelay) await this.delay(config.initialDelay);
 		const retries = config?.maxRetries ?? 1;
 		for (let i = 0; i < retries; i++) {
 			const result = await predicate();
 			if (result) {
-				await callback(result, i);
-				return;
+				return callback(result, i);
 			}
 			if (i < retries - 1) {
 				await this.delay(config?.delay ?? 100);
 			}
 		}
+		if (config?.notFoundCallback) {
+			await config.notFoundCallback();
+		}
+		return false;
 	}
 
 	async delay(ms: number) {

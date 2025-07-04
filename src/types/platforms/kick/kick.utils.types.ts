@@ -1,4 +1,4 @@
-export type getChannelSectionInfoComponent = {
+export type ChannelInfo = {
 	slug: string;
 	channelId: number;
 };
@@ -16,4 +16,13 @@ export type VideoProgressProps = {
 export type StreamStatusProps = {
 	isLive: boolean;
 	isPlaying: boolean;
+};
+
+export type ChannelChatRoomInfo = {
+	slug: string;
+};
+
+export type ChannelChatRoom = {
+	isPaused: boolean;
+	setIsPaused: (paused: boolean) => void;
 };

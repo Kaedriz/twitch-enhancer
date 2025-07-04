@@ -170,6 +170,24 @@ interface EnhancerAboutComponentProps {
 }
 
 export function EnhancerAboutComponent({ icons }: EnhancerAboutComponentProps) {
+	const contributors = ["igorovh", "czestereq", "d33zor", "kawre", "usermacieg"];
+	const testers = [
+		"piotrgamerpl",
+		"m0rtak_",
+		"conki__",
+		"grzegoryflorida",
+		"jsdthe1st",
+		"mxj1337",
+		"h2p_ygus",
+		"marekkk2007",
+		"nowy_lepszy_silver",
+		"plyta__",
+		"kolegajakub_",
+		"mrsono1212",
+		"rqqn_",
+	];
+	const specialThanks = ["lewus", "nyloniarz", "b3akers", "xyves"];
+
 	return (
 		<Container>
 			<Header>
@@ -210,36 +228,23 @@ export function EnhancerAboutComponent({ icons }: EnhancerAboutComponentProps) {
 
 				<SubSectionTitle>Contributors</SubSectionTitle>
 				<ContributorGrid>
-					<ContributorTag key="igorovh">igorovh</ContributorTag>
-					<ContributorTag key="czestereq">czestereq</ContributorTag>
-					<ContributorTag key="d33zor">d33zor</ContributorTag>
-					<ContributorTag key="kawre">kawre</ContributorTag>
-					<ContributorTag key="usermacieg">usermacieg</ContributorTag>
+					{contributors.map((contributor) => (
+						<ContributorTag key={contributor}>{contributor}</ContributorTag>
+					))}
 				</ContributorGrid>
 
 				<SubSectionTitle>Testers</SubSectionTitle>
 				<ContributorGrid>
-					<ContributorTag key="piotrgamerpl">piotrgamerpl</ContributorTag>
-					<ContributorTag key="m0rtak_">m0rtak_</ContributorTag>
-					<ContributorTag key="conki__">conki__</ContributorTag>
-					<ContributorTag key="grzegoryflorida">grzegoryflorida</ContributorTag>
-					<ContributorTag key="jsdthe1st">jsdthe1st</ContributorTag>
-					<ContributorTag key="mxj1337">mxj1337</ContributorTag>
-					<ContributorTag key="h2p_ygus">h2p_ygus</ContributorTag>
-					<ContributorTag key="marekkk2007">marekkk2007</ContributorTag>
-					<ContributorTag key="nowy_lepszy_silver">nowy_lepszy_silver</ContributorTag>
-					<ContributorTag key="plyta__">plyta__</ContributorTag>
-					<ContributorTag key="kolegajakub_">kolegajakub_</ContributorTag>
-					<ContributorTag key="mrsono1212">mrsono1212</ContributorTag>
-					<ContributorTag key="rqqn_">rqqn_</ContributorTag>
+					{testers.map((tester) => (
+						<ContributorTag key={tester}>{tester}</ContributorTag>
+					))}
 				</ContributorGrid>
 
 				<SubSectionTitle>Special Thanks</SubSectionTitle>
 				<ContributorGrid>
-					<ContributorTag key="lewus">lewus</ContributorTag>
-					<ContributorTag key="nyloniarz">nyloniarz</ContributorTag>
-					<ContributorTag key="b3akers">b3akers</ContributorTag>
-					<ContributorTag key="xyves">xyves</ContributorTag>
+					{specialThanks.map((person) => (
+						<ContributorTag key={person}>{person}</ContributorTag>
+					))}
 				</ContributorGrid>
 			</Section>
 		</Container>

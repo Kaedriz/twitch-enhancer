@@ -1,3 +1,4 @@
+import KickApi from "$kick/apis/kick.api.ts";
 import type KickModule from "$kick/kick.module.ts";
 import KickUtils from "$kick/kick.utils.ts";
 import ChatAttachmentsModule from "$kick/modules/chat-attachments/chat-attachments.module.ts";
@@ -18,7 +19,8 @@ export default class KickPlatform extends Platform<KickModule, KickEvents, KickS
 		super({ type: "kick" });
 	}
 
-	protected readonly kickUtils = new KickUtils(this.utilsRepository.reactUtils);
+	private readonly kickUtils = new KickUtils(this.utilsRepository.reactUtils);
+	private readonly kickApi = new KickApi();
 
 	protected getModules(): KickModule[] {
 		const dependencies = [
@@ -29,6 +31,7 @@ export default class KickPlatform extends Platform<KickModule, KickEvents, KickS
 			this.enhancerApi,
 			this.workerApi,
 			this.kickUtils,
+			this.kickApi,
 		] as const;
 		return [
 			new ExampleModule(...dependencies),

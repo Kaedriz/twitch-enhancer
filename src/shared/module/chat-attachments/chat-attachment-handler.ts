@@ -5,10 +5,7 @@ import type {
 } from "$types/shared/module/chat-attachment/chat-attachment.types.ts";
 
 export default abstract class ChatAttachmentHandler {
-	constructor(
-		protected readonly logger: Logger,
-		protected readonly loadedCallback: () => void,
-	) {}
+	constructor(protected readonly logger: Logger) {}
 
 	abstract validate(baseData: BaseChatAttachmentData): boolean;
 
