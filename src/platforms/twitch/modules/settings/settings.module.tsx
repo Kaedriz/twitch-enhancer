@@ -131,6 +131,7 @@ export default class SettingsModule extends TwitchModule {
 			await this.workerService().send("updateSettings", { settings, platform: "twitch" });
 			this.settingsSignal.value = settings;
 			this.emitter.emit(`twitch:settings:${updatedKey}`, settings[updatedKey]);
+			this.logger.debug(`Settings changed "${updatedKey}" to`, settings[updatedKey]);
 		} catch (error) {
 			console.error("Failed to save settings:", error);
 		}

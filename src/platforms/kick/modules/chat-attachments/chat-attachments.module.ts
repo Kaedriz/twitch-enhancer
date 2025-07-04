@@ -64,6 +64,7 @@ export default class ChatAttachmentsModule extends KickModule {
 	];
 
 	private async handleMessage(message: KickChatMessageEvent) {
+		this.logger.debug("essa");
 		if (!this.isModuleEnabled) return;
 		const baseData = this.getBaseData(message);
 		if (!baseData) return;
@@ -136,6 +137,14 @@ export default class ChatAttachmentsModule extends KickModule {
 				min-height: 16px;
 				max-height: 256px;
 				width: 100%;
+			}
+
+			.enhancer-chat-image-blurred {
+				filter: blur(5px);
+			}
+
+			.enhancer-chat-image-blurred:hover {
+				filter: blur(0);
 			}`);
 	}
 }

@@ -127,7 +127,7 @@ export default class SettingsModule extends KickModule {
 			await this.settingsService().updateSettings(settings);
 			this.settingsSignal.value = settings;
 			this.emitter.emit(`kick:settings:${updatedKey}`, settings[updatedKey]);
-			this.logger.debug(`Settings changed "${updatedKey}"`, settings[updatedKey]);
+			this.logger.debug(`Settings changed "${updatedKey}" to`, settings[updatedKey]);
 		} catch (error) {
 			console.error("Failed to save settings:", error);
 		}
