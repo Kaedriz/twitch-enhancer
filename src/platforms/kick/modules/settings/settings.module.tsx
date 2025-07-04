@@ -81,6 +81,7 @@ export default class SettingsModule extends KickModule {
 				type: "number",
 				tabIndex: 1,
 				min: 1,
+				max: 300,
 				step: 1,
 			},
 			{
