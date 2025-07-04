@@ -69,7 +69,6 @@ export default class ChatModule extends KickModule {
 
 	private async handleMessage(element: Element) {
 		try {
-			// TODO Fix scroll, we need to check if check is paused if yes then we dont want to scroll it
 			if (this.isMessageHandled(element)) return;
 			const messageData = this.getMessageData(element);
 			if (!messageData) return;
