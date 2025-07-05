@@ -14,6 +14,7 @@ import Platform from "$shared/platform/platform.ts";
 import type { KickEvents } from "$types/platforms/kick/kick.events.types.ts";
 import type { KickSettings } from "$types/platforms/kick/kick.settings.types.ts";
 import type { KickStorage } from "$types/platforms/kick/kick.storage.types.ts";
+import ChatHighlightUserModule from "$kick/modules/chat-highlight-user/chat-highlight-user.module.tsx";
 
 export default class KickPlatform extends Platform<KickModule, KickEvents, KickStorage, KickSettings> {
 	constructor() {
@@ -44,6 +45,7 @@ export default class KickPlatform extends Platform<KickModule, KickEvents, KickS
 			new NicknameCustomizationModule(...dependencies),
 			new StreamLatencyModule(...dependencies),
 			new RealVideoTimeModule(...dependencies),
+			new ChatHighlightUserModule(...dependencies),
 		];
 	}
 }
