@@ -458,7 +458,7 @@ const Settings = <T,>({
 					const Component = setting.content;
 					return <Component />;
 				} catch (e) {
-					console.error("essa", e);
+					console.error("Enhancer Error when rendering component", e);
 				}
 				return null;
 			}

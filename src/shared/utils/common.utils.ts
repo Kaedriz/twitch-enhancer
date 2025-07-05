@@ -41,21 +41,24 @@ export default class CommonUtils {
 
 	async waitFor<T>(
 		predicate: () => Promise<T | undefined> | T | undefined,
-		callback: (result: T, retry: number) => Promise<void> | void,
+		callback: (result: T, retry: number) => Promise<boolean> | boolean,
 		config?: WaitForConfig,
-	) {
+	): Promise<boolean> {
 		if (config?.initialDelay) await this.delay(config.initialDelay);
 		const retries = config?.maxRetries ?? 1;
 		for (let i = 0; i < retries; i++) {
 			const result = await predicate();
 			if (result) {
-				await callback(result, i);
-				return;
+				return callback(result, i);
 			}
 			if (i < retries - 1) {
 				await this.delay(config?.delay ?? 100);
 			}
 		}
+		if (config?.notFoundCallback) {
+			await config.notFoundCallback();
+		}
+		return false;
 	}
 
 	async delay(ms: number) {
@@ -65,6 +68,17 @@ export default class CommonUtils {
 	async getIcon(workerApi: WorkerService, path: string, defaultPath = ""): Promise<string> {
 		const response = await workerApi.send("getAssetsFile", { path });
 		return response?.url || defaultPath;
+	}
+
+	timeToHHMMSS(time: number | Date): string {
+		if (!(time instanceof Date) && time < 0) {
+			return "--:--:--";
+		}
+		const date = typeof time === "number" ? new Date(time) : time;
+		const hours = date.getHours().toString().padStart(2, "0");
+		const minutes = date.getMinutes().toString().padStart(2, "0");
+		const seconds = date.getSeconds().toString().padStart(2, "0");
+		return `${hours}:${minutes}:${seconds}`;
 	}
 }
 

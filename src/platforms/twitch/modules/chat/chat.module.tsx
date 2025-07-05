@@ -73,6 +73,7 @@ export default class ChatModule extends TwitchModule {
 				(channelId, attempt) => {
 					this.emitter.emit("twitch:chatInitialized", channelId);
 					this.logger.info(`Initialized chat (attempt: ${attempt})`);
+					return true;
 				},
 				{ delay: 100, maxRetries: 20, initialDelay: 30 },
 			)

@@ -1,3 +1,4 @@
+import KickApi from "$kick/apis/kick.api.ts";
 import type KickModule from "$kick/kick.module.ts";
 import KickUtils from "$kick/kick.utils.ts";
 import ChatAttachmentsModule from "$kick/modules/chat-attachments/chat-attachments.module.ts";
@@ -5,6 +6,7 @@ import ChatBadgesModule from "$kick/modules/chat-badges/chat-badges.module.tsx";
 import ChatModule from "$kick/modules/chat/chat.module.ts";
 import ExampleModule from "$kick/modules/example/example.module.ts";
 import NicknameCustomizationModule from "$kick/modules/nickname-customization/nickname-customization.module.ts";
+import RealVideoTimeModule from "$kick/modules/real-video-time/real-video-time.module.tsx";
 import SettingsButtonModule from "$kick/modules/settings-button/settings-button.module.tsx";
 import SettingsModule from "$kick/modules/settings/settings.module.tsx";
 import StreamLatencyModule from "$kick/modules/stream-latency/stream-latency.module.tsx";
@@ -18,7 +20,8 @@ export default class KickPlatform extends Platform<KickModule, KickEvents, KickS
 		super({ type: "kick" });
 	}
 
-	protected readonly kickUtils = new KickUtils(this.utilsRepository.reactUtils);
+	private readonly kickUtils = new KickUtils(this.utilsRepository.reactUtils);
+	private readonly kickApi = new KickApi();
 
 	protected getModules(): KickModule[] {
 		const dependencies = [
@@ -29,6 +32,7 @@ export default class KickPlatform extends Platform<KickModule, KickEvents, KickS
 			this.enhancerApi,
 			this.workerApi,
 			this.kickUtils,
+			this.kickApi,
 		] as const;
 		return [
 			new ExampleModule(...dependencies),
@@ -39,6 +43,7 @@ export default class KickPlatform extends Platform<KickModule, KickEvents, KickS
 			new SettingsModule(...dependencies),
 			new NicknameCustomizationModule(...dependencies),
 			new StreamLatencyModule(...dependencies),
+			new RealVideoTimeModule(...dependencies),
 		];
 	}
 }

@@ -4,8 +4,8 @@ import ChatMessageListener from "./chat-message.listener.ts";
 export default class SeventvChatMessageListener extends ChatMessageListener {
 	inject() {
 		const messageHandlerAPI = this.twitchUtilsRepository.getChatController()?.props.messageHandlerAPI;
-		if (!messageHandlerAPI) throw new Error("Missing chat message chat-attachments-handlers");
-		this.logger.debug("Injected 7TV message chat-attachments-handlers");
+		if (!messageHandlerAPI) throw new Error("Missing chat message chat-attachments");
+		this.logger.debug("Injected 7TV message chat-attachments");
 		const descriptor = Object.getOwnPropertyDescriptor(messageHandlerAPI, "handleMessage");
 		if (!descriptor || !descriptor.get || !descriptor.set) throw new Error("Couldn't inject into 7TV chat");
 		const callbackWrapper = (messages: TwitchChatMessage[]) =>
