@@ -45,8 +45,8 @@ export default abstract class Platform<
 	}
 
 	private appliers = [
-		new SelectorModuleApplier<TEvents, TStorage>(this.logger),
-		new EventModuleApplier<TEvents, TStorage>(this.logger, this.emitter),
+		new SelectorModuleApplier<TEvents, TStorage, TSettings>(this.logger),
+		new EventModuleApplier<TEvents, TStorage, TSettings>(this.logger, this.emitter),
 	];
 
 	protected abstract getModules(): TModule[];
