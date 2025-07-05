@@ -1,9 +1,9 @@
 import type { Logger } from "$shared/logger/logger.ts";
 import type { CommonEvents } from "$types/platforms/common.events.ts";
+import type { PlatformSettings } from "$types/shared/worker/settings-worker.types.ts";
 import type { Emitter } from "nanoevents";
 import type Module from "../module.ts";
 import ModuleApplier from "./module-applier.ts";
-import type { PlatformSettings } from "$types/shared/worker/settings-worker.types.ts";
 
 export default class EventModuleApplier<
 	Events extends CommonEvents,
