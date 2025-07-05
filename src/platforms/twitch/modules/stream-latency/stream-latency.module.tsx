@@ -7,6 +7,7 @@ import TwitchModule from "../../twitch.module.ts";
 export default class StreamLatencyModule extends TwitchModule {
 	private latencyCounter = {} as Signal<number>;
 	private isLiveState = {} as Signal<boolean>;
+	private updateInterval: NodeJS.Timeout | undefined;
 
 	readonly config: TwitchModuleConfig = {
 		name: "stream-latency",
@@ -34,7 +35,9 @@ export default class StreamLatencyModule extends TwitchModule {
 
 		this.createLatencyCounter();
 		this.updateLatency();
-		setInterval(async () => this.updateLatency(), 1000);
+
+		if (this.updateInterval) clearInterval(this.updateInterval);
+		this.updateInterval = setInterval(async () => this.updateLatency(), 1000);
 
 		wrappers.forEach((element: HTMLElement) => {
 			const header = document.querySelector("#chat-room-header-label") as HTMLElement | null;
