@@ -2,14 +2,16 @@ import type { CommonEvents } from "$types/platforms/common.events.ts";
 import type { SelectorModuleApplierConfig } from "$types/shared/module/module-applier.types.ts";
 import type Module from "../module.ts";
 import ModuleApplier from "./module-applier.ts";
+import type { PlatformSettings } from "$types/shared/worker/settings-worker.types.ts";
 
 export default class SelectorModuleApplier<
 	Events extends CommonEvents,
 	Storage extends Record<string, any>,
-> extends ModuleApplier<Events, Storage> {
+	Settings extends PlatformSettings,
+> extends ModuleApplier<Events, Storage, Settings> {
 	protected readonly appliers: SelectorModuleApplierRunner[] = [];
 
-	async apply(module: Module<Events, Storage>) {
+	async apply(module: Module<Events, Storage, Settings>) {
 		const selectorAppliers = module.config.appliers.filter(
 			(applier) => applier.type === "selector",
 		) as SelectorModuleApplierConfig[];

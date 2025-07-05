@@ -3,11 +3,13 @@ import type { CommonEvents } from "$types/platforms/common.events.ts";
 import type { Emitter } from "nanoevents";
 import type Module from "../module.ts";
 import ModuleApplier from "./module-applier.ts";
+import type { PlatformSettings } from "$types/shared/worker/settings-worker.types.ts";
 
 export default class EventModuleApplier<
 	Events extends CommonEvents,
 	Storage extends Record<string, any>,
-> extends ModuleApplier<Events, Storage> {
+	Settings extends PlatformSettings,
+> extends ModuleApplier<Events, Storage, Settings> {
 	constructor(
 		logger: Logger,
 		protected readonly emitter: Emitter<Events>,
@@ -15,7 +17,7 @@ export default class EventModuleApplier<
 		super(logger);
 	}
 
-	async apply(module: Module<Events, Storage>) {
+	async apply(module: Module<Events, Storage, Settings>) {
 		for (const applier of module.config.appliers) {
 			if (applier.type === "event") {
 				// @ts-ignore Its needed, because of the try catch, we are just passing everything that comes to callback
