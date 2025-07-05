@@ -3,6 +3,21 @@ export type ChannelInfo = {
 	channelId: number;
 };
 
+export type IsoDateProps = {
+	isoDate: string;
+};
+
+export type VideoProgressProps = {
+	durationInMs: number;
+	currentProgressInMs: number;
+	loadedInMs: number;
+};
+
+export type StreamStatusProps = {
+	isLive: boolean;
+	isPlaying: boolean;
+};
+
 export type ChannelChatRoomInfo = {
 	slug: string;
 };
