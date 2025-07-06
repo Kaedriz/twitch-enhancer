@@ -1,31 +1,32 @@
+import KickModule from "$kick/kick.module.ts";
 import { ChannelSectionComponent } from "$shared/components/channel-section/channel-section.component.tsx";
 import type { QuickAccessLink } from "$types/shared/components/settings.component.types.ts";
-import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
+import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
 import { type Signal, signal } from "@preact/signals";
 import { render } from "preact";
 import styled from "styled-components";
-import TwitchModule from "../../twitch.module.ts";
 
-export default class ChannelSectionModule extends TwitchModule {
+export default class ChannelSectionModule extends KickModule {
 	private quickAccessLinks = {} as Signal<QuickAccessLink[]>;
 	private watchtimeCounter = {} as Signal<number>;
 	private currentChannelName: string | undefined;
 	private watchtimeInterval: NodeJS.Timeout | undefined;
 
-	readonly config: TwitchModuleConfig = {
+	readonly config: KickModuleConfig = {
 		name: "channel-info",
 		appliers: [
 			{
 				type: "selector",
 				key: "channel-info",
-				selectors: [".about-section__panel"],
+				selectors: ["#channel-content section.rounded"],
 				callback: this.run.bind(this),
+				useParent: true,
 				once: true,
 			},
 			{
 				type: "event",
 				key: "settings-quick-access-links",
-				event: "twitch:settings:quickAccessLinks",
+				event: "kick:settings:quickAccessLinks",
 				callback: (quickAccessLinks) => {
 					this.quickAccessLinks.value = quickAccessLinks;
 				},
@@ -39,9 +40,13 @@ export default class ChannelSectionModule extends TwitchModule {
 	}
 
 	private async run(elements: Element[]) {
+		elements.forEach((element) => {
+			(element as HTMLElement).style.flexDirection = "column";
+		});
 		const wrappers = this.commonUtils().createEmptyElements(this.getId(), elements, "div");
 		for (const wrapper of wrappers) {
-			const channelName = this.twitchUtils().getCurrentChannelByUrl();
+			// this.fixOrderForChildren(wrapper);
+			const channelName = this.kickUtils().getChannelInfo()?.slug;
 			this.currentChannelName = channelName;
 			if (!channelName) {
 				this.logger.warn("Error: Channel name not found");
@@ -89,7 +94,7 @@ export default class ChannelSectionModule extends TwitchModule {
 
 	private async getWatchTime(channelName: string): Promise<number> {
 		const watchtime = await this.workerService().send("getWatchtime", {
-			platform: "twitch",
+			platform: "kick",
 			channel: channelName.toLowerCase(),
 		});
 		return watchtime?.time ?? 0;
