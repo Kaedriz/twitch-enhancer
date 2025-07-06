@@ -4,6 +4,7 @@ import KickUtils from "$kick/kick.utils.ts";
 import ChannelSectionModule from "$kick/modules/channel-section/channel-section.module.tsx";
 import ChatAttachmentsModule from "$kick/modules/chat-attachments/chat-attachments.module.ts";
 import ChatBadgesModule from "$kick/modules/chat-badges/chat-badges.module.tsx";
+import ChatHighlightUserModule from "$kick/modules/chat-highlight-user/chat-highlight-user.module.tsx";
 import ChatModule from "$kick/modules/chat/chat.module.ts";
 import ExampleModule from "$kick/modules/example/example.module.ts";
 import LocalWatchtimeCounterModule from "$kick/modules/local-watchtime-counter/local-watchtime-counter.module.tsx";
@@ -48,6 +49,7 @@ export default class KickPlatform extends Platform<KickModule, KickEvents, KickS
 			new RealVideoTimeModule(...dependencies),
 			new ChannelSectionModule(...dependencies),
 			new LocalWatchtimeCounterModule(...dependencies),
+			new ChatHighlightUserModule(...dependencies),
 		];
 	}
 }
