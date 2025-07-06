@@ -10,8 +10,6 @@ export default class StreamLatencyModule extends KickModule {
 	private isLiveState = signal(false);
 	private updateInterval: NodeJS.Timeout | undefined;
 
-	static LIVE_VIDEO_DURATION = 1073741824;
-
 	readonly config: KickModuleConfig = {
 		name: "stream-latency",
 		appliers: [
@@ -53,7 +51,7 @@ export default class StreamLatencyModule extends KickModule {
 
 	private updateLatency(): void {
 		const video = this.getVideoElement();
-		if (!video || !this.isLiveVideo(video)) {
+		if (!video || !this.kickUtils().isLiveVideo(video)) {
 			this.setLive(false);
 			return;
 		}
@@ -74,7 +72,7 @@ export default class StreamLatencyModule extends KickModule {
 			this.logger.warn("Failed to find video element");
 			return;
 		}
-		if (!this.isLiveVideo(video)) {
+		if (!this.kickUtils().isLiveVideo(video)) {
 			video.currentTime = video.duration;
 			return;
 		}
@@ -82,10 +80,6 @@ export default class StreamLatencyModule extends KickModule {
 		if (latency > 0) {
 			video.currentTime += latency;
 		}
-	}
-
-	private isLiveVideo(video: HTMLVideoElement): boolean {
-		return video.duration === StreamLatencyModule.LIVE_VIDEO_DURATION;
 	}
 
 	private setLive(isLive: boolean): void {
