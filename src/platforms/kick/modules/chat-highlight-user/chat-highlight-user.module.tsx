@@ -61,7 +61,7 @@ export default class ChatHighlightUserModule extends KickModule {
 				this.colorIndex++;
 
 				this.commonUtils().createGlobalStyle(`
-				.enhancer-highlighted-user-${encodeURIComponent(username)} {
+				.enhancer-highlighted-user-${username.replace(/[^a-zA-Z0-9]/g, "")} {
 						background-color: ${color} !important; 
 					}
 				`);
