@@ -1,10 +1,12 @@
 import KickApi from "$kick/apis/kick.api.ts";
 import type KickModule from "$kick/kick.module.ts";
 import KickUtils from "$kick/kick.utils.ts";
+import ChannelSectionModule from "$kick/modules/channel-section/channel-section.module.tsx";
 import ChatAttachmentsModule from "$kick/modules/chat-attachments/chat-attachments.module.ts";
 import ChatBadgesModule from "$kick/modules/chat-badges/chat-badges.module.tsx";
 import ChatModule from "$kick/modules/chat/chat.module.ts";
 import ExampleModule from "$kick/modules/example/example.module.ts";
+import LocalWatchtimeCounterModule from "$kick/modules/local-watchtime-counter/local-watchtime-counter.module.tsx";
 import NicknameCustomizationModule from "$kick/modules/nickname-customization/nickname-customization.module.ts";
 import RealVideoTimeModule from "$kick/modules/real-video-time/real-video-time.module.tsx";
 import SettingsButtonModule from "$kick/modules/settings-button/settings-button.module.tsx";
@@ -44,6 +46,8 @@ export default class KickPlatform extends Platform<KickModule, KickEvents, KickS
 			new NicknameCustomizationModule(...dependencies),
 			new StreamLatencyModule(...dependencies),
 			new RealVideoTimeModule(...dependencies),
+			new ChannelSectionModule(...dependencies),
+			new LocalWatchtimeCounterModule(...dependencies),
 		];
 	}
 }
