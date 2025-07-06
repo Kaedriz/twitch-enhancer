@@ -1,9 +1,8 @@
 import KickModule from "$kick/kick.module.ts";
 import { LatencyComponent } from "$shared/components/latency/latency.component.tsx";
 import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
-import { type Signal, signal } from "@preact/signals";
+import { signal } from "@preact/signals";
 import { render } from "preact";
-import styled from "styled-components";
 
 export default class StreamLatencyModule extends KickModule {
 	private latencyCounter = signal(-1);

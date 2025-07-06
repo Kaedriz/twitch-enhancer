@@ -1,20 +1,18 @@
+import KickModule from "$kick/kick.module.ts";
 import TwitchModule from "$twitch/twitch.module.ts";
 import type { ChatMessagePopup } from "$types/platforms/twitch/twitch.events.types.ts";
-import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
+import type { KickModuleConfig, TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 import { h, render } from "preact";
 import { useEffect, useRef, useState } from "preact/hooks";
 import styled from "styled-components";
 
-export default class ChatMessagePopupModule extends TwitchModule {
-	static readonly TWITCHTV_CHAT_SELECTOR = ".chat-list--default";
-	static readonly SEVENTV_CHAT_SELECTOR = "main.seventv-chat-list";
-
-	config: TwitchModuleConfig = {
+export default class ChatMessagePopupModule extends KickModule {
+	config: KickModuleConfig = {
 		name: "message-popup",
 		appliers: [
 			{
 				type: "event",
-				event: "twitch:chatPopupMessage",
+				event: "kick:chatPopupMessage",
 				callback: this.render.bind(this),
 				key: "message-popup",
 			},
@@ -22,51 +20,45 @@ export default class ChatMessagePopupModule extends TwitchModule {
 	};
 
 	private render(message: ChatMessagePopup) {
-		let contentElement: Element | null = null;
-
-		if (document.querySelector(ChatMessagePopupModule.SEVENTV_CHAT_SELECTOR)) {
-			contentElement = document.querySelector(ChatMessagePopupModule.SEVENTV_CHAT_SELECTOR);
-		} else if (document.querySelector(ChatMessagePopupModule.TWITCHTV_CHAT_SELECTOR)) {
-			contentElement = document.querySelector(ChatMessagePopupModule.TWITCHTV_CHAT_SELECTOR);
-		}
-
+		const contentElement = document.querySelector(".kick__chat-footer");
+		this.logger.debug("trying to render");
 		if (contentElement) {
-			const wrapper = contentElement.querySelector(`.${this.getId()}`);
+			this.logger.debug("rendering to render");
+
+			let wrapper = contentElement.querySelector(`.${this.getId()}`);
 			if (wrapper) wrapper.remove();
 
-			const wrappers = this.commonUtils().createEmptyElements(this.getId(), [contentElement], "span");
-			wrappers.forEach((wrapper) => {
-				render(
-					<MessagePopup
-						title={message.title}
-						autoclose={message.autoclose ?? 15}
-						onClose={() => {
-							wrapper.remove();
-							if (message.onClose) {
-								message.onClose();
-							}
-						}}
-						content={message.content}
-					/>,
-					wrapper,
-				);
-			});
+			wrapper = document.createElement("div");
+			wrapper.classList.add(this.getId());
+
+			contentElement.insertBefore(wrapper, contentElement.firstElementChild);
+
+			render(
+				<MessagePopup
+					title={message.title}
+					autoclose={message.autoclose ?? 15}
+					onClose={() => {
+						wrapper.remove();
+						if (message.onClose) {
+							message.onClose();
+						}
+					}}
+					content={message.content}
+				/>,
+				wrapper,
+			);
 		} else this.logger.error("Failed to render watchtime component in chat");
 	}
 }
 
 const PopupWrapper = styled.div`
-  --main-color: #bf94ff;
+  --main-color: #53fc18;
   margin-bottom: 8px;
-  background: #18181b;
-  padding: 10px;
-  border-radius: 4px;
   color: #efeff1;
   font-size: 14px;
   display: flex;
   flex-direction: column;
   gap: 8px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
   position: relative;
 `;
 

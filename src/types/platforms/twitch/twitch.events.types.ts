@@ -5,7 +5,7 @@ import type { ComponentChildren } from "preact";
 export type TwitchEvents = {
 	"twitch:chatInitialized": (channelId: string) => void | Promise<void>;
 	"twitch:chatMessage": (message: TwitchChatMessageEvent) => void | Promise<void>;
-	"twitch:chatPopupMessage": (message: TwitchChatMessagePopup) => void | Promise<void>;
+	"twitch:chatPopupMessage": (message: ChatMessagePopup) => void | Promise<void>;
 } & TwitchSettingsEvents &
 	CommonEvents;
 
@@ -40,7 +40,7 @@ export type TwitchChatMessageEvent = {
 	type: ChatType;
 };
 
-export type TwitchChatMessagePopup = {
+export type ChatMessagePopup = {
 	title: string;
 	content: ComponentChildren;
 	autoclose?: number;
