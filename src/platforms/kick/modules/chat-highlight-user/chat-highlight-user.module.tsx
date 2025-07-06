@@ -1,21 +1,21 @@
 import KickModule from "$kick/kick.module.ts";
-import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
 import type { KickChatMessageEvent } from "$types/platforms/kick/kick.events.types.ts";
+import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
 
 export default class ChatHighlightUserModule extends KickModule {
 	private highlightedUsers = new Map<string, string>();
 	private colorIndex = 0;
 	private readonly colors = [
-		"rgba(255, 107, 107, 0.2)",
-		"rgba(78, 205, 196, 0.2)",
-		"rgba(69, 183, 209, 0.2)",
-		"rgba(150, 206, 180, 0.2)",
-		"rgba(254, 202, 87, 0.2)",
-		"rgba(255, 159, 243, 0.2)",
-		"rgba(84, 160, 255, 0.2)",
-		"rgba(95, 39, 205, 0.2)",
-		"rgba(0, 210, 211, 0.2)",
-		"rgba(255, 159, 67, 0.2)",
+		"rgba(255, 107, 107, 0.1)",
+		"rgba(78, 205, 196, 0.1)",
+		"rgba(69, 183, 209, 0.1)",
+		"rgba(150, 206, 180, 0.1)",
+		"rgba(254, 202, 87, 0.1)",
+		"rgba(255, 159, 243, 0.1)",
+		"rgba(84, 160, 255, 0.1)",
+		"rgba(95, 39, 205, 0.1)",
+		"rgba(0, 210, 211, 0.1)",
+		"rgba(255, 159, 67, 0.1)",
 	];
 
 	readonly config: KickModuleConfig = {
