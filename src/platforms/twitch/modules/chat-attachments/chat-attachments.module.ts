@@ -61,8 +61,12 @@ export default class ChatAttachmentsModule extends TwitchModule {
 		if (!this.isModuleEnabled) return;
 		const baseData = this.getBaseData(message);
 		if (!baseData) return;
-		const result = await this.resolveChatAttachmentHandler(baseData);
-		if (result?.applies) await result.chatAttachmentHandler.handle(result.data);
+		try {
+			const result = await this.resolveChatAttachmentHandler(baseData);
+			if (result?.applies) await result.chatAttachmentHandler.handle(result.data);
+		} catch (error) {
+			this.logger.error('Failed to handle chat attachment:', error);
+		}
 	}
 
 	private async resolveChatAttachmentHandler(baseData: BaseChatAttachmentData) {
