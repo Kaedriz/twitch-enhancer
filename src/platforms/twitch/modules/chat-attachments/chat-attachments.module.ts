@@ -17,7 +17,7 @@ export default class ChatAttachmentsModule extends TwitchModule {
 		this.twitchUtils().unstuckScroll();
 	});
 	private previousInputContent = "";
-	private inputMonitoringInterval: number | undefined;
+	private inputMonitoringInterval: NodeJS.Timeout | undefined;
 
 	config: TwitchModuleConfig = {
 		name: "chat-attachments",
@@ -46,11 +46,7 @@ export default class ChatAttachmentsModule extends TwitchModule {
 				event: "twitch:settings:chatImagesEnabled",
 				callback: (enabled) => {
 					this.isModuleEnabled = enabled;
-					if (enabled) {
-						this.startInputMonitoring();
-					} else {
-						this.stopInputMonitoring();
-					}
+					this.isModuleEnabled ? this.startInputMonitoring() : this.stopInputMonitoring();
 				},
 			},
 		],
@@ -65,13 +61,18 @@ export default class ChatAttachmentsModule extends TwitchModule {
 		if (!this.isModuleEnabled) return;
 		const baseData = this.getBaseData(message);
 		if (!baseData) return;
+		const result = await this.resolveChatAttachmentHandler(baseData);
+		if (result?.applies) await result.chatAttachmentHandler.handle(result.data);
+	}
+
+	private async resolveChatAttachmentHandler(baseData: BaseChatAttachmentData) {
 		const chatAttachmentHandler = this.chatAttachmentHandlers.find((chatAttachmentHandler) =>
 			chatAttachmentHandler.validate(baseData),
 		);
 		if (!chatAttachmentHandler) return;
 		baseData.url = chatAttachmentHandler.parseUrl(baseData.url);
 		const data = await this.getData(baseData);
-		if (await chatAttachmentHandler.applies(data)) await chatAttachmentHandler.handle(data);
+		return { applies: await chatAttachmentHandler.applies(data), chatAttachmentHandler, data };
 	}
 
 	private getBaseData(message: TwitchChatMessageEvent): BaseChatAttachmentData | undefined {
@@ -113,47 +114,39 @@ export default class ChatAttachmentsModule extends TwitchModule {
 
 	private startInputMonitoring() {
 		if (this.inputMonitoringInterval) return;
-
-		this.inputMonitoringInterval = window.setInterval(async () => {
+		this.inputMonitoringInterval = setInterval(async () => {
 			const chatInputContent = this.twitchUtils().getChatInputContent();
-
 			if (!chatInputContent || chatInputContent === this.previousInputContent) return;
-
 			this.previousInputContent = chatInputContent;
-
 			const words = chatInputContent.split(" ");
-			for (const word of words) {
-				if (this.commonUtils().isValidUrl(word)) {
-					const url = new URL(word);
 
-					const baseData = {
-						url,
-						messageElement: document.createElement("div"),
-						messageType: ChatAttachmentMessageType.FIRST,
-					};
-					const chatAttachmentHandler = this.chatAttachmentHandlers.find((chatAttachmentHandler) =>
-						chatAttachmentHandler.validate(baseData),
-					);
+			const firstWord = words.at(0);
+			const lastWord = words.at(-1);
+			const firstWordData = this.simulateBaseData(firstWord);
+			const lastWordData = this.simulateBaseData(lastWord);
 
-					if (chatAttachmentHandler) {
-						try {
-							const parsedUrl = chatAttachmentHandler.parseUrl(url);
-							const attachmentData = await this.getAttachmentData(parsedUrl);
+			const attachmentResolved =
+				(firstWordData && (await this.resolveChatAttachmentHandler(firstWordData))?.applies) ||
+				(lastWordData && (await this.resolveChatAttachmentHandler(lastWordData))?.applies);
 
-							if (attachmentData?.type?.startsWith("image/")) {
-								this.emitter.emit("twitch:chatPopupMessage", {
-									title: "Image preview",
-									autoclose: 10,
-									content: "This image will be shown in chat.",
-								});
-							}
-						} catch (error) {
-							this.logger.warn("Failed to check image in input", error);
-						}
-					}
-				}
+			if (attachmentResolved) {
+				this.emitter.emit("twitch:chatPopupMessage", {
+					title: "Image preview",
+					autoclose: 9999999,
+					content: "This image will be shown in chat.",
+				});
 			}
 		}, 500);
+	}
+
+	private simulateBaseData(word: string | undefined): BaseChatAttachmentData | undefined {
+		if (word && this.commonUtils().isValidUrl(word)) {
+			return {
+				messageType: ChatAttachmentMessageType.FIRST,
+				url: new URL(word),
+			} as BaseChatAttachmentData;
+		}
+		return undefined;
 	}
 
 	private stopInputMonitoring() {
@@ -165,10 +158,7 @@ export default class ChatAttachmentsModule extends TwitchModule {
 
 	async initialize() {
 		await this.imageAttachmentConfig.initialize();
-
-		if (this.isModuleEnabled) {
-			this.startInputMonitoring();
-		}
+		if (this.isModuleEnabled) this.startInputMonitoring();
 
 		this.commonUtils().createGlobalStyle(`
 			.enhancer-chat-link {
