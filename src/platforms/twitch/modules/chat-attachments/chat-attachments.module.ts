@@ -10,13 +10,14 @@ import {
 	ChatAttachmentMessageType,
 } from "$types/shared/module/chat-attachment/chat-attachment.types.ts";
 import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
-import { type Signal, signal } from "@preact/signals";
 
 export default class ChatAttachmentsModule extends TwitchModule {
 	private readonly httpClient = new HttpClient();
 	private readonly imageAttachmentConfig = new ImageChatAttachmentConfig(this.settingsService(), () => {
 		this.twitchUtils().unstuckScroll();
 	});
+	private previousInputContent = "";
+	private inputMonitoringInterval: number | undefined;
 
 	config: TwitchModuleConfig = {
 		name: "chat-attachments",
@@ -45,6 +46,11 @@ export default class ChatAttachmentsModule extends TwitchModule {
 				event: "twitch:settings:chatImagesEnabled",
 				callback: (enabled) => {
 					this.isModuleEnabled = enabled;
+					if (enabled) {
+						this.startInputMonitoring();
+					} else {
+						this.stopInputMonitoring();
+					}
 				},
 			},
 		],
@@ -105,8 +111,65 @@ export default class ChatAttachmentsModule extends TwitchModule {
 		}
 	}
 
+	private startInputMonitoring() {
+		if (this.inputMonitoringInterval) return;
+
+		this.inputMonitoringInterval = window.setInterval(async () => {
+			const chatInputContent = this.twitchUtils().getChatInputContent();
+
+			if (!chatInputContent || chatInputContent === this.previousInputContent) return;
+
+			this.previousInputContent = chatInputContent;
+
+			const words = chatInputContent.split(" ");
+			for (const word of words) {
+				if (this.commonUtils().isValidUrl(word)) {
+					const url = new URL(word);
+
+					const baseData = {
+						url,
+						messageElement: document.createElement("div"),
+						messageType: ChatAttachmentMessageType.FIRST,
+					};
+					const chatAttachmentHandler = this.chatAttachmentHandlers.find((chatAttachmentHandler) =>
+						chatAttachmentHandler.validate(baseData),
+					);
+
+					if (chatAttachmentHandler) {
+						try {
+							const parsedUrl = chatAttachmentHandler.parseUrl(url);
+							const attachmentData = await this.getAttachmentData(parsedUrl);
+
+							if (attachmentData?.type?.startsWith("image/")) {
+								this.emitter.emit("twitch:chatPopupMessage", {
+									title: "Image preview",
+									autoclose: 10,
+									content: "This image will be shown in chat.",
+								});
+							}
+						} catch (error) {
+							this.logger.warn("Failed to check image in input", error);
+						}
+					}
+				}
+			}
+		}, 500);
+	}
+
+	private stopInputMonitoring() {
+		if (this.inputMonitoringInterval) {
+			clearInterval(this.inputMonitoringInterval);
+			this.inputMonitoringInterval = undefined;
+		}
+	}
+
 	async initialize() {
 		await this.imageAttachmentConfig.initialize();
+
+		if (this.isModuleEnabled) {
+			this.startInputMonitoring();
+		}
+
 		this.commonUtils().createGlobalStyle(`
 			.enhancer-chat-link {
 				display: block;
