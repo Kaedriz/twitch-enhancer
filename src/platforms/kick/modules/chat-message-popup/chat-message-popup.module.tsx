@@ -20,11 +20,8 @@ export default class ChatMessagePopupModule extends KickModule {
 	};
 
 	private render(message: ChatMessagePopup) {
-		const contentElement = document.querySelector(".kick__chat-footer");
-		this.logger.debug("trying to render");
+		const contentElement = document.querySelector("#chatroom-footer");
 		if (contentElement) {
-			this.logger.debug("rendering to render");
-
 			let wrapper = contentElement.querySelector(`.${this.getId()}`);
 			if (wrapper) wrapper.remove();
 
@@ -47,13 +44,13 @@ export default class ChatMessagePopupModule extends KickModule {
 				/>,
 				wrapper,
 			);
-		} else this.logger.error("Failed to render watchtime component in chat");
+		} else this.logger.error("Failed to render component in chat");
 	}
 }
 
 const PopupWrapper = styled.div`
   --main-color: #53fc18;
-  margin-bottom: 8px;
+  padding: 0 1.25rem;
   color: #efeff1;
   font-size: 14px;
   display: flex;

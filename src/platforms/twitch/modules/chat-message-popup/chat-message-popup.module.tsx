@@ -51,7 +51,7 @@ export default class ChatMessagePopupModule extends TwitchModule {
 					wrapper,
 				);
 			});
-		} else this.logger.error("Failed to render watchtime component in chat");
+		} else this.logger.error("Failed to render component in chat");
 	}
 }
 
