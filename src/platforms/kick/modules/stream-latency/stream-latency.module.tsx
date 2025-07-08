@@ -66,11 +66,6 @@ export default class StreamLatencyModule extends KickModule {
 	}
 
 	private resetPlayer(): void {
-		this.emitter.emit("kick:chatPopupMessage", {
-			title: "essa",
-			autoclose: 999999999999,
-			content: <span>Test</span>,
-		});
 		const video = this.getVideoElement();
 		if (!video) {
 			this.logger.warn("Failed to find video element");
