@@ -9,6 +9,7 @@ const head = document.head || document.getElementsByTagName("head")[0] || docume
 
 const script = document.createElement("script");
 script.type = "module";
+script.id = "enhancer-script";
 script.src = source[__environment__];
 
 head.appendChild(script);
