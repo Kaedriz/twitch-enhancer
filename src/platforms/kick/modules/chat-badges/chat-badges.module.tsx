@@ -27,7 +27,6 @@ export default class ChatBadgesModule extends KickModule {
 	};
 
 	private handleMessage({ message, element, isUsingNTV }: KickChatMessageEvent) {
-		this.logger.debug(this.isModuleEnabled);
 		if (!this.isModuleEnabled) return;
 		const userBadges = this.enhancerApi().findUserBadgesForCurrentChannel(message.sender.id.toString());
 		if (!userBadges?.length) return;
