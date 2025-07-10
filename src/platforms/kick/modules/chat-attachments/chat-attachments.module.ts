@@ -56,7 +56,7 @@ export default class ChatAttachmentsModule extends KickModule {
 				},
 			},
 		],
-		isModuleEnabled: () => this.settingsService().getSettingsKey("chatImagesEnabled"),
+		isModuleEnabledCallback: () => this.settingsService().getSettingsKey("chatImagesEnabled"),
 	};
 
 	private readonly chatAttachmentHandlers: ChatAttachmentHandler[] = [

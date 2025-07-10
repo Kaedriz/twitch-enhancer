@@ -4,6 +4,8 @@ export type KickSettings = {
 	chatImagesEnabled: boolean;
 	chatImagesOnHover: boolean;
 	chatImagesSize: number;
+	chatBadgesEnabled: boolean;
+	chatNicknameCustomizationEnabled: boolean;
 	quickAccessLinks: QuickAccessLink[];
 };
 

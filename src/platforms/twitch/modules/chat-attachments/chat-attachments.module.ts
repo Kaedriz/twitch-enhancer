@@ -48,7 +48,7 @@ export default class ChatAttachmentsModule extends TwitchModule {
 				},
 			},
 		],
-		isModuleEnabled: () => this.settingsService().getSettingsKey("chatImagesEnabled"),
+		isModuleEnabledCallback: () => this.settingsService().getSettingsKey("chatImagesEnabled"),
 	};
 
 	private readonly chatAttachmentHandlers: ChatAttachmentHandler[] = [

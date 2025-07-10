@@ -12,10 +12,20 @@ export default class NicknameCustomizationModule extends KickModule {
 				event: "kick:chatMessage",
 				callback: this.handleMessage.bind(this),
 			},
+			{
+				type: "event",
+				key: "settings-chat-images-enabled",
+				event: "kick:settings:chatNicknameCustomizationEnabled",
+				callback: (enabled) => {
+					this.isModuleEnabled = enabled;
+				},
+			},
 		],
+		isModuleEnabledCallback: () => this.settingsService().getSettingsKey("chatNicknameCustomizationEnabled"),
 	};
 
 	private handleMessage({ message, element }: KickChatMessageEvent) {
+		if (!this.isModuleEnabled) return;
 		const usernameElements = [
 			...element.querySelectorAll<HTMLElement>(".ntv__chat-message__username"),
 			...element.querySelectorAll<HTMLElement>(`[title='${message.sender.slug}']`),

@@ -71,12 +71,10 @@ export class SettingsDatabase {
 
 			request.onsuccess = () => {
 				const result = request.result as SettingsRecord | undefined;
-				let settings: PlatformSettings;
-				if (result) {
-					settings = result.settings;
-				} else {
-					settings = this.getDefaultSettings(platform);
-				}
+				const defaultSettings = this.getDefaultSettings(platform);
+
+				const settings: PlatformSettings = result ? { ...defaultSettings, ...result.settings } : defaultSettings;
+
 				this.cache.set(platform, settings);
 				resolve(settings as T);
 			};
