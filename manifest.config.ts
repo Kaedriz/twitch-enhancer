@@ -19,7 +19,7 @@ export function getManifest() {
 			},
 		],
 		background: {
-			scripts: ["worker.js"],
+			scripts: ["worker.background.js"],
 			service_worker: "worker.background.js",
 			type: "module",
 		},
