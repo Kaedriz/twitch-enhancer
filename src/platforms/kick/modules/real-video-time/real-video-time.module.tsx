@@ -86,6 +86,7 @@ export default class RealVideoTimeModule extends KickModule {
 	}
 
 	private getCurrentRealVideoTime(video: HTMLVideoElement) {
+		if (!this.videoCreatedAt) this.tryGetVideoCreatedAt();
 		if (this.videoCreatedAt) return this.videoCreatedAt.getTime() + video.currentTime * 1000;
 
 		const videoProgress = this.kickUtils().getVideoProgressProps();
