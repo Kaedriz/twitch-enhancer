@@ -14,10 +14,20 @@ export default class NicknameCustomizationModule extends TwitchModule {
 				event: "twitch:chatMessage",
 				callback: this.handleMessage.bind(this),
 			},
+			{
+				type: "event",
+				key: "settings-chat-images-enabled",
+				event: "twitch:settings:chatNicknameCustomizationEnabled",
+				callback: (enabled) => {
+					this.isModuleEnabled = enabled;
+				},
+			},
 		],
+		isModuleEnabledCallback: () => this.settingsService().getSettingsKey("chatNicknameCustomizationEnabled"),
 	};
 
 	private handleMessage({ message, element }: TwitchChatMessageEvent) {
+		if (!this.isModuleEnabled) return;
 		const usernameElement =
 			element.querySelector<HTMLElement>(".chat-author__display-name") ||
 			element.querySelector<HTMLElement>(".seventv-chat-user-username");

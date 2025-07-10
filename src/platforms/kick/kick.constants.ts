@@ -4,6 +4,8 @@ export const KICK_DEFAULT_SETTINGS: KickSettings = {
 	chatImagesEnabled: false,
 	chatImagesOnHover: false,
 	chatImagesSize: 15,
+	chatBadgesEnabled: true,
+	chatNicknameCustomizationEnabled: true,
 	quickAccessLinks: [{ title: "Streams Charts", url: "https://streamscharts.com/channels/%username%?platform=kick" }],
 };
 
