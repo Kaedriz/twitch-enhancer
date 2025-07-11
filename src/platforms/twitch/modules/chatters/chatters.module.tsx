@@ -8,7 +8,7 @@ import styled from "styled-components";
 import TwitchModule from "../../twitch.module.ts";
 
 export default class ChattersModule extends TwitchModule {
-	private static URL_CONFIG = (url: string) => !url.includes("clips.twitch.tv");
+	private static URL_CONFIG = (url: string) => !url.includes("clips.twitch.tv") && !url.includes("/team/");
 	public static LOADING_VALUE = -1;
 
 	config: TwitchModuleConfig = {
