@@ -28,7 +28,6 @@ export default class WorkerBackground {
 	private setupMessageListener() {
 		chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			if (!this.isInitialized) {
-				// Queue the message until services are initialized
 				this.messageQueue.push({ message, sendResponse });
 				return true;
 			}
