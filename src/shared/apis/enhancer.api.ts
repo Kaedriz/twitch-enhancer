@@ -136,7 +136,6 @@ export default class EnhancerApi {
 			...(globalBadges?.users.find((user) => user.externalId === externalUserId)?.badgesIds ?? []),
 			...(badges?.users.find((user) => user.externalId === externalUserId)?.badgesIds ?? []),
 		];
-		if (!userBadgesIds) return;
 		return [
 			...(globalBadges?.badges?.filter((badge) => userBadgesIds?.includes(badge.badgeId)) ?? []).sort(
 				(a, b) => a.priority - b.priority,
