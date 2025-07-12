@@ -1,3 +1,4 @@
+import { TooltipComponent } from "$shared/components/tooltip/tooltip.component.tsx";
 import { ChattersQuery } from "$twitch/apis/twitch-queries.ts";
 import type { ChattersResponse } from "$types/platforms/twitch/twitch.api.types.ts";
 import type { TwitchEvents } from "$types/platforms/twitch/twitch.events.types.ts";
@@ -75,7 +76,14 @@ export default class ChattersModule extends TwitchModule {
 
 		wrappers.forEach((element) => {
 			render(
-				<ChattersComponent click={this.refreshChatters.bind(this)} counter={this.totalChattersCounter} />,
+				<TooltipComponent
+					content={
+						<span>Chatters are logged-in users in a Twitch stream’s chatroom. Click here to refresh the counter.</span>
+					}
+					position="bottom"
+				>
+					<ChattersComponent click={this.refreshChatters.bind(this)} counter={this.totalChattersCounter} />
+				</TooltipComponent>,
 				element,
 			);
 		});
@@ -213,7 +221,11 @@ const ChattersComponent = ({
 	counter: Signal<number>;
 	click: () => void;
 }) => (
-	<Wrapper onClick={click}>
+	<Wrapper
+		onClick={click}
+		onMouseEnter={() => console.info("essa test enter")}
+		onMouseLeave={() => console.info("essa test leave")}
+	>
 		({counter.value === ChattersModule.LOADING_VALUE ? "Loading..." : formatChatters(counter.value)})
 	</Wrapper>
 );
