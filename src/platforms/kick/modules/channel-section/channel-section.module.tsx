@@ -45,7 +45,6 @@ export default class ChannelSectionModule extends KickModule {
 		});
 		const wrappers = this.commonUtils().createEmptyElements(this.getId(), elements, "div");
 		for (const wrapper of wrappers) {
-			// this.fixOrderForChildren(wrapper);
 			const channelName = this.kickUtils().getChannelInfo()?.slug;
 			this.currentChannelName = channelName;
 			if (!channelName) {

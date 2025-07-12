@@ -127,7 +127,6 @@ export function TooltipComponent({ children, content, position = "top", delay = 
 	}, [position]);
 
 	const showTooltip = useCallback(() => {
-		console.info("essa showing");
 		if (timeoutId) clearTimeout(timeoutId);
 		window.dispatchEvent(new CustomEvent(TOOLTIP_SHOW_EVENT, { detail: idRef.current }));
 		const id = setTimeout(() => {
