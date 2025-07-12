@@ -1,10 +1,12 @@
 import type WorkerService from "$shared/worker/worker.service.ts";
+import type { EnhancerBadgeSize } from "$types/apis/enhancer.apis.ts";
 import type { RequestConfig, RequestResponse } from "$types/shared/http-client.types.ts";
 import type { WaitForConfig } from "$types/shared/utils/common.utils.types.ts";
 import { defaultAllowedOrigins } from "vite";
 
 export default class CommonUtils {
 	static readonly UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[4][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+	static readonly BADGES_SIZE_ORDER: EnhancerBadgeSize[] = ["1x", "2x", "4x"];
 
 	createElementByParent(name: string, tag: keyof HTMLElementTagNameMap, parent: Element) {
 		const element = document.createElement(tag);
@@ -79,6 +81,25 @@ export default class CommonUtils {
 		const minutes = date.getMinutes().toString().padStart(2, "0");
 		const seconds = date.getSeconds().toString().padStart(2, "0");
 		return `${hours}:${minutes}:${seconds}`;
+	}
+
+	getLowestBadgeSourceUrl(sources: Partial<Record<EnhancerBadgeSize, string>>): string | null {
+		for (const size of CommonUtils.BADGES_SIZE_ORDER) {
+			if (sources[size]) {
+				return sources[size];
+			}
+		}
+		return null;
+	}
+
+	getHighestBadgeSourceUrl(sources: Partial<Record<EnhancerBadgeSize, string>>): string | null {
+		for (let i = CommonUtils.BADGES_SIZE_ORDER.length - 1; i >= 0; i--) {
+			const size = CommonUtils.BADGES_SIZE_ORDER[i];
+			if (sources[size]) {
+				return sources[size];
+			}
+		}
+		return null;
 	}
 }
 

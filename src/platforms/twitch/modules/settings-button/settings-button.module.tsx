@@ -2,6 +2,7 @@ import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 import { render } from "preact";
 import styled from "styled-components";
 import TwitchModule from "../../twitch.module.ts";
+import { TooltipComponent } from "$shared/components/tooltip/tooltip.component.tsx";
 
 export default class SettingsButtonModule extends TwitchModule {
 	readonly config: TwitchModuleConfig = {
@@ -35,7 +36,12 @@ export default class SettingsButtonModule extends TwitchModule {
 		const logo = await this.commonUtils().getIcon(this.workerService(), "enhancer/logo-gray.svg");
 		wrappers.forEach((element) => {
 			element.style.order = "-1";
-			render(<SettingsButtonComponent onClick={this.openSettings.bind(this)} logoUrl={logo} />, element);
+			render(
+				<TooltipComponent content={<p>Open Enhancer Settings</p>} position="bottom">
+					<SettingsButtonComponent onClick={this.openSettings.bind(this)} logoUrl={logo} />
+				</TooltipComponent>,
+				element,
+			);
 		});
 	}
 
@@ -53,11 +59,13 @@ const StyledSettingsButton = styled.button`
   height: 30px;
   cursor: pointer;
   position: relative;
-
+  margin-top: 4px;
+	
   border: none;
   background: transparent;
   padding: 0;
   color: inherit;
+	
 
   &:hover {
     background: var(--color-background-button-text-hover);

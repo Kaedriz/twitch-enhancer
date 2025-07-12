@@ -139,10 +139,10 @@ export default class EnhancerApi {
 		if (!userBadgesIds) return;
 		return [
 			...(globalBadges?.badges?.filter((badge) => userBadgesIds?.includes(badge.badgeId)) ?? []).sort(
-				(a, b) => b.priority - a.priority,
+				(a, b) => a.priority - b.priority,
 			),
 			...(badges?.badges?.filter((badge) => userBadgesIds?.includes(badge.badgeId)) ?? []).sort(
-				(a, b) => b.priority - a.priority,
+				(a, b) => a.priority - b.priority,
 			),
 		];
 	}

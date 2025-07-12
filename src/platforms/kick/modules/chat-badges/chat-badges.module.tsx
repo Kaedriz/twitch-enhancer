@@ -1,8 +1,9 @@
 import KickModule from "$kick/kick.module.ts";
+import { BadgeComponent } from "$shared/components/badge/badge.component.tsx";
+import { TooltipComponent } from "$shared/components/tooltip/tooltip.component.tsx";
 import type { KickChatMessageEvent } from "$types/platforms/kick/kick.events.types.ts";
 import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
 import { render } from "preact";
-import styled from "styled-components";
 
 export default class ChatBadgesModule extends KickModule {
 	config: KickModuleConfig = {
@@ -39,28 +40,27 @@ export default class ChatBadgesModule extends KickModule {
 		for (const badge of userBadges) {
 			const badgeWrapper = document.createElement("div");
 			badgeWrapper.classList.add("enhancer-badges");
-			badgeWrapper.style.marginRight = ".25em";
-			badgeWrapper.style.marginLeft = ".25em";
 			badgeWrapper.style.alignSelf = "center";
-			// TODO Make it Preact component?
 
-			render(<Badge sourceUrl={badge.sources["4x"]} name={badge.name} />, badgeWrapper);
+			const lowestSourceUrl = this.commonUtils().getLowestBadgeSourceUrl(badge.sources);
+			if (!lowestSourceUrl) throw new Error("Badge is missing a source url");
+			render(
+				<TooltipComponent content={<p>{badge.name}</p>} position="right" delay={200}>
+					<BadgeComponent sourceUrl={lowestSourceUrl} name={badge.name} marginRight=".25em" marginTop="2px" />
+				</TooltipComponent>,
+				badgeWrapper,
+			);
 
 			badgesContainer.insertBefore(badgeWrapper, badgesContainer.firstChild);
 		}
 	}
-}
 
-interface BadgeComponentProps {
-	name: string;
-	sourceUrl: string;
-}
-
-const Icon = styled.img`
-	width: 18px;
-	height: 18px;
-`;
-
-function Badge({ name, sourceUrl }: BadgeComponentProps) {
-	return <Icon src={sourceUrl} alt={name} />;
+	async initialize(): Promise<void> {
+		this.commonUtils().createGlobalStyle(`
+			.ntv__chat-message__badge {
+				width: 18px;
+				height: 18px;
+			}
+		`);
+	}
 }

@@ -6,6 +6,7 @@ import { type Signal, signal } from "@preact/signals";
 import { render } from "preact";
 import styled from "styled-components";
 import TwitchModule from "../../twitch.module.ts";
+import { TooltipComponent } from "$shared/components/tooltip/tooltip.component.tsx";
 
 export default class ChattersModule extends TwitchModule {
 	private static URL_CONFIG = (url: string) => !url.includes("clips.twitch.tv") && !url.includes("/team/");
@@ -101,7 +102,12 @@ export default class ChattersModule extends TwitchModule {
 						existing.className = ChattersModule.INDIVIDUAL_CHATTERS_COMPONENT_WRAPPER_CLASS;
 						indicator.parentElement.appendChild(existing);
 					}
-					render(<ChattersComponent click={this.refreshChatters.bind(this)} counter={counter} />, existing);
+					render(
+						<TooltipComponent content={<p>test</p>} position="bottom">
+							<ChattersComponent click={this.refreshChatters.bind(this)} counter={counter} />
+						</TooltipComponent>,
+						existing,
+					);
 				}
 			});
 		});
