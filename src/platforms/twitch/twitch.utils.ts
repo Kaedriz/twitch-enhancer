@@ -1,5 +1,6 @@
 import type ReactUtils from "$shared/utils/react.utils.ts";
 import type {
+	ChannelInfoComponent,
 	Chat,
 	ChatControllerComponent,
 	ChatInfoComponent,
@@ -207,6 +208,14 @@ export default class TwitchUtils {
 				n?.stateNode?.props.isOffline !== undefined &&
 				n?.stateNode?.props.isPlaying !== undefined &&
 				n?.stateNode?.props.liveContentChannelLogin,
+			100,
+		)?.stateNode.props;
+	}
+
+	getChannelInfo() {
+		return this.reactUtils.findReactChildren<ChannelInfoComponent>(
+			this.reactUtils.getReactInstance(document.querySelector("#live-channel-stream-information")),
+			(n) => n?.stateNode?.props.channelLogin !== undefined && n?.stateNode?.props.channelName !== undefined,
 			100,
 		)?.stateNode.props;
 	}
