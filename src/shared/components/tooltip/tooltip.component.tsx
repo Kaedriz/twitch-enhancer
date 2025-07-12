@@ -1,6 +1,6 @@
 import type { ComponentChildren } from "preact";
-import { useState, useRef, useEffect, useCallback } from "preact/hooks";
 import { createPortal } from "preact/compat";
+import { useCallback, useEffect, useRef, useState } from "preact/hooks";
 import styled from "styled-components";
 
 interface TooltipComponentProps {
