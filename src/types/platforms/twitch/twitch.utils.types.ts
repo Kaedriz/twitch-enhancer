@@ -211,3 +211,10 @@ export type CurrentLiveStatusComponent = {
 		isVideoAdShowing: boolean;
 	};
 };
+
+export type ChannelInfoComponent = {
+	props: {
+		channelLogin: string;
+		channelName: string;
+	};
+};

@@ -9,7 +9,8 @@ import TwitchModule from "../../twitch.module.ts";
 export default class ChannelSectionModule extends TwitchModule {
 	private quickAccessLinks = {} as Signal<QuickAccessLink[]>;
 	private watchtimeCounter = {} as Signal<number>;
-	private currentChannelName: string | undefined;
+	private currentDisplayName = signal("");
+	private currentLogin = signal("");
 	private watchtimeInterval: NodeJS.Timeout | undefined;
 
 	readonly config: TwitchModuleConfig = {
@@ -41,12 +42,7 @@ export default class ChannelSectionModule extends TwitchModule {
 	private async run(elements: Element[]) {
 		const wrappers = this.commonUtils().createEmptyElements(this.getId(), elements, "div");
 		for (const wrapper of wrappers) {
-			const channelName = this.twitchUtils().getCurrentChannelByUrl();
-			this.currentChannelName = channelName;
-			if (!channelName) {
-				this.logger.warn("Error: Channel name not found");
-				continue;
-			}
+			if (this.updateNames()) continue;
 			await this.startWatchtimeUpdates();
 			const logo = await this.commonUtils().getIcon(
 				this.workerService(),
@@ -55,7 +51,8 @@ export default class ChannelSectionModule extends TwitchModule {
 			);
 			render(
 				<ChannelSectionComponent
-					channelName={channelName}
+					displayName={this.currentDisplayName}
+					login={this.currentLogin}
 					sites={this.quickAccessLinks}
 					watchTime={this.watchtimeCounter}
 					logoUrl={logo}
@@ -65,10 +62,22 @@ export default class ChannelSectionModule extends TwitchModule {
 		}
 	}
 
+	private updateNames() {
+		const channelInfo = this.twitchUtils().getChannelInfo();
+		if (!channelInfo) {
+			this.logger.warn("Channel name not found");
+			return true;
+		}
+		this.currentDisplayName.value = channelInfo.channelName;
+		this.currentLogin.value = channelInfo.channelLogin;
+		return false;
+	}
+
 	private async updateWatchtime() {
-		if (!this.currentChannelName) return;
+		if (this.updateNames()) return;
+		if (this.currentLogin.value.length < 1) return;
 		try {
-			this.watchtimeCounter.value = await this.getWatchTime(this.currentChannelName);
+			this.watchtimeCounter.value = await this.getWatchTime(this.currentLogin.value);
 		} catch (error) {
 			console.error("Failed to fetch watch time:", error);
 		}

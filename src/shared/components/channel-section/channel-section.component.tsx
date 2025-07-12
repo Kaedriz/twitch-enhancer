@@ -3,13 +3,20 @@ import type { Signal } from "@preact/signals";
 import styled from "styled-components";
 
 interface ChannelSectionComponentProps {
-	channelName: string;
+	displayName: Signal<string>;
+	login: Signal<string>;
 	sites: Signal<QuickAccessLink[]>;
 	watchTime: Signal<number>;
 	logoUrl: string;
 }
 
-export function ChannelSectionComponent({ channelName, sites, watchTime, logoUrl }: ChannelSectionComponentProps) {
+export function ChannelSectionComponent({
+	displayName,
+	login,
+	sites,
+	watchTime,
+	logoUrl,
+}: ChannelSectionComponentProps) {
 	const formatWatchTime = (time: number) => {
 		const hours = time === 0 ? 0 : time / 3600;
 		if (hours < 1) return `${Math.round(hours * 60)} minutes`;
@@ -30,7 +37,7 @@ export function ChannelSectionComponent({ channelName, sites, watchTime, logoUrl
 						}}
 					>
 						<ChannelNameRow>
-							<ChannelName>{channelName}</ChannelName>
+							<ChannelName>{displayName.value}</ChannelName>
 							<RowText>—</RowText>
 							<RowText>You've watched this channel for {formatWatchTime(watchTime.value)}</RowText>
 						</ChannelNameRow>
@@ -40,7 +47,7 @@ export function ChannelSectionComponent({ channelName, sites, watchTime, logoUrl
 			<Content>
 				<LinkGrid>
 					{sites.value.map((site) => {
-						const fullUrl = site.url.replace("%username%", channelName);
+						const fullUrl = site.url.replace("%username%", login.value);
 						return (
 							<LinkItem key={site.title} href={fullUrl} target="_blank" rel="noopener noreferrer">
 								<LinkName>{site.title}</LinkName>
