@@ -7,7 +7,7 @@ import type {
 	ChatInput,
 	Command,
 	CurrentLiveStatusComponent,
-	FollowedSection,
+	FollowedSectionComponenet,
 	MediaPlayerComponent,
 	PersistentPlayerComponent,
 	ScrollableChatComponent,
@@ -44,7 +44,7 @@ export default class TwitchUtils {
 	}
 
 	getPersonalSections() {
-		return this.reactUtils.findReactParents<FollowedSection>(
+		return this.reactUtils.findReactParents<FollowedSectionComponenet>(
 			this.reactUtils.getReactInstance(document.querySelector(".side-nav-section")),
 			(n) => !!n.stateNode?.props?.section,
 			100,

@@ -1,10 +1,9 @@
+import { TooltipComponent } from "$shared/components/tooltip/tooltip.component.tsx";
 import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 import { type Signal, signal } from "@preact/signals";
 import { render } from "preact";
 import styled from "styled-components";
 import TwitchModule from "../../twitch.module.ts";
-import { TooltipComponent } from "$shared/components/tooltip/tooltip.component.tsx";
-import type { FollowedSectionStreamData } from "$types/platforms/twitch/twitch.utils.types.ts";
 
 export default class PinStreamerModule extends TwitchModule {
 	readonly config: TwitchModuleConfig = {
@@ -17,11 +16,15 @@ export default class PinStreamerModule extends TwitchModule {
 				key: "pin-streamer",
 				once: true,
 			},
+			{
+				type: "selector",
+				selectors: [".followed-side-nav-header__dropdown-trigger p"],
+				callback: this.hideSortDescription.bind(this),
+				key: "pin-streamer-hide-sort-description",
+				once: true,
+			},
 		],
 	};
-
-	private originalStreams: FollowedSectionStreamData[] = [];
-	private originalOfflineStreams: FollowedSectionStreamData[] = [];
 
 	private observer: MutationObserver | undefined;
 	private pinnedStreamers: string[] = [];
@@ -35,6 +38,11 @@ export default class PinStreamerModule extends TwitchModule {
 		}
 		this.createObserver(properElement);
 		[...properElement.children].forEach((child) => this.createPin(child));
+	}
+
+	private hideSortDescription(elements: Element[]): void {
+		const firstElement = elements[0] as HTMLElement | undefined;
+		if (firstElement) firstElement.style.display = "none";
 	}
 
 	private createObserver(element: Element) {
@@ -51,9 +59,8 @@ export default class PinStreamerModule extends TwitchModule {
 		this.observer?.observe(element, { attributes: true, childList: true });
 	}
 
-	private ignoreEssa = false;
-
 	private createPin(channelWrapper: Element) {
+		if (channelWrapper.hasAttribute("enhancer-pin")) return;
 		const channelID = this.twitchUtils().getUserIdBySideElement(channelWrapper);
 		if (!channelID) return;
 		const imageWrapper = channelWrapper.querySelector("div.tw-avatar");
@@ -67,7 +74,7 @@ export default class PinStreamerModule extends TwitchModule {
 			if (isPinned.value) {
 				button.style.display = "inline-block";
 			} else button.style.display = "none";
-			this.forceUpdatePersonalSection();
+			await this.resetListOrderAndUpdate();
 		};
 		button.style.display = "none";
 		channelWrapper.addEventListener("mouseover", () => {
@@ -86,27 +93,24 @@ export default class PinStreamerModule extends TwitchModule {
 			</TooltipComponent>,
 			button,
 		);
+		channelWrapper.setAttribute("enhancer-pin", "");
 		this.forceUpdatePersonalSection();
 	}
 
 	private hookPersonalSectionsRender() {
 		const reactComponent = this.twitchUtils().getPersonalSections();
 		if (!reactComponent) return;
-		// todo get original by changing sort to other and then returning to previous
 		const originalFunction = reactComponent.render;
 		reactComponent.render = (...data: any[]) => {
 			this.logger.debug("Rendering personal section channels");
 			this.updateFollowList();
-			const result = originalFunction.apply(reactComponent, data);
-			this.revert();
-			return result;
+			return originalFunction.apply(reactComponent, data);
 		};
 		this.logger.debug("Hooked into personal section render function");
 	}
 
 	private forceUpdatePersonalSection() {
 		this.twitchUtils().getPersonalSections()?.forceUpdate();
-		this.ignoreEssa = false;
 	}
 
 	private updateFollowList() {
@@ -126,20 +130,26 @@ export default class PinStreamerModule extends TwitchModule {
 			return [pinned, other];
 		};
 
-		this.originalStreams = props.section.streams;
-		const [pinnedStreams, otherStreams] = partitionByPinned(this.originalStreams);
+		const [pinnedStreams, otherStreams] = partitionByPinned(props.section.streams);
 		props.section.streams = [...pinnedStreams, ...otherStreams];
 
-		this.originalOfflineStreams = props.section.offlineChannels;
-		const [pinnedOffline, otherOffline] = partitionByPinned(this.originalOfflineStreams);
+		const [pinnedOffline, otherOffline] = partitionByPinned(props.section.offlineChannels);
 		props.section.offlineChannels = [...pinnedOffline, ...otherOffline];
 	}
 
-	private revert() {
-		const props = this.twitchUtils().getPersonalSections()?.props;
-		if (!props) return;
-		props.section.streams = this.originalStreams;
-		props.section.offlineChannels = this.originalOfflineStreams;
+	private async resetListOrderAndUpdate(delayMs = 5) {
+		const personalSections = this.twitchUtils().getPersonalSections();
+		const props = personalSections?.props;
+		const sort = props?.sort;
+		if (!sort) return;
+		const { type: currentSort, setSortType } = sort;
+		const RECOMMENDED = "recommended";
+		const VIEWERS_DESC = "viewers_desc";
+		const nextSort = currentSort === RECOMMENDED ? VIEWERS_DESC : RECOMMENDED;
+		setSortType(nextSort);
+		await this.commonUtils().delay(delayMs);
+		setSortType(currentSort);
+		await this.commonUtils().delay(delayMs);
 	}
 
 	private isPinnedStreamer(channelId: string): boolean {
