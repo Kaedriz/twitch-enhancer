@@ -18,5 +18,6 @@ export class SettingsService {
 
 	async updateSettings(platform: PlatformType, settings: PlatformSettings): Promise<void> {
 		await this.database.updateSettings(platform, settings);
+		this.logger.debug(`Updated settings on ${platform} to`, settings);
 	}
 }

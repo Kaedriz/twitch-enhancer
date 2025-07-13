@@ -21,6 +21,11 @@ export default class SettingsService<T extends PlatformSettings> {
 		return settings[key];
 	}
 
+	async updateSettingsKey<K extends keyof T>(key: K, value: T[K]) {
+		const settings = await this.getSettings();
+		await this.updateSettings({ ...settings, [key]: value });
+	}
+
 	async updateSettings(settings: T) {
 		const result = await this.workerService.send("updateSettings", { platform: this.platformType, settings });
 		if (!result) return false;

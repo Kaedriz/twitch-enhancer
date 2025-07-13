@@ -7,6 +7,7 @@ export type TwitchSettings = {
 	chatBadgesEnabled: boolean;
 	chatNicknameCustomizationEnabled: boolean;
 	quickAccessLinks: QuickAccessLink[];
+	pinnedStreamers: string[];
 };
 
 export type TwitchSettingsEvents = {

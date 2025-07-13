@@ -47,7 +47,7 @@ export default class TwitchUtils {
 		return this.reactUtils.findReactParents<FollowedSection>(
 			this.reactUtils.getReactInstance(document.querySelector(".side-nav-section")),
 			(n) => !!n.stateNode?.props?.section,
-			1000,
+			100,
 		)?.stateNode;
 	}
 

@@ -221,11 +221,7 @@ const ChattersComponent = ({
 	counter: Signal<number>;
 	click: () => void;
 }) => (
-	<Wrapper
-		onClick={click}
-		onMouseEnter={() => console.info("essa test enter")}
-		onMouseLeave={() => console.info("essa test leave")}
-	>
+	<Wrapper onClick={click}>
 		({counter.value === ChattersModule.LOADING_VALUE ? "Loading..." : formatChatters(counter.value)})
 	</Wrapper>
 );

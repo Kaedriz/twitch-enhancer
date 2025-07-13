@@ -1,22 +1,18 @@
-import type { FollowedSectionStreamData } from "$types/platforms/twitch/twitch.utils.types.ts";
 import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 import { type Signal, signal } from "@preact/signals";
 import { render } from "preact";
 import styled from "styled-components";
 import TwitchModule from "../../twitch.module.ts";
+import { TooltipComponent } from "$shared/components/tooltip/tooltip.component.tsx";
+import type { FollowedSectionStreamData } from "$types/platforms/twitch/twitch.utils.types.ts";
 
 export default class PinStreamerModule extends TwitchModule {
-	private followsUpdater: ReturnType<typeof setInterval> | undefined;
-	private previousFollowListState: FollowedSectionStreamData[] = [];
-	private originalFollowList: FollowedSectionStreamData[] = [];
-	private originalOfflineFollowList: FollowedSectionStreamData[] = [];
-
 	readonly config: TwitchModuleConfig = {
 		name: "pin-streamer",
 		appliers: [
 			{
 				type: "selector",
-				selectors: ['.side-nav-card__link[data-test-selector="followed-channel"]'],
+				selectors: ["#side-nav .side-nav-section .tw-transition-group"],
 				callback: this.run.bind(this),
 				key: "pin-streamer",
 				once: true,
@@ -24,145 +20,153 @@ export default class PinStreamerModule extends TwitchModule {
 		],
 	};
 
+	private originalStreams: FollowedSectionStreamData[] = [];
+	private originalOfflineStreams: FollowedSectionStreamData[] = [];
+
+	private observer: MutationObserver | undefined;
+	private pinnedStreamers: string[] = [];
+
 	private run(elements: Element[]) {
-		this.originalFollowList = this.getPersonalSectionStreams();
+		this.hookPersonalSectionsRender();
+		const properElement = elements.at(0);
+		if (!properElement) {
+			this.logger.error("Failed to find proper wrapper for pins");
+			return;
+		}
+		this.createObserver(properElement);
+		[...properElement.children].forEach((child) => this.createPin(child));
+	}
 
-		this.updateFollows();
-		if (this.followsUpdater) clearInterval(this.followsUpdater);
-		this.followsUpdater = setInterval(() => this.followsObserver(), 1000);
+	private createObserver(element: Element) {
+		this.observer?.disconnect();
+		this.observer = new MutationObserver(async (list) => {
+			for (const mutation of list) {
+				if (mutation.type === "childList" && mutation.addedNodes) {
+					for (const node of mutation.addedNodes) {
+						this.createPin(node as Element);
+					}
+				}
+			}
+		});
+		this.observer?.observe(element, { attributes: true, childList: true });
+	}
 
-		elements.forEach(async (element) => {
-			const isPinned = signal(false);
+	private ignoreEssa = false;
 
-			const button = this.commonUtils().createElementByParent("pin-streamer-button", "button", element);
-
-			const channelID = this.twitchUtils().getUserIdBySideElement(element);
-
-			button.onclick = async (event) => {
-				event.preventDefault();
-				event.stopPropagation();
-				isPinned.value = await this.pinStreamer(channelID);
-				if (isPinned.valueOf()) button.style.display = "inline-block";
-			};
-
-			button.style.display = "none";
-			element.addEventListener("mouseover", () => {
-				if (isPinned.valueOf()) return;
+	private createPin(channelWrapper: Element) {
+		const channelID = this.twitchUtils().getUserIdBySideElement(channelWrapper);
+		if (!channelID) return;
+		const imageWrapper = channelWrapper.querySelector("div.tw-avatar");
+		if (!imageWrapper) return;
+		const isPinned = signal(this.isPinnedStreamer(channelID));
+		const button = this.commonUtils().createElementByParent("pin-streamer-button", "button", imageWrapper);
+		button.onclick = async (event) => {
+			event.preventDefault();
+			event.stopPropagation();
+			isPinned.value = await this.togglePinnedStreamer(channelID);
+			if (isPinned.value) {
 				button.style.display = "inline-block";
-			});
-			element.addEventListener("mouseleave", () => {
-				if (isPinned.valueOf()) return;
-				button.style.display = "none";
-			});
-
-			await this.refreshFollows();
-			if (channelID !== undefined) {
-				const pinnedStreamers = await this.getPinnedStreamers();
-				isPinned.value = pinnedStreamers.includes(channelID);
-				if (isPinned.valueOf()) button.style.display = "inline-block";
-				render(<PinStreamerComponent isPinned={isPinned} />, button);
-			}
+			} else button.style.display = "none";
+			this.forceUpdatePersonalSection();
+		};
+		button.style.display = "none";
+		channelWrapper.addEventListener("mouseover", () => {
+			if (isPinned.value) return;
+			button.style.display = "inline-block";
 		});
-	}
-
-	private async updateFollows() {
-		const section = this.twitchUtils().getPersonalSections()?.props;
-		if (!section) return;
-
-		if (this.originalOfflineFollowList.length && this.originalFollowList.length) {
-			section.section.streams = await this.sortStreamsByPinned(
-				this.originalFollowList,
-				section.sort.type === "viewers_desc",
-			);
-
-			section.section.offlineChannels = await this.sortStreamsByPinned(this.originalOfflineFollowList, true);
-		}
-	}
-
-	private async getPinnedStreamers(): Promise<string[]> {
-		return this.localStorage().getOrDefault("pinnedStreamers", []);
-	}
-
-	private async pinStreamer(channelID: string | undefined): Promise<boolean> {
-		if (!channelID) {
-			return false;
-		}
-
-		const pinnedStreamers = await this.getPinnedStreamers();
-		const isPinned = !pinnedStreamers.includes(channelID);
-
-		const updatedPinnedStreamers = isPinned
-			? [...pinnedStreamers, channelID]
-			: pinnedStreamers.filter((id) => id !== channelID);
-
-		await this.localStorage().save("pinnedStreamers", updatedPinnedStreamers);
-
-		await this.followsObserver();
-		await this.updateFollows();
-		await this.refreshFollows();
-
-		return isPinned;
-	}
-
-	private async sortStreamsByPinned(
-		streamFollowList: FollowedSectionStreamData[],
-		isSortAvailable: boolean,
-	): Promise<FollowedSectionStreamData[]> {
-		const pinnedStreamers = await this.getPinnedStreamers();
-
-		const pinnedStreams: FollowedSectionStreamData[] = [];
-		const regularStreams: FollowedSectionStreamData[] = [];
-
-		streamFollowList.forEach((stream) => {
-			if (pinnedStreamers.includes(stream.user.id)) {
-				pinnedStreams.push(stream);
-			} else {
-				regularStreams.push(stream);
-			}
+		channelWrapper.addEventListener("mouseleave", () => {
+			if (isPinned.value) return;
+			button.style.display = "none";
 		});
 
-		if (isSortAvailable) {
-			const sortedRegularStreams = this.sortStreamDataByViewersCount(regularStreams);
-			const sortedPinnedStreams = this.sortStreamDataByViewersCount(pinnedStreams);
+		if (isPinned.value) button.style.display = "inline-block";
+		render(
+			<TooltipComponent content={<PinStreamerTooltipComponent isPinned={isPinned} />} position="right">
+				<PinStreamerComponent isPinned={isPinned} />
+			</TooltipComponent>,
+			button,
+		);
+		this.forceUpdatePersonalSection();
+	}
 
-			this.previousFollowListState = [...sortedPinnedStreams, ...sortedRegularStreams];
+	private hookPersonalSectionsRender() {
+		const reactComponent = this.twitchUtils().getPersonalSections();
+		if (!reactComponent) return;
+		// todo get original by changing sort to other and then returning to previous
+		const originalFunction = reactComponent.render;
+		reactComponent.render = (...data: any[]) => {
+			this.logger.debug("Rendering personal section channels");
+			this.updateFollowList();
+			const result = originalFunction.apply(reactComponent, data);
+			this.revert();
+			return result;
+		};
+		this.logger.debug("Hooked into personal section render function");
+	}
+
+	private forceUpdatePersonalSection() {
+		this.twitchUtils().getPersonalSections()?.forceUpdate();
+		this.ignoreEssa = false;
+	}
+
+	private updateFollowList() {
+		const props = this.twitchUtils().getPersonalSections()?.props;
+		if (!props) return;
+
+		const partitionByPinned = <T extends { user: { id: string } }>(items: T[]): [T[], T[]] => {
+			const pinned: T[] = [];
+			const other: T[] = [];
+			for (const item of items) {
+				if (this.isPinnedStreamer(item.user.id)) {
+					pinned.push(item);
+				} else {
+					other.push(item);
+				}
+			}
+			return [pinned, other];
+		};
+
+		this.originalStreams = props.section.streams;
+		const [pinnedStreams, otherStreams] = partitionByPinned(this.originalStreams);
+		props.section.streams = [...pinnedStreams, ...otherStreams];
+
+		this.originalOfflineStreams = props.section.offlineChannels;
+		const [pinnedOffline, otherOffline] = partitionByPinned(this.originalOfflineStreams);
+		props.section.offlineChannels = [...pinnedOffline, ...otherOffline];
+	}
+
+	private revert() {
+		const props = this.twitchUtils().getPersonalSections()?.props;
+		if (!props) return;
+		props.section.streams = this.originalStreams;
+		props.section.offlineChannels = this.originalOfflineStreams;
+	}
+
+	private isPinnedStreamer(channelId: string): boolean {
+		return this.pinnedStreamers.includes(channelId);
+	}
+
+	private async togglePinnedStreamer(channelId: string): Promise<boolean> {
+		const isPinned = this.isPinnedStreamer(channelId);
+		if (isPinned) {
+			this.pinnedStreamers = this.pinnedStreamers.filter((id) => id !== channelId);
 		} else {
-			this.previousFollowListState = [...pinnedStreams, ...regularStreams];
+			this.pinnedStreamers.push(channelId);
 		}
-
-		return this.previousFollowListState;
+		await this.settingsService().updateSettingsKey("pinnedStreamers", this.pinnedStreamers);
+		return !isPinned;
 	}
 
-	private async refreshFollows() {
-		const section = this.twitchUtils().getPersonalSections();
-		if (!section) return;
-		section.forceUpdate();
-	}
-
-	private getPersonalSectionStreams() {
-		return this.twitchUtils().getPersonalSections()?.props?.section.streams ?? [];
-	}
-
-	private getPersonalSectionVideoConnections() {
-		return this.twitchUtils().getPersonalSections()?.props?.section.offlineChannels ?? [];
-	}
-
-	private async followsObserver() {
-		const section = this.getPersonalSectionStreams();
-		if (section !== this.previousFollowListState) {
-			this.originalFollowList = this.getPersonalSectionStreams();
-			this.originalOfflineFollowList = this.getPersonalSectionVideoConnections();
-			await this.updateFollows();
-			await this.refreshFollows();
-		}
-	}
-
-	private sortStreamDataByViewersCount(streamDataArray: FollowedSectionStreamData[]): FollowedSectionStreamData[] {
-		return streamDataArray.sort((a, b) => {
-			const viewersCountA = a.content?.viewersCount ?? 0;
-			const viewersCountB = b.content?.viewersCount ?? 0;
-			return viewersCountB - viewersCountA;
-		});
+	async initialize() {
+		this.pinnedStreamers.push(...(await this.settingsService().getSettingsKey("pinnedStreamers")));
+		this.commonUtils().createGlobalStyle(`
+			.pin-streamer-button {
+				order: 2;
+				position: absolute;
+				bottom: -6px;
+				left: -4px;
+			}
+		`);
 	}
 }
 
@@ -170,13 +174,53 @@ interface PinStreamerComponentProps {
 	isPinned: Signal<boolean>;
 }
 
-const Wrapper = styled.div`
-	position: absolute;
-	right: 10px;
-	bottom: 0;
+const ButtonWrapper = styled.div`
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
 	z-index: 999;
 `;
 
+const PinButton = styled.button<{ $isPinned: boolean }>`
+	background-color: ${(props) => (props.$isPinned ? "rgba(145, 71, 255, 0.5)" : "rgba(0, 0, 0, 0.4)")};
+	border: none;
+	border-radius: 3px;
+	width: 16px;
+	height: 16px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	color: ${(props) => (props.$isPinned ? "white" : "#ffffff")};
+	padding: 0;
+	&:hover {
+		background-color: ${(props) => (props.$isPinned ? "rgba(145, 71, 255, 0.7)" : "rgba(0, 0, 0, 0.6)")};
+		transform: scale(1.05);
+	}
+	&:active {
+		transform: scale(0.95);
+	}
+`;
+
+const StarIcon = styled.div<{ $isPinned: boolean }>`
+  font-size: 12px;
+  line-height: 1;
+  font-weight: ${(props) => (props.$isPinned ? "bold" : "normal")};
+  text-shadow: ${(props) => (props.$isPinned ? "0 0 3px rgba(145, 71, 255, 0.5)" : "none")};
+`;
+
 function PinStreamerComponent({ isPinned }: PinStreamerComponentProps) {
-	return <Wrapper>{isPinned.value ? "★" : "☆"}</Wrapper>;
+	return (
+		<ButtonWrapper>
+			<PinButton $isPinned={isPinned.value}>
+				<StarIcon $isPinned={isPinned.value}>{isPinned.value ? "★" : "☆"}</StarIcon>
+			</PinButton>
+		</ButtonWrapper>
+	);
+}
+
+function PinStreamerTooltipComponent({ isPinned }: PinStreamerComponentProps) {
+	return <span>{isPinned.value ? "Unpin streamer" : "Pin streamer"}</span>;
 }
