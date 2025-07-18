@@ -1,22 +1,13 @@
+import type TwitchUtils from "$twitch/twitch.utils.ts";
 import type { GQLResponse } from "$types/platforms/twitch/twitch.api.types.ts";
+import gql from "graphql-tag";
 
 export default class TwitchApi {
-	private readonly TWITCH_GQL_ENDPOINT = "https://gql.twitch.tv/gql";
-	private readonly TWITCH_CLIENT_ID = "kimne78kx3ncx6brgo4mv6wki5h1ko";
+	constructor(private readonly twitchUtils: TwitchUtils) {}
 
 	async gql<T>(query: string, variables: Record<string, string>) {
-		return new Promise<GQLResponse<T>>((resolve, reject) =>
-			fetch(this.TWITCH_GQL_ENDPOINT, {
-				method: "POST",
-				headers: {
-					"Client-ID": this.TWITCH_CLIENT_ID,
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ query, variables }),
-			})
-				.then((response) => response.json())
-				.then((response) => resolve(response))
-				.catch((error) => reject(error)),
-		);
+		const client = this.twitchUtils.getApolloClient();
+		if (!client) throw new Error("Failed to find Apollo Client");
+		return (await client.query({ query: gql`${query}`, variables })) as Promise<GQLResponse<T>>;
 	}
 }
