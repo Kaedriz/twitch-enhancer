@@ -19,7 +19,6 @@ import ChatHighlightUserModule from "./modules/chat-highlight-user/chat-highligh
 import ChatMessagePopupModule from "./modules/chat-message-popup/chat-message-popup.module.tsx";
 import ChatModule from "./modules/chat/chat.module.tsx";
 import ClipDownloadModule from "./modules/clip-download/clip-download.module.tsx";
-import ExampleModule from "./modules/example/example.module.ts";
 import StreamLatencyModule from "./modules/stream-latency/stream-latency.module.tsx";
 import type TwitchModule from "./twitch.module.ts";
 import TwitchUtils from "./twitch.utils.ts";
@@ -44,7 +43,6 @@ export default class TwitchPlatform extends Platform<TwitchModule, TwitchEvents,
 			this.twitchApi,
 		] as const;
 		return [
-			new ExampleModule(...dependencies),
 			new StreamLatencyModule(...dependencies),
 			new ClipDownloadModule(...dependencies),
 			new ChatModule(...dependencies),
