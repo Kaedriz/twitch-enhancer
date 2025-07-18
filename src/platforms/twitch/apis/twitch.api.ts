@@ -8,6 +8,6 @@ export default class TwitchApi {
 	async gql<T>(query: string, variables: Record<string, string>) {
 		const client = this.twitchUtils.getApolloClient();
 		if (!client) throw new Error("Failed to find Apollo Client");
-		return (await client.query({ query: gql`${query}`, variables })) as Promise<GQLResponse<T>>;
+		return (await client.query({ query: gql`${query}`, variables })) as GQLResponse<T>;
 	}
 }
