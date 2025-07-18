@@ -30,7 +30,7 @@ export default class TwitchPlatform extends Platform<TwitchModule, TwitchEvents,
 	}
 
 	protected readonly twitchUtils = new TwitchUtils(this.utilsRepository.reactUtils);
-	protected readonly twitchApi = new TwitchApi();
+	protected readonly twitchApi = new TwitchApi(this.twitchUtils);
 
 	protected getModules(): TwitchModule[] {
 		const dependencies = [
