@@ -65,6 +65,9 @@ export default class SettingsModule extends TwitchModule {
 				title: "Enable Chat Images",
 				description: "Display images sent in chat messages.",
 				type: "toggle",
+				confirmOnEnable: true,
+				confirmationMessage:
+					"Enhancer is not responsible for the content of images sent in the chat by users. By enabling this option, you can see images in the chat that may not look good. We do not moderate them in any way, we simply display them. Are you sure you want to enable this option?",
 				tabIndex: 1,
 			},
 			{
