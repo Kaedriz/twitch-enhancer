@@ -25,7 +25,7 @@ async function zipDir(dir: string, zipPath: string, exclude: Set<string> = new S
 		for (const entry of entries) {
 			if (exclude.has(entry.name)) continue;
 			const fullPath = path.join(currentDir, entry.name);
-			const relPath = relDir ? path.join(relDir, entry.name) : entry.name;
+			const relPath = relDir ? [relDir, entry.name].join("/") : entry.name;
 			if (entry.isDirectory()) {
 				await addDir(fullPath, relPath);
 			} else if (entry.isFile()) {
