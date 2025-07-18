@@ -88,9 +88,7 @@ export default class ChatModule extends TwitchModule {
 					for (const node of mutation.addedNodes) {
 						const element = node as Element;
 						const seventvId = element.getAttribute("msg-id");
-						const messageProps = this.twitchUtils().getChatMessage(
-							element.querySelector(".chat-line__message") as Node,
-						)?.props;
+						const messageProps = this.twitchUtils().getChatMessage(element.querySelector(".chat-line__message"))?.props;
 						const id = seventvId ?? messageProps?.message.id;
 						if (!id) continue;
 						let message = this.queue.getAndRemove(id);

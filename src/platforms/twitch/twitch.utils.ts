@@ -125,7 +125,8 @@ export default class TwitchUtils {
 		chatInput.stateNode.forceUpdate();
 	}*/
 
-	getChatMessage(message: Node) {
+	getChatMessage(message: Node | Element | HTMLElement | null) {
+		if (!message) return;
 		const instance = this.reactUtils.getReactInstance(message)?.return?.stateNode as TwitchChatMessageComponent;
 		return instance?.props.message ? instance : undefined;
 	}
