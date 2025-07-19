@@ -4,7 +4,7 @@ import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
 
 export default class ChatNicknameCustomizationModule extends KickModule {
 	config: KickModuleConfig = {
-		name: "nickname-customization",
+		name: "chat-nickname-customization",
 		appliers: [
 			{
 				type: "event",
