@@ -55,7 +55,7 @@ export type MediaPlayerInstance = {
 	getPosition(): number;
 };
 
-export type FollowedSection = {
+export type FollowedSectionComponenet = {
 	props: {
 		collapsed: boolean;
 		section: {
