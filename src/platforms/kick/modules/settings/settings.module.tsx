@@ -61,6 +61,20 @@ export default class SettingsModule extends KickModule {
 		};
 		this.SETTING_DEFINITIONS = [
 			{
+				id: "streamLatencyEnabled",
+				title: "Enable Stream Latency",
+				description: "Shows the current stream delay on top of the chat.",
+				type: "toggle",
+				tabIndex: 0,
+			},
+			{
+				id: "realVideoTimeEnabled",
+				title: "Enable Real Video Time",
+				description: "Displays the real-world time of the VOD.",
+				type: "toggle",
+				tabIndex: 0,
+			},
+			{
 				id: "chatImagesEnabled",
 				title: "Enable Chat Images",
 				description: "Display images sent in chat messages.",

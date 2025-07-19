@@ -16,6 +16,7 @@ export default class RealVideoTimeModule extends KickModule {
 				once: true,
 			},
 		],
+		isModuleEnabledCallback: async () => await this.settingsService().getSettingsKey("realVideoTimeEnabled"),
 	};
 
 	private timeCounter = signal(-1);

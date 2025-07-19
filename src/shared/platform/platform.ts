@@ -70,7 +70,7 @@ export default abstract class Platform<
 				this.logger.error(`Failed to load ${module.config.name} module: ${error}`);
 			}
 		}
-		this.appliers.forEach(applier => applier.start());
+		this.appliers.forEach((applier) => applier.start());
 	}
 
 	getPlatformType() {

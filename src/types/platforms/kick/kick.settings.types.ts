@@ -7,6 +7,8 @@ export type KickSettings = {
 	chatBadgesEnabled: boolean;
 	chatNicknameCustomizationEnabled: boolean;
 	quickAccessLinks: QuickAccessLink[];
+	streamLatencyEnabled: boolean;
+	realVideoTimeEnabled: boolean;
 };
 
 export type KickSettingsEvents = {
