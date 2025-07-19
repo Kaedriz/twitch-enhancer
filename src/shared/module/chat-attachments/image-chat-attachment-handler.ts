@@ -63,7 +63,9 @@ export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 	}
 
 	async applies(data: ChatAttachmentData) {
-		return data.attachmentSize < this.config.maxFileSize.value * 1024 * 1024;
+		return (
+			data.attachmentType.startsWith("image/") && data.attachmentSize < this.config.maxFileSize.value * 1024 * 1024
+		);
 	}
 
 	public parseUrl(url: URL): URL {

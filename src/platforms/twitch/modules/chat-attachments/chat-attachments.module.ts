@@ -10,13 +10,14 @@ import {
 	ChatAttachmentMessageType,
 } from "$types/shared/module/chat-attachment/chat-attachment.types.ts";
 import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
-import { type Signal, signal } from "@preact/signals";
 
 export default class ChatAttachmentsModule extends TwitchModule {
 	private readonly httpClient = new HttpClient();
 	private readonly imageAttachmentConfig = new ImageChatAttachmentConfig(this.settingsService(), () => {
 		this.twitchUtils().unstuckScroll();
 	});
+	private previousInputContent = "";
+	private inputMonitoringInterval: NodeJS.Timeout | undefined;
 
 	config: TwitchModuleConfig = {
 		name: "chat-attachments",
@@ -45,6 +46,7 @@ export default class ChatAttachmentsModule extends TwitchModule {
 				event: "twitch:settings:chatImagesEnabled",
 				callback: (enabled) => {
 					this.isModuleEnabled = enabled;
+					this.isModuleEnabled ? this.startInputMonitoring() : this.stopInputMonitoring();
 				},
 			},
 		],
@@ -59,13 +61,22 @@ export default class ChatAttachmentsModule extends TwitchModule {
 		if (!this.isModuleEnabled) return;
 		const baseData = this.getBaseData(message);
 		if (!baseData) return;
+		try {
+			const result = await this.resolveChatAttachmentHandler(baseData);
+			if (result?.applies) await result.chatAttachmentHandler.handle(result.data);
+		} catch (error) {
+			this.logger.error("Failed to handle chat attachment:", error);
+		}
+	}
+
+	private async resolveChatAttachmentHandler(baseData: BaseChatAttachmentData) {
 		const chatAttachmentHandler = this.chatAttachmentHandlers.find((chatAttachmentHandler) =>
 			chatAttachmentHandler.validate(baseData),
 		);
 		if (!chatAttachmentHandler) return;
 		baseData.url = chatAttachmentHandler.parseUrl(baseData.url);
 		const data = await this.getData(baseData);
-		if (await chatAttachmentHandler.applies(data)) await chatAttachmentHandler.handle(data);
+		return { applies: await chatAttachmentHandler.applies(data), chatAttachmentHandler, data };
 	}
 
 	private getBaseData(message: TwitchChatMessageEvent): BaseChatAttachmentData | undefined {
@@ -105,8 +116,54 @@ export default class ChatAttachmentsModule extends TwitchModule {
 		}
 	}
 
+	private startInputMonitoring() {
+		if (this.inputMonitoringInterval) return;
+		this.inputMonitoringInterval = setInterval(async () => {
+			const chatInputContent = this.twitchUtils().getChatInputContent();
+			if (!chatInputContent || chatInputContent === this.previousInputContent) return;
+			this.previousInputContent = chatInputContent;
+			const words = chatInputContent.split(" ");
+
+			const firstWord = words.at(0);
+			const lastWord = words.at(-1);
+			const firstWordData = this.simulateBaseData(firstWord);
+			const lastWordData = this.simulateBaseData(lastWord);
+
+			const attachmentResolved =
+				(firstWordData && (await this.resolveChatAttachmentHandler(firstWordData))?.applies) ||
+				(lastWordData && (await this.resolveChatAttachmentHandler(lastWordData))?.applies);
+
+			if (attachmentResolved) {
+				this.emitter.emit("twitch:chatPopupMessage", {
+					title: "Image preview",
+					autoclose: 3,
+					content: "This image will be shown in chat.",
+				});
+			}
+		}, 500);
+	}
+
+	private stopInputMonitoring() {
+		if (this.inputMonitoringInterval) {
+			clearInterval(this.inputMonitoringInterval);
+			this.inputMonitoringInterval = undefined;
+		}
+	}
+
+	private simulateBaseData(word: string | undefined): BaseChatAttachmentData | undefined {
+		if (word && this.commonUtils().isValidUrl(word)) {
+			return {
+				messageType: ChatAttachmentMessageType.FIRST,
+				url: new URL(word),
+			} as BaseChatAttachmentData;
+		}
+		return undefined;
+	}
+
 	async initialize() {
 		await this.imageAttachmentConfig.initialize();
+		if (this.isModuleEnabled) this.startInputMonitoring();
+
 		this.commonUtils().createGlobalStyle(`
 			.enhancer-chat-link {
 				display: block;
