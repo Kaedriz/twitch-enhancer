@@ -116,7 +116,7 @@ export type Chat = {
 	};
 };
 
-export type Command = {
+export type TwitchChatCommand = {
 	name: string;
 	description: string;
 	helpText: string;
@@ -223,6 +223,15 @@ export type RootComponent = {
 	value: {
 		client: ApolloClient;
 	};
+};
+
+export type ChatCommandStoreComponent = {
+	value: ChatCommandStore;
+};
+
+export type ChatCommandStore = {
+	addCommand: (command: TwitchChatCommand) => void;
+	getCommands: () => string[];
 };
 
 export type ApolloClient = {

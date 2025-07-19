@@ -2,16 +2,17 @@ import type ReactUtils from "$shared/utils/react.utils.ts";
 import type {
 	ChannelInfoComponent,
 	Chat,
+	ChatCommandStoreComponent,
 	ChatControllerComponent,
 	ChatInfoComponent,
 	ChatInput,
-	Command,
 	CurrentLiveStatusComponent,
 	FollowedSectionComponenet,
 	MediaPlayerComponent,
 	PersistentPlayerComponent,
 	RootComponent,
 	ScrollableChatComponent,
+	TwitchChatCommand,
 	TwitchChatMessageComponent,
 } from "$types/platforms/twitch/twitch.utils.types";
 
@@ -60,7 +61,7 @@ export default class TwitchUtils {
 	}
 
 	getChatCommandStore() {
-		const node = this.reactUtils.findReactParents(
+		const node = this.reactUtils.findReactParents<never, never, ChatCommandStoreComponent>(
 			this.reactUtils.getReactInstance(document.querySelector(".stream-chat")),
 			(n) => n.pendingProps?.value?.getCommands != null,
 			25,
@@ -88,8 +89,13 @@ export default class TwitchUtils {
 		return node?.stateNode;
 	}
 
-	addCommandToChat(command: Command) {
-		this.getChatCommandStore().addCommand({ ...command, group: "Enhancer" });
+	addCommandToChat(command: TwitchChatCommand) {
+		const commandStore = this.getChatCommandStore();
+		console.info("[plyta-debug] command store", commandStore);
+		if (!commandStore) return;
+		console.info("[plyta-debug] adding command", command);
+		commandStore.addCommand({ ...command, group: "Enhancer" });
+		console.info("[plyta-debug] current commands", commandStore.getCommands());
 	}
 
 	getChatInputContent(): string | null {
