@@ -16,6 +16,8 @@ export function getManifest() {
 			{
 				matches: ["*://*.twitch.tv/*", "*://*.kick.com/*"],
 				js: ["inject.js", "worker.bridge.js"],
+				all_frames: true,
+				run_at: "document_end",
 			},
 		],
 		background: {
