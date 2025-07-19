@@ -72,7 +72,7 @@ export default class PinStreamerModule extends TwitchModule {
 	}
 
 	private createPin(channelWrapper: Element) {
-		if (channelWrapper.hasAttribute("enhancer-pin")) return;
+		if (channelWrapper.querySelector(".pin-streamer-button")) return;
 		const channelID = this.twitchUtils().getUserIdBySideElement(channelWrapper);
 		if (!channelID) return;
 		const imageWrapper = channelWrapper.querySelector("div.tw-avatar");
@@ -105,7 +105,6 @@ export default class PinStreamerModule extends TwitchModule {
 			</TooltipComponent>,
 			button,
 		);
-		channelWrapper.setAttribute("enhancer-pin", "");
 		this.forceUpdatePersonalSection();
 	}
 

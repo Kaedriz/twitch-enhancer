@@ -187,7 +187,7 @@ const TooltipContainer = styled.div`
 
 const TooltipContent = styled.div<{ position: string }>`
 	position: fixed;
-	z-index: 1000;
+	z-index: 99999999999;
 	background: rgba(25, 25, 28, 0.8);
 	border: 1px solid rgba(255, 255, 255, 0.1);
 	border-radius: 8px;
