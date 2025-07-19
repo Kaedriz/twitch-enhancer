@@ -65,7 +65,7 @@ export default class ChatAttachmentsModule extends TwitchModule {
 			const result = await this.resolveChatAttachmentHandler(baseData);
 			if (result?.applies) await result.chatAttachmentHandler.handle(result.data);
 		} catch (error) {
-			this.logger.error('Failed to handle chat attachment:', error);
+			this.logger.error("Failed to handle chat attachment:", error);
 		}
 	}
 
@@ -136,11 +136,18 @@ export default class ChatAttachmentsModule extends TwitchModule {
 			if (attachmentResolved) {
 				this.emitter.emit("twitch:chatPopupMessage", {
 					title: "Image preview",
-					autoclose: 9999999,
+					autoclose: 3,
 					content: "This image will be shown in chat.",
 				});
 			}
 		}, 500);
+	}
+
+	private stopInputMonitoring() {
+		if (this.inputMonitoringInterval) {
+			clearInterval(this.inputMonitoringInterval);
+			this.inputMonitoringInterval = undefined;
+		}
 	}
 
 	private simulateBaseData(word: string | undefined): BaseChatAttachmentData | undefined {
@@ -151,13 +158,6 @@ export default class ChatAttachmentsModule extends TwitchModule {
 			} as BaseChatAttachmentData;
 		}
 		return undefined;
-	}
-
-	private stopInputMonitoring() {
-		if (this.inputMonitoringInterval) {
-			clearInterval(this.inputMonitoringInterval);
-			this.inputMonitoringInterval = undefined;
-		}
 	}
 
 	async initialize() {
