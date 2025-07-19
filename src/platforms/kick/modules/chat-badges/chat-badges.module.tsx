@@ -15,20 +15,12 @@ export default class ChatBadgesModule extends KickModule {
 				event: "kick:chatMessage",
 				callback: this.handleMessage.bind(this),
 			},
-			{
-				type: "event",
-				key: "settings-chat-images-enabled",
-				event: "kick:settings:chatBadgesEnabled",
-				callback: (enabled) => {
-					this.isModuleEnabled = enabled;
-				},
-			},
 		],
 		isModuleEnabledCallback: () => this.settingsService().getSettingsKey("chatBadgesEnabled"),
 	};
 
-	private handleMessage({ message, element, isUsingNTV }: KickChatMessageEvent) {
-		if (!this.isModuleEnabled) return;
+	private async handleMessage({ message, element, isUsingNTV }: KickChatMessageEvent) {
+		if (!(await this.isModuleEnabled())) return;
 		const userBadges = this.enhancerApi().findUserBadgesForCurrentChannel(message.sender.id.toString());
 		if (!userBadges?.length) return;
 

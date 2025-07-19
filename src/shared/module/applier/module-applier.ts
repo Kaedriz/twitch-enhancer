@@ -13,4 +13,6 @@ export default class ModuleApplier<
 	async apply(module: Module<Events, Storage, Settings>) {
 		throw new Error("Not implemented");
 	}
+
+	async start() {}
 }

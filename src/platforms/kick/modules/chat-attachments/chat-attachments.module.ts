@@ -52,10 +52,7 @@ export default class ChatAttachmentsModule extends KickModule {
 				type: "event",
 				key: "settings-chat-images-enabled",
 				event: "kick:settings:chatImagesEnabled",
-				callback: (enabled) => {
-					this.isModuleEnabled = enabled;
-					this.isModuleEnabled ? this.startInputMonitoring() : this.stopInputMonitoring();
-				},
+				callback: (enabled) => (enabled ? this.startInputMonitoring() : this.stopInputMonitoring()),
 			},
 		],
 		isModuleEnabledCallback: () => this.settingsService().getSettingsKey("chatImagesEnabled"),
@@ -66,7 +63,7 @@ export default class ChatAttachmentsModule extends KickModule {
 	];
 
 	private async handleMessage(message: KickChatMessageEvent) {
-		if (!this.isModuleEnabled) return;
+		if (!(await this.isModuleEnabled())) return;
 		const baseData = this.getBaseData(message);
 		if (!baseData) return;
 		try {
@@ -182,7 +179,7 @@ export default class ChatAttachmentsModule extends KickModule {
 
 	async initialize() {
 		await this.imageAttachmentConfig.initialize();
-		if (this.isModuleEnabled) this.startInputMonitoring();
+		if (await this.isModuleEnabled()) this.startInputMonitoring();
 		this.commonUtils().createGlobalStyle(`
 			.enhancer-chat-link {
 				display: block;

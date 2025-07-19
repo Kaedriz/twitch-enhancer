@@ -32,6 +32,7 @@ export default class WatchTimeModule extends TwitchModule {
 				once: true,
 			},
 		],
+		isModuleEnabledCallback: async () => await this.settingsService().getSettingsKey("xayoWatchtimeEnabled"),
 	};
 
 	private async run(elements: Element[]) {
@@ -70,6 +71,7 @@ export default class WatchTimeModule extends TwitchModule {
 	}
 
 	private async addCommand() {
+		if (!(await this.isModuleEnabled())) return;
 		this.twitchUtils().addCommandToChat({
 			name: "watchtime",
 			description: "See user's watchtime from xayo.pl service",
