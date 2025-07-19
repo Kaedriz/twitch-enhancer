@@ -52,7 +52,8 @@
         "webpack-merge": "^5.8.0"
     },
     "dependencies": {
-        "@babel/runtime": "^7.18.9"
+        "@babel/runtime": "^7.18.9",
+        "graphql-tag": "^2.12.6"
     },
     "browserslist": "> 0.25%, not dead",
     "lint-staged": {

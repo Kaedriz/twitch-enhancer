@@ -39,20 +39,16 @@ const About = () => {
                 </span>
             </Copyrights>
             <Socials>
-                <a href="https://enhancer.pro/" target="_blank" rel="noreferrer">
+                <a href="https://enhancer.at/" target="_blank" rel="noreferrer">
                     Enhancer
                 </a>
                 ·
-                <a href="https://github.com/igorovh/twitch-enhancer" target="_blank" rel="noreferrer">
+                <a href="https://sh.enhancer.at/s/github" target="_blank" rel="noreferrer">
                     Github
                 </a>
                 ·
-                <a href="https://twitter.com/igor_ovh" target="_blank" rel="noreferrer">
+                <a href="https://sh.enhancer.at/s/twitter" target="_blank" rel="noreferrer">
                     Twitter
-                </a>
-                ·
-                <a href="https://coffee.vopp.top/" target="_blank" rel="noreferrer">
-                    Buy me a coffee
                 </a>
             </Socials>
         </Wrapper>

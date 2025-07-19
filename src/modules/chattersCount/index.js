@@ -4,6 +4,7 @@ import Component from './component';
 import GQL from '$Utils/twitchql';
 import { getLive, getModeratorLive } from '$Utils/twitch';
 import { numberWithCommas } from '$Utils/number';
+import gql from 'graphql-tag';
 // import { tooltip } from '$Utils/tooltip';
 
 Peeker.add(() => {
@@ -59,15 +60,16 @@ function setChatters(amount) {
 }
 
 async function getChatters(channel) {
-    const query = `
-    query GetChannelChattersCount($name: String!) {
-        channel(name: $name) {
-            chatters {
-                count
+    const query = gql`
+        query GetChannelChattersCount($name: String!) {
+            channel(name: $name) {
+                chatters {
+                    count
+                }
             }
         }
-    }`;
-    const data = await GQL.query(query, { name: channel }, false);
+    `;
+    const data = await GQL.query(query, { name: channel });
     return numberWithCommas(data?.data?.channel?.chatters?.count) || '???';
 }
 

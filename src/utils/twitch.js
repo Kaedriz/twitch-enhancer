@@ -170,6 +170,30 @@ export function getChannelInfo() {
     return node?.stateNode;
 }
 
+function getReactRoot(element) {
+    for (const key in element) {
+        if (key.startsWith('_reactRootContainer') || key.startsWith('__reactContainer$')) {
+            return element[key];
+        }
+    }
+
+    return null;
+}
+
+export function getApolloClient() {
+    let client;
+    try {
+        const reactRoot = getReactRoot(document.querySelector('#root'));
+        const node = findReactChildren(
+            reactRoot?._internalRoot?.current ?? reactRoot,
+            (n) => n.pendingProps?.value?.client
+        );
+        client = node.pendingProps.value.client;
+    } catch (_) {}
+
+    return client;
+}
+
 export function getScrollableChat() {
     const element = document.querySelector('.chat-scrollable-area__message-container');
 
