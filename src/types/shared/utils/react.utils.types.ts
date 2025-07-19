@@ -1,5 +1,5 @@
-export type ReactComponent<StateNode, MemoizedProps = any> = {
+export type ReactComponent<StateNode, MemoizedProps = any, PendingProps = any> = {
 	stateNode: StateNode & { render: (...data: any[]) => any };
-	pendingProps: any;
+	pendingProps: PendingProps;
 	memoizedProps: MemoizedProps;
 };

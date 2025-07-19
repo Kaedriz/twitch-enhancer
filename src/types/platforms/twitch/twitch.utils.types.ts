@@ -218,3 +218,13 @@ export type ChannelInfoComponent = {
 		channelName: string;
 	};
 };
+
+export type RootComponent = {
+	value: {
+		client: ApolloClient;
+	};
+};
+
+export type ApolloClient = {
+	query: (params: { query: any; variables?: Record<string, any> }) => Promise<Record<string, any>>;
+};

@@ -10,6 +10,7 @@ import type {
 	FollowedSectionComponenet,
 	MediaPlayerComponent,
 	PersistentPlayerComponent,
+	RootComponent,
 	ScrollableChatComponent,
 	TwitchChatMessageComponent,
 } from "$types/platforms/twitch/twitch.utils.types";
@@ -71,7 +72,7 @@ export default class TwitchUtils {
 		const node = this.reactUtils.findReactChildren<Chat>(
 			this.reactUtils.getReactInstance(document.querySelector(".stream-chat")),
 			(n) => n.stateNode?.props?.onSendMessage,
-			1000,
+			100,
 		);
 		return node?.stateNode;
 	}
@@ -124,7 +125,8 @@ export default class TwitchUtils {
 		chatInput.stateNode.forceUpdate();
 	}*/
 
-	getChatMessage(message: Node) {
+	getChatMessage(message: Node | Element | HTMLElement | null) {
+		if (!message) return;
 		const instance = this.reactUtils.getReactInstance(message)?.return?.stateNode as TwitchChatMessageComponent;
 		return instance?.props.message ? instance : undefined;
 	}
@@ -133,7 +135,7 @@ export default class TwitchUtils {
 		return this.reactUtils.findReactChildren<ChatInput>(
 			this.reactUtils.getReactInstance(document.querySelector(".chat-input__textarea")),
 			(n) => n.stateNode?.providers,
-			1000,
+			100,
 		)?.stateNode;
 	}
 
@@ -218,5 +220,14 @@ export default class TwitchUtils {
 			(n) => n?.stateNode?.props.channelLogin !== undefined && n?.stateNode?.props.channelName !== undefined,
 			100,
 		)?.stateNode.props;
+	}
+
+	getApolloClient() {
+		const reactRoot = this.reactUtils.getReactRoot(document.querySelector("#root"));
+		return this.reactUtils.findReactChildren<never, never, RootComponent>(
+			reactRoot?._internalRoot?.current ?? reactRoot,
+			(n) => n.pendingProps?.value?.client,
+			100,
+		)?.pendingProps.value.client;
 	}
 }
