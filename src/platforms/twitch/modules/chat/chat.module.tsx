@@ -10,7 +10,7 @@ import TwitchChatMessageListener from "./listener/twitch-chat-message.listener.t
 export default class ChatModule extends TwitchModule {
 	static readonly TWITCHTV_CHAT_SELECTOR = ".chat-scrollable-area__message-container";
 	static readonly SEVENTV_CHAT_SELECTOR = "main.seventv-chat-list";
-	static readonly VALID_MESSAGE_TYPES = [0];
+	static readonly VALID_MESSAGE_TYPES = [0, 43];
 	static readonly LINK_MESSAGE_ID = 51;
 
 	private listener = {} as ChatMessageListener;

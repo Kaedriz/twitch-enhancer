@@ -20,6 +20,7 @@ export default class NicknameCustomizationModule extends TwitchModule {
 
 	private async handleMessage({ message, element }: TwitchChatMessageEvent) {
 		if (!(await this.isModuleEnabled())) return;
+		if(message.type === 43) message = message.message;
 		const usernameElement =
 			element.querySelector<HTMLElement>(".chat-author__display-name") ||
 			element.querySelector<HTMLElement>(".seventv-chat-user-username");

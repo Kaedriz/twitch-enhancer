@@ -21,7 +21,7 @@ export default class ChatBadgesModule extends TwitchModule {
 
 	private async handleMessage({ message, element }: TwitchChatMessageEvent) {
 		if (!(await this.isModuleEnabled())) return;
-
+		if(message.type === 43) message = message.message;
 		const badgeList =
 			element.querySelector(".seventv-chat-user-badge-list") ||
 			element.querySelector(".chat-line__username-container")?.children[0] ||
