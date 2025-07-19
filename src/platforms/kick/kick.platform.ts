@@ -8,7 +8,7 @@ import ChatHighlightUserModule from "$kick/modules/chat-highlight-user/chat-high
 import ChatMessagePopupModule from "$kick/modules/chat-message-popup/chat-message-popup.module.tsx";
 import ChatModule from "$kick/modules/chat/chat.module.ts";
 import LocalWatchtimeCounterModule from "$kick/modules/local-watchtime-counter/local-watchtime-counter.module.tsx";
-import NicknameCustomizationModule from "$kick/modules/nickname-customization/nickname-customization.module.ts";
+import ChatNicknameCustomizationModule from "$kick/modules/nickname-customization/chat-nickname-customization.module.ts";
 import RealVideoTimeModule from "$kick/modules/real-video-time/real-video-time.module.tsx";
 import SettingsButtonModule from "$kick/modules/settings-button/settings-button.module.tsx";
 import SettingsModule from "$kick/modules/settings/settings.module.tsx";
@@ -43,7 +43,7 @@ export default class KickPlatform extends Platform<KickModule, KickEvents, KickS
 			new ChatBadgesModule(...dependencies),
 			new SettingsButtonModule(...dependencies),
 			new SettingsModule(...dependencies),
-			new NicknameCustomizationModule(...dependencies),
+			new ChatNicknameCustomizationModule(...dependencies),
 			new StreamLatencyModule(...dependencies),
 			new RealVideoTimeModule(...dependencies),
 			new ChannelSectionModule(...dependencies),

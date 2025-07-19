@@ -4,13 +4,13 @@ import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 import { render } from "preact";
 import styled, { css } from "styled-components";
 
-export default class NicknameCustomizationModule extends TwitchModule {
+export default class ChatNicknameCustomizationModule extends TwitchModule {
 	config: TwitchModuleConfig = {
-		name: "nickname-customization",
+		name: "chat-nickname-customization",
 		appliers: [
 			{
 				type: "event",
-				key: "nickname-customization",
+				key: "chat-nickname-customization",
 				event: "twitch:chatMessage",
 				callback: this.handleMessage.bind(this),
 			},
@@ -20,7 +20,6 @@ export default class NicknameCustomizationModule extends TwitchModule {
 
 	private async handleMessage({ message, element }: TwitchChatMessageEvent) {
 		if (!(await this.isModuleEnabled())) return;
-		if(message.type === 43) message = message.message;
 		const usernameElement =
 			element.querySelector<HTMLElement>(".chat-author__display-name") ||
 			element.querySelector<HTMLElement>(".seventv-chat-user-username");
