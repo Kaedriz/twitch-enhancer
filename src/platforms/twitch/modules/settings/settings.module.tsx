@@ -61,6 +61,35 @@ export default class SettingsModule extends TwitchModule {
 		};
 		this.SETTING_DEFINITIONS = [
 			{
+				id: "streamLatencyEnabled",
+				title: "Enable Stream Latency",
+				description: "Shows the current stream delay on top of the chat.",
+				type: "toggle",
+				tabIndex: 0,
+			},
+			{
+				id: "realVideoTimeEnabled",
+				title: "Enable Real Video Time",
+				description: "Displays the real-world time of the VOD.",
+				type: "toggle",
+				tabIndex: 0,
+			},
+			{
+				id: "pinnedStreamersEnabled",
+				title: "Enable Pinning Streamers",
+				description: "Allows you to pin your favorite streamers for easy access.",
+				type: "toggle",
+				tabIndex: 0,
+			},
+			{
+				id: "xayoWatchtimeEnabled",
+				title: "Enabled Usercard Watchtime",
+				description:
+					"Displays watchtime in usercards and via the /watchtime command for Polish channels by xayo.pl serivce.",
+				type: "toggle",
+				tabIndex: 0,
+			},
+			{
 				id: "chatImagesEnabled",
 				title: "Enable Chat Images",
 				description: "Display images sent in chat messages.",

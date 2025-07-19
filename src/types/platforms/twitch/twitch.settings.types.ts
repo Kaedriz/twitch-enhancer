@@ -8,6 +8,10 @@ export type TwitchSettings = {
 	chatNicknameCustomizationEnabled: boolean;
 	quickAccessLinks: QuickAccessLink[];
 	pinnedStreamers: string[];
+	streamLatencyEnabled: boolean;
+	realVideoTimeEnabled: boolean;
+	pinnedStreamersEnabled: boolean;
+	xayoWatchtimeEnabled: boolean;
 };
 
 export type TwitchSettingsEvents = {

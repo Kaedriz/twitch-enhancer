@@ -31,6 +31,7 @@ export default class PinStreamerModule extends TwitchModule {
 				once: true,
 			},
 		],
+		isModuleEnabledCallback: async () => await this.settingsService().getSettingsKey("pinnedStreamersEnabled"),
 	};
 
 	private observer: MutationObserver | undefined;

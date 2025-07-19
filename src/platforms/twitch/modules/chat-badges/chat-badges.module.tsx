@@ -15,20 +15,12 @@ export default class ChatBadgesModule extends TwitchModule {
 				event: "twitch:chatMessage",
 				callback: this.handleMessage.bind(this),
 			},
-			{
-				type: "event",
-				key: "settings-chat-images-enabled",
-				event: "twitch:settings:chatBadgesEnabled",
-				callback: (enabled) => {
-					this.isModuleEnabled = enabled;
-				},
-			},
 		],
 		isModuleEnabledCallback: () => this.settingsService().getSettingsKey("chatBadgesEnabled"),
 	};
 
-	private handleMessage({ message, element }: TwitchChatMessageEvent) {
-		if (!this.isModuleEnabled) return;
+	private async handleMessage({ message, element }: TwitchChatMessageEvent) {
+		if (!(await this.isModuleEnabled())) return;
 
 		const badgeList =
 			element.querySelector(".seventv-chat-user-badge-list") ||

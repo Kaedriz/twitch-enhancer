@@ -12,4 +12,8 @@ export const TWITCH_DEFAULT_SETTINGS: TwitchSettings = {
 		{ title: "Sullygnome", url: "https://sullygnome.com/channel/%username%" },
 		{ title: "Emotes", url: "https://emotes.enhancer.at/?username=%username%" },
 	],
+	streamLatencyEnabled: true,
+	realVideoTimeEnabled: true,
+	pinnedStreamersEnabled: true,
+	xayoWatchtimeEnabled: true,
 };

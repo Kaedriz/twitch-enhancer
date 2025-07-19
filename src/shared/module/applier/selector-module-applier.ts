@@ -18,15 +18,21 @@ export default class SelectorModuleApplier<
 		this.appliers.push(
 			...selectorAppliers.map((selectorApplier) => ({
 				config: selectorApplier,
+				isModuleEnabled: module.config.isModuleEnabledCallback,
 				lastCheckedAt: 0,
 			})),
 		);
-		this.run();
-		setInterval(async () => this.run(), 1000);
 	}
 
-	private run() {
+	async start() {
+		await this.run();
+		setInterval(async () => this.run(), 1000);
+		this.logger.debug("Started selector interval");
+	}
+
+	private async run() {
 		for (const applier of this.appliers) {
+			if (applier.isModuleEnabled !== undefined && !(await applier.isModuleEnabled())) continue;
 			if (this.isApplierOnCooldown(applier)) continue;
 			applier.lastCheckedAt = Date.now();
 			const { config } = applier;
@@ -79,5 +85,6 @@ export default class SelectorModuleApplier<
 
 type SelectorModuleApplierRunner = {
 	config: SelectorModuleApplierConfig;
+	isModuleEnabled?: () => Promise<boolean>;
 	lastCheckedAt: number;
 };

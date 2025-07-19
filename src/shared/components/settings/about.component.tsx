@@ -185,8 +185,10 @@ export function EnhancerAboutComponent({ icons }: EnhancerAboutComponentProps) {
 		"kolegajakub_",
 		"mrsono1212",
 		"rqqn_",
+		"x3te",
+		"nyloniarz",
 	];
-	const specialThanks = ["lewus", "nyloniarz", "b3akers", "xyves"];
+	const specialThanks = ["lewus", "b3akers", "xyves"];
 
 	return (
 		<Container>

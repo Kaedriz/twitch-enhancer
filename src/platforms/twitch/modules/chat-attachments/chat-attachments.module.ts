@@ -44,10 +44,7 @@ export default class ChatAttachmentsModule extends TwitchModule {
 				type: "event",
 				key: "settings-chat-images-enabled",
 				event: "twitch:settings:chatImagesEnabled",
-				callback: (enabled) => {
-					this.isModuleEnabled = enabled;
-					this.isModuleEnabled ? this.startInputMonitoring() : this.stopInputMonitoring();
-				},
+				callback: (enabled) => (enabled ? this.startInputMonitoring() : this.stopInputMonitoring()),
 			},
 		],
 		isModuleEnabledCallback: () => this.settingsService().getSettingsKey("chatImagesEnabled"),
@@ -58,7 +55,7 @@ export default class ChatAttachmentsModule extends TwitchModule {
 	];
 
 	private async handleMessage(message: TwitchChatMessageEvent) {
-		if (!this.isModuleEnabled) return;
+		if (!(await this.isModuleEnabled())) return;
 		const baseData = this.getBaseData(message);
 		if (!baseData) return;
 		try {
@@ -162,7 +159,7 @@ export default class ChatAttachmentsModule extends TwitchModule {
 
 	async initialize() {
 		await this.imageAttachmentConfig.initialize();
-		if (this.isModuleEnabled) this.startInputMonitoring();
+		if (await this.isModuleEnabled()) this.startInputMonitoring();
 
 		this.commonUtils().createGlobalStyle(`
 			.enhancer-chat-link {
