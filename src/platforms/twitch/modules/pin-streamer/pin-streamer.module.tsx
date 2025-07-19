@@ -56,7 +56,7 @@ export default class PinStreamerModule extends TwitchModule {
 				}
 			}
 		});
-		this.observer?.observe(element, { attributes: true, childList: true });
+		this.observer?.observe(element, { childList: true });
 	}
 
 	private createPin(channelWrapper: Element) {
