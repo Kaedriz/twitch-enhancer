@@ -51,7 +51,11 @@ export default class PinStreamerModule extends TwitchModule {
 			for (const mutation of list) {
 				if (mutation.type === "childList" && mutation.addedNodes) {
 					for (const node of mutation.addedNodes) {
-						this.createPin(node as Element);
+						try {
+							this.createPin(node as Element);
+						} catch (error) {
+							this.logger.error(`Failed to create pin for node: ${error}`);
+						}
 					}
 				}
 			}
