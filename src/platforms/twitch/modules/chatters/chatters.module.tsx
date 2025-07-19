@@ -1,3 +1,4 @@
+import { TooltipComponent } from "$shared/components/tooltip/tooltip.component.tsx";
 import { ChattersQuery } from "$twitch/apis/twitch-queries.ts";
 import type { ChattersResponse } from "$types/platforms/twitch/twitch.api.types.ts";
 import type { TwitchEvents } from "$types/platforms/twitch/twitch.events.types.ts";
@@ -8,7 +9,7 @@ import styled from "styled-components";
 import TwitchModule from "../../twitch.module.ts";
 
 export default class ChattersModule extends TwitchModule {
-	private static URL_CONFIG = (url: string) => !url.includes("clips.twitch.tv");
+	private static URL_CONFIG = (url: string) => !url.includes("clips.twitch.tv") && !url.includes("/team/");
 	public static LOADING_VALUE = -1;
 
 	config: TwitchModuleConfig = {
@@ -75,7 +76,14 @@ export default class ChattersModule extends TwitchModule {
 
 		wrappers.forEach((element) => {
 			render(
-				<ChattersComponent click={this.refreshChatters.bind(this)} counter={this.totalChattersCounter} />,
+				<TooltipComponent
+					content={
+						<span>Chatters are logged-in users in a Twitch stream’s chatroom. Click here to refresh the counter.</span>
+					}
+					position="bottom"
+				>
+					<ChattersComponent click={this.refreshChatters.bind(this)} counter={this.totalChattersCounter} />
+				</TooltipComponent>,
 				element,
 			);
 		});

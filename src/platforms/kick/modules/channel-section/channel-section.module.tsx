@@ -9,7 +9,7 @@ import styled from "styled-components";
 export default class ChannelSectionModule extends KickModule {
 	private quickAccessLinks = {} as Signal<QuickAccessLink[]>;
 	private watchtimeCounter = {} as Signal<number>;
-	private currentChannelName: string | undefined;
+	private currentUsername = signal("");
 	private watchtimeInterval: NodeJS.Timeout | undefined;
 
 	readonly config: KickModuleConfig = {
@@ -45,13 +45,12 @@ export default class ChannelSectionModule extends KickModule {
 		});
 		const wrappers = this.commonUtils().createEmptyElements(this.getId(), elements, "div");
 		for (const wrapper of wrappers) {
-			// this.fixOrderForChildren(wrapper);
 			const channelName = this.kickUtils().getChannelInfo()?.slug;
-			this.currentChannelName = channelName;
 			if (!channelName) {
-				this.logger.warn("Error: Channel name not found");
+				this.logger.warn("Channel name not found");
 				continue;
 			}
+			this.currentUsername.value = channelName;
 			await this.startWatchtimeUpdates();
 			const logo = await this.commonUtils().getIcon(
 				this.workerService(),
@@ -60,7 +59,8 @@ export default class ChannelSectionModule extends KickModule {
 			);
 			render(
 				<ChannelSectionComponent
-					channelName={channelName}
+					displayName={this.currentUsername}
+					login={this.currentUsername}
 					sites={this.quickAccessLinks}
 					watchTime={this.watchtimeCounter}
 					logoUrl={logo}
@@ -71,9 +71,9 @@ export default class ChannelSectionModule extends KickModule {
 	}
 
 	private async updateWatchtime() {
-		if (!this.currentChannelName) return;
+		if (this.currentUsername.value.length < 1) return;
 		try {
-			this.watchtimeCounter.value = await this.getWatchTime(this.currentChannelName);
+			this.watchtimeCounter.value = await this.getWatchTime(this.currentUsername.value);
 		} catch (error) {
 			console.error("Failed to fetch watch time:", error);
 		}

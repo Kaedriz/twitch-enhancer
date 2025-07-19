@@ -69,7 +69,6 @@
 //
 // 			if (!chatInputContent?.startsWith("/playsound")) {
 // 				elements.forEach((element) => {
-// 					element.innerHTML = "";
 // 				});
 // 				return;
 // 			}
@@ -88,7 +87,6 @@
 // 				: this.soundboardData?.playSounds;
 //
 // 			/*elements.forEach((element) => {
-// 				element.innerHTML = "";
 // 				render(
 // 					<SoundboardComponent
 // 						key={matchingSounds?.map((sound) => sound.name).join(",")}

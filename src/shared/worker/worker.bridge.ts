@@ -35,21 +35,25 @@ export default class WorkerBridge {
 	private setupMessageListener() {
 		if (!this.bridgeElement) return;
 		this.log("WorkerService bridge started!");
-		this.bridgeElement.addEventListener("enhancer-message", (async (event: CustomEvent<ExtensionMessageDetail>) => {
-			const { messageId, action, payload } = event.detail;
+		this.bridgeElement.addEventListener("enhancer-message", (async (event: CustomEvent<string>) => {
+			//ExtensionMessageDetail
+			const detail = JSON.parse(event.detail) as ExtensionMessageDetail;
+			const { messageId, action, payload } = detail;
 			try {
 				const response = await chrome.runtime.sendMessage({
 					action,
 					payload,
 				});
-				const responseEvent = new CustomEvent<ExtensionResponseDetail>("enhancer-response", {
-					detail: { messageId, data: response },
+				const responseEvent = new CustomEvent<string>("enhancer-response", {
+					// ExtensionResponseDetail
+					detail: JSON.stringify({ messageId, data: response }),
 				});
 				// biome-ignore lint/style/noNonNullAssertion: we are checking it above, it cannot be null
 				this.bridgeElement!.dispatchEvent(responseEvent);
 			} catch (error) {
-				const errorEvent = new CustomEvent<ExtensionResponseDetail>("enhancer-response", {
-					detail: { messageId, error: (error as Error).message },
+				// ExtensionResponseDetail
+				const errorEvent = new CustomEvent<string>("enhancer-response", {
+					detail: JSON.stringify({ messageId, error: (error as Error).message }),
 				});
 				// biome-ignore lint/style/noNonNullAssertion: we are checking it above, it cannot be null
 				this.bridgeElement!.dispatchEvent(errorEvent);

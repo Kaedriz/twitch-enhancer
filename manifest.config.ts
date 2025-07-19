@@ -19,6 +19,7 @@ export function getManifest() {
 			},
 		],
 		background: {
+			scripts: ["worker.background.js"],
 			service_worker: "worker.background.js",
 			type: "module",
 		},
@@ -29,6 +30,8 @@ export function getManifest() {
 					"index.js",
 					"index.js.map",
 					"inject.js.map",
+					"twitch.constants.js",
+					"kick.constants.js",
 					"assets/enhancer/*.svg",
 					"assets/enhancer/*.png",
 					"assets/brands/*.svg",
@@ -36,5 +39,12 @@ export function getManifest() {
 				],
 			},
 		],
+		browser_specific_settings: {
+			gecko: {
+				id: "{7ddb770a-37fb-48ce-b1fb-0afaf281fa0b}",
+			},
+		},
+		// Firefox Normal {09b8dba2-ae33-4bea-8bf1-d85e50691408}
+		// Firefox Dev {7ddb770a-37fb-48ce-b1fb-0afaf281fa0b}
 	};
 }

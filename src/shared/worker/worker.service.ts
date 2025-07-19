@@ -41,8 +41,9 @@ export default class WorkerService {
 	}
 
 	private setupMessageListener() {
-		this.element.addEventListener("enhancer-response", ((event: CustomEvent<ExtensionResponseDetail>) => {
-			const { messageId, data, error } = event.detail;
+		this.element.addEventListener("enhancer-response", ((event: CustomEvent<string>) => {
+			const detail = JSON.parse(event.detail) as ExtensionResponseDetail;
+			const { messageId, data, error } = detail;
 			const resolver = this.pendingMessages.get(messageId);
 			if (resolver) {
 				this.pendingMessages.delete(messageId);
@@ -63,8 +64,9 @@ export default class WorkerService {
 			this.pendingMessages.set(messageId, resolve);
 
 			const payload = args.length > 0 ? args[0] : undefined;
-			const event = new CustomEvent<ExtensionMessageDetail>("enhancer-message", {
-				detail: { messageId, action, payload },
+			const event = new CustomEvent<string>("enhancer-message", {
+				// ExtensionMessageDetail
+				detail: JSON.stringify({ messageId, action, payload }),
 			});
 
 			this.element.dispatchEvent(event);

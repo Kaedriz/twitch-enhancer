@@ -14,10 +14,20 @@ export default class NicknameCustomizationModule extends TwitchModule {
 				event: "twitch:chatMessage",
 				callback: this.handleMessage.bind(this),
 			},
+			{
+				type: "event",
+				key: "settings-chat-images-enabled",
+				event: "twitch:settings:chatNicknameCustomizationEnabled",
+				callback: (enabled) => {
+					this.isModuleEnabled = enabled;
+				},
+			},
 		],
+		isModuleEnabledCallback: () => this.settingsService().getSettingsKey("chatNicknameCustomizationEnabled"),
 	};
 
 	private handleMessage({ message, element }: TwitchChatMessageEvent) {
+		if (!this.isModuleEnabled) return;
 		const usernameElement =
 			element.querySelector<HTMLElement>(".chat-author__display-name") ||
 			element.querySelector<HTMLElement>(".seventv-chat-user-username");
@@ -36,12 +46,16 @@ export default class NicknameCustomizationModule extends TwitchModule {
 	}
 
 	private applyGlow(element: HTMLElement, userMessageColor: string | undefined) {
-		const color =
-			element.style.color ||
-			(element.firstChild?.firstChild && (element.firstChild.firstChild as HTMLElement).style.color) ||
-			"" ||
-			userMessageColor ||
-			"white";
+		let color: string;
+		try {
+			color =
+				element.style.color ||
+				(element.firstChild?.firstChild && (element.firstChild.firstChild as HTMLElement).style.color) ||
+				userMessageColor ||
+				"white";
+		} catch (error) {
+			color = userMessageColor || "white";
+		}
 		element.style.textShadow = `${color} 0 0 10px`;
 		element.style.color = color;
 		element.style.fontWeight = "bold";

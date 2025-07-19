@@ -6,7 +6,7 @@ import type { ModuleApplierConfig } from "$types/shared/module/module-applier.ty
 export type ModuleConfig<Events extends CommonEvents> = {
 	name: string;
 	appliers: ModuleApplierConfig<Events>[];
-	isModuleEnabled?: () => Promise<boolean>;
+	isModuleEnabledCallback?: () => Promise<boolean>;
 };
 
 export type TwitchModuleConfig = ModuleConfig<TwitchEvents>;

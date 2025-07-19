@@ -4,7 +4,10 @@ export type TwitchSettings = {
 	chatImagesEnabled: boolean;
 	chatImagesOnHover: boolean;
 	chatImagesSize: number;
+	chatBadgesEnabled: boolean;
+	chatNicknameCustomizationEnabled: boolean;
 	quickAccessLinks: QuickAccessLink[];
+	pinnedStreamers: string[];
 };
 
 export type TwitchSettingsEvents = {

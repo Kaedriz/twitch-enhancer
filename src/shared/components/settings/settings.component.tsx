@@ -3,6 +3,8 @@ import { h } from "preact";
 import { useState } from "preact/hooks";
 import styled from "styled-components";
 
+// ... (existing styled components)
+
 const SettingsContainer = styled.div`
 	display: flex;
 	width: 800px;
@@ -118,7 +120,7 @@ const CloseButton = styled.button`
 
 const SettingsContent = styled.div`
 	overflow-y: auto;
-	
+
 	&::-webkit-scrollbar {
 		width: 8px;
 	}
@@ -278,6 +280,81 @@ const TextContent = styled.div`
 	max-width: 500px;
 `;
 
+const ModalOverlay = styled.div`
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0, 0, 0, 0.7); /* Keep the semi-transparent overlay */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1001;
+	backdrop-filter: blur(4px);
+`;
+
+const ModalContent = styled.div`
+	background-color: #0d0d0d;
+	border-radius: 15px;      
+	border: 1px solid #232323;
+	font-family: "Inter", "Noto Sans Arabic", "Roobert", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+
+	padding: 25px;
+	box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5);
+	max-width: 500px;
+	width: 90%;
+`;
+
+const ModalHeader = styled.h3`
+	color: white;
+	margin-bottom: 15px;
+	font-size: 18px;
+	text-align: center;
+`;
+
+const ModalMessage = styled.p`
+	color: #ccc;
+	font-size: 14px;
+	margin-bottom: 20px;
+	line-height: 1.5;
+`;
+
+const ModalButtonContainer = styled.div`
+	display: flex;
+	justify-content: flex-end;
+	gap: 10px;
+	margin-top: 20px;
+`;
+
+const ModalButton = styled.button<{ primary?: boolean }>`
+	padding: 8px 15px;
+	border-radius: 5px;
+	font-size: 12px;
+	cursor: pointer;
+	border: none;
+	transition: background-color 0.2s ease, color 0.2s ease;
+
+	${(props) =>
+		props.primary
+			? `
+    background-color: #9147ff;
+    color: white;
+
+    &:hover {
+      background-color: #7a3cc8;
+    }
+  `
+			: `
+    background-color: #232323;
+    color: #ccc;
+
+    &:hover {
+      background-color: #333333;
+    }
+  `}
+`;
+
 const Settings = <T,>({
 	logoSrc = "Logo.svg",
 	tabs,
@@ -287,6 +364,11 @@ const Settings = <T,>({
 	onClose = () => {},
 }: SettingsProps<T>) => {
 	const [activeTab, setActiveTab] = useState(0);
+	const [pendingToggle, setPendingToggle] = useState<{
+		key: keyof T;
+		value: boolean;
+		confirmationMessage?: string;
+	} | null>(null);
 
 	const updateSetting = (key: keyof T, value: unknown) => {
 		const newSettings = { ...settings, [key]: value };
@@ -314,6 +396,32 @@ const Settings = <T,>({
 		updateSetting(key, newArray);
 	};
 
+	const handleToggleChange = (event: Event, setting: SettingDefinition<T>, checked: boolean) => {
+		event.stopPropagation();
+
+		if (setting.type === "toggle" && setting.confirmOnEnable && checked) {
+			setPendingToggle({
+				key: setting.id as keyof T,
+				value: checked,
+				confirmationMessage: setting.confirmationMessage ?? "Are you sure you want to enable this setting?",
+			});
+		} else {
+			updateSetting(setting.id as keyof T, checked);
+			setPendingToggle(null);
+		}
+	};
+
+	const confirmToggle = () => {
+		if (pendingToggle) {
+			updateSetting(pendingToggle.key, pendingToggle.value);
+			setPendingToggle(null);
+		}
+	};
+
+	const cancelToggle = () => {
+		setPendingToggle(null);
+	};
+
 	const renderSettingControl = (setting: SettingDefinition<T>) => {
 		const value = settings[setting.id as keyof T];
 
@@ -325,10 +433,7 @@ const Settings = <T,>({
 							type="checkbox"
 							id={setting.id as string}
 							checked={value as boolean}
-							onChange={(e) => {
-								e.stopPropagation();
-								updateSetting(setting.id as keyof T, (e.target as HTMLInputElement).checked);
-							}}
+							onChange={(e) => handleToggleChange(e, setting, (e.target as HTMLInputElement).checked)}
 						/>
 						<ToggleSwitch
 							htmlFor={setting.id as string}
@@ -539,6 +644,24 @@ const Settings = <T,>({
 					</SettingsContent>
 				</Main>
 			</SettingsContainer>
+
+			{/* Confirmation Modal */}
+			{pendingToggle && (
+				<ModalOverlay onClick={cancelToggle}>
+					<ModalContent onClick={(e) => e.stopPropagation()}>
+						<ModalHeader>Confirm Action</ModalHeader>
+						<ModalMessage>
+							{pendingToggle.confirmationMessage || "Are you sure you want to enable this setting?"}
+						</ModalMessage>
+						<ModalButtonContainer>
+							<ModalButton primary onClick={confirmToggle}>
+								Confirm
+							</ModalButton>
+							<ModalButton onClick={cancelToggle}>Cancel</ModalButton>
+						</ModalButtonContainer>
+					</ModalContent>
+				</ModalOverlay>
+			)}
 		</>
 	);
 };

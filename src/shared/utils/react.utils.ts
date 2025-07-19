@@ -1,12 +1,12 @@
 import type { ReactComponent } from "$types/shared/utils/react.utils.types.ts";
 
 export default class ReactUtils {
-	findReactParents<StateNode, MemoizedProps = any>(
+	findReactParents<StateNode, MemoizedProps = any, PendingProps = any>(
 		node: any,
 		predicate: (node: any) => boolean,
 		maxDepth = 15,
 		depth = 0,
-	): ReactComponent<StateNode, MemoizedProps> | null {
+	): ReactComponent<StateNode, MemoizedProps, PendingProps> | null {
 		let success = false;
 		try {
 			success = predicate(node);
@@ -22,12 +22,12 @@ export default class ReactUtils {
 		return null;
 	}
 
-	findReactChildren<StateNode, MemoizedProps = any>(
+	findReactChildren<StateNode, MemoizedProps = any, PendingProps = any>(
 		node: any,
 		predicate: (node: any) => boolean,
 		maxDepth = 15,
 		depth = 0,
-	): ReactComponent<StateNode, MemoizedProps> | null {
+	): ReactComponent<StateNode, MemoizedProps, PendingProps> | null {
 		let success = false;
 		try {
 			success = predicate(node);
@@ -50,6 +50,14 @@ export default class ReactUtils {
 		for (const k in element) {
 			if (k.startsWith("__reactFiber$") || k.startsWith("__reactInternalInstance$")) {
 				return (element as any)[k];
+			}
+		}
+	}
+
+	getReactRoot(element: Element | Node | null) {
+		for (const key in element) {
+			if (key.startsWith("_reactRootContainer") || key.startsWith("__reactContainer$")) {
+				return (element as any)[key];
 			}
 		}
 	}

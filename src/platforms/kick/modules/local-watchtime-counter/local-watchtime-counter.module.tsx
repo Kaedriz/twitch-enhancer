@@ -36,7 +36,6 @@ export default class LocalWatchtimeCounterModule extends KickModule {
 			if (!video) return;
 			if (!this.kickUtils().isLiveVideo(video)) return;
 			if (video.paused) return;
-			this.logger.debug(`watching ${channelName}`);
 			await this.workerService().send("addWatchtime", {
 				platform: "kick",
 				channel: channelName,

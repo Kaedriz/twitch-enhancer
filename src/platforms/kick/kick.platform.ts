@@ -5,8 +5,8 @@ import ChannelSectionModule from "$kick/modules/channel-section/channel-section.
 import ChatAttachmentsModule from "$kick/modules/chat-attachments/chat-attachments.module.ts";
 import ChatBadgesModule from "$kick/modules/chat-badges/chat-badges.module.tsx";
 import ChatHighlightUserModule from "$kick/modules/chat-highlight-user/chat-highlight-user.module.tsx";
+import ChatMessagePopupModule from "$kick/modules/chat-message-popup/chat-message-popup.module.tsx";
 import ChatModule from "$kick/modules/chat/chat.module.ts";
-import ExampleModule from "$kick/modules/example/example.module.ts";
 import LocalWatchtimeCounterModule from "$kick/modules/local-watchtime-counter/local-watchtime-counter.module.tsx";
 import NicknameCustomizationModule from "$kick/modules/nickname-customization/nickname-customization.module.ts";
 import RealVideoTimeModule from "$kick/modules/real-video-time/real-video-time.module.tsx";
@@ -38,7 +38,6 @@ export default class KickPlatform extends Platform<KickModule, KickEvents, KickS
 			this.kickApi,
 		] as const;
 		return [
-			new ExampleModule(...dependencies),
 			new ChatModule(...dependencies),
 			new ChatAttachmentsModule(...dependencies),
 			new ChatBadgesModule(...dependencies),
@@ -50,6 +49,7 @@ export default class KickPlatform extends Platform<KickModule, KickEvents, KickS
 			new ChannelSectionModule(...dependencies),
 			new LocalWatchtimeCounterModule(...dependencies),
 			new ChatHighlightUserModule(...dependencies),
+			new ChatMessagePopupModule(...dependencies),
 		];
 	}
 }

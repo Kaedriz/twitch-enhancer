@@ -55,7 +55,7 @@ export type MediaPlayerInstance = {
 	getPosition(): number;
 };
 
-export type FollowedSection = {
+export type FollowedSectionComponenet = {
 	props: {
 		collapsed: boolean;
 		section: {
@@ -210,4 +210,21 @@ export type CurrentLiveStatusComponent = {
 		liveContentChannelLogin: string;
 		isVideoAdShowing: boolean;
 	};
+};
+
+export type ChannelInfoComponent = {
+	props: {
+		channelLogin: string;
+		channelName: string;
+	};
+};
+
+export type RootComponent = {
+	value: {
+		client: ApolloClient;
+	};
+};
+
+export type ApolloClient = {
+	query: (params: { query: any; variables?: Record<string, any> }) => Promise<Record<string, any>>;
 };
