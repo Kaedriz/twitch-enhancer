@@ -10,7 +10,8 @@ import TwitchChatMessageListener from "./listener/twitch-chat-message.listener.t
 export default class ChatModule extends TwitchModule {
 	static readonly TWITCHTV_CHAT_SELECTOR = ".chat-scrollable-area__message-container";
 	static readonly SEVENTV_CHAT_SELECTOR = "main.seventv-chat-list";
-	static readonly VALID_MESSAGE_TYPES = [0];
+	static readonly VALID_MESSAGE_TYPES_IDS = [0, 43];
+	static readonly SPECIAL_MESSAGES_IDS = [43];
 	static readonly LINK_MESSAGE_ID = 51;
 
 	private listener = {} as ChatMessageListener;
@@ -106,8 +107,12 @@ export default class ChatModule extends TwitchModule {
 		elements.forEach((element) => this.observer?.observe(element, { attributes: true, childList: true }));
 	}
 
-	private async handleMessage(message: TwitchChatMessage) {
-		if (ChatModule.VALID_MESSAGE_TYPES.includes(message.type)) {
+	private async handleMessage(_message: TwitchChatMessage) {
+		let message = _message;
+		if (ChatModule.VALID_MESSAGE_TYPES_IDS.includes(message.type)) {
+			if (ChatModule.SPECIAL_MESSAGES_IDS.includes(message.type)) {
+				message = message.message as unknown as TwitchChatMessage;
+			}
 			if (message.id) {
 				this.queue.addByValue({
 					...message,
@@ -131,6 +136,8 @@ export default class ChatModule extends TwitchModule {
 					queueKey: message.id,
 				});
 			}
+		} else {
+			this.logger.warn(`Unknown message with id: ${message.type}`, message);
 		}
 	}
 }

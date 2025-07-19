@@ -2,13 +2,13 @@ import KickModule from "$kick/kick.module.ts";
 import type { KickChatMessageEvent } from "$types/platforms/kick/kick.events.types.ts";
 import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
 
-export default class NicknameCustomizationModule extends KickModule {
+export default class ChatNicknameCustomizationModule extends KickModule {
 	config: KickModuleConfig = {
-		name: "nickname-customization",
+		name: "chat-nickname-customization",
 		appliers: [
 			{
 				type: "event",
-				key: "nickname-customization",
+				key: "chat-nickname-customization",
 				event: "kick:chatMessage",
 				callback: this.handleMessage.bind(this),
 			},
