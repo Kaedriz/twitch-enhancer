@@ -7,7 +7,7 @@ import type {
 	ChatCommandStoreComponent,
 	ChatControllerComponent,
 	ChatInfoComponent,
-	ChatInput,
+	ChatInputComponent,
 	CurrentLiveStatusComponent,
 	FollowedSectionComponenet,
 	MediaPlayerComponent,
@@ -111,14 +111,6 @@ export default class TwitchUtils {
 		return null;
 	}
 
-	/*getChatInput() {
-		return this.reactUtils.findReactChildren(
-			this.reactUtils.getReactInstance(document.querySelector(".chat-input")),
-			(n) => n.stateNode?.state?.value,
-			1000,
-		);
-	}*/
-
 	getChannelId(): string {
 		return this.reactUtils.findReactChildren(
 			this.reactUtils.getReactInstance(document.querySelector(".channel-info-content")),
@@ -127,12 +119,6 @@ export default class TwitchUtils {
 		)?.pendingProps.channelID;
 	}
 
-	/*setChatMessage(message: string) {
-		const chatInput = this.getChatInput() as ChatInput;
-		chatInput.stateNode.state.value = `/playsound ${message}`;
-		chatInput.stateNode.forceUpdate();
-	}*/
-
 	getChatMessage(message: Node | Element | HTMLElement | null) {
 		if (!message) return;
 		const instance = this.reactUtils.getReactInstance(message)?.return?.stateNode as TwitchChatMessageComponent;
@@ -140,14 +126,14 @@ export default class TwitchUtils {
 	}
 
 	getAutoCompleteHandler() {
-		return this.reactUtils.findReactChildren<ChatInput>(
+		return this.reactUtils.findReactChildren<ChatInputComponent>(
 			this.reactUtils.getReactInstance(document.querySelector(".chat-input__textarea")),
 			(n) => n.stateNode?.providers,
 			100,
 		)?.stateNode;
 	}
 
-	setChatText(message: string, focus: boolean) {
+	setChatText(message: string, focus?: boolean) {
 		const chatInput = this.getAutoCompleteHandler();
 		chatInput?.componentRef.props.onChange({ target: { value: message } });
 		if (focus) chatInput?.componentRef.focus();

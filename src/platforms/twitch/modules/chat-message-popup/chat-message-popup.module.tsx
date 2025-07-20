@@ -1,5 +1,5 @@
 import TwitchModule from "$twitch/twitch.module.ts";
-import type { ChatMessagePopup } from "$types/platforms/twitch/twitch.events.types.ts";
+import type { ChatMessagePopupEvent } from "$types/platforms/twitch/twitch.events.types.ts";
 import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 import { h, render } from "preact";
 import { useEffect, useRef, useState } from "preact/hooks";
@@ -21,7 +21,7 @@ export default class ChatMessagePopupModule extends TwitchModule {
 		],
 	};
 
-	private render(message: ChatMessagePopup) {
+	private render(message: ChatMessagePopupEvent) {
 		let contentElement: Element | null = null;
 
 		if (document.querySelector(ChatMessagePopupModule.SEVENTV_CHAT_SELECTOR)) {
@@ -128,7 +128,7 @@ const ContentArea = styled.div`
   padding: 4px 0;
 `;
 
-export function MessagePopup({ title, content, autoclose, onClose }: ChatMessagePopup) {
+export function MessagePopup({ title, content, autoclose, onClose }: ChatMessagePopupEvent) {
 	const [timeLeft, setTimeLeft] = useState(autoclose || 0);
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);
 	const startTimeRef = useRef<number | null>(null);

@@ -134,6 +134,13 @@ export default class SettingsModule extends TwitchModule {
 				tabIndex: 1,
 			},
 			{
+				id: "chatMessageMenuEnabled",
+				title: "Enable Chat Message Menu",
+				description: "Show a menu with message options when you right-click a chat message.",
+				type: "toggle",
+				tabIndex: 1,
+			},
+			{
 				id: "quickAccessLinks",
 				title: "Quick Access Links",
 				description:

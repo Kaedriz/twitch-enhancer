@@ -6,6 +6,7 @@ export type TwitchSettings = {
 	chatImagesSize: number;
 	chatBadgesEnabled: boolean;
 	chatNicknameCustomizationEnabled: boolean;
+	chatMessageMenuEnabled: boolean;
 	quickAccessLinks: QuickAccessLink[];
 	pinnedStreamers: string[];
 	streamLatencyEnabled: boolean;

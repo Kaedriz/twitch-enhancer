@@ -117,6 +117,13 @@ export default class SettingsModule extends KickModule {
 				tabIndex: 1,
 			},
 			{
+				id: "chatMessageMenuEnabled",
+				title: "Enable Chat Message Menu",
+				description: "Show a menu with message options when you right-click a chat message.",
+				type: "toggle",
+				tabIndex: 1,
+			},
+			{
 				id: "quickAccessLinks",
 				title: "Quick Access Links",
 				description: "Manage your quick access links with custom names and URLs",

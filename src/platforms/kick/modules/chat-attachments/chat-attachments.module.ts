@@ -134,9 +134,7 @@ export default class ChatAttachmentsModule extends KickModule {
 	private startInputMonitoring() {
 		if (this.inputMonitoringInterval) return;
 		this.inputMonitoringInterval = setInterval(async () => {
-			const chatInputContent =
-				document.querySelector("#ntv__message-input")?.textContent ??
-				document.querySelector('div[data-testid="chat-input"] p')?.textContent;
+			const chatInputContent = this.kickUtils().getChatInputContent();
 			if (!chatInputContent || chatInputContent === this.previousInputContent) return;
 			this.previousInputContent = chatInputContent;
 			const words = chatInputContent.split(" ");

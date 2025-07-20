@@ -1,10 +1,12 @@
+import type { MessageMenuEvent } from "$shared/components/message-menu/message-menu.component.tsx";
 import type { CommonEvents } from "$types/platforms/common.events.ts";
 import type { KickSettingsEvents } from "$types/platforms/kick/kick.settings.types.ts";
-import type { ChatMessagePopup } from "$types/platforms/twitch/twitch.events.types.ts";
+import type { ChatMessagePopupEvent } from "$types/platforms/twitch/twitch.events.types.ts";
 
 export type KickEvents = {
 	"kick:chatMessage": (message: KickChatMessageEvent) => void | Promise<void>;
-	"kick:chatPopupMessage": (message: ChatMessagePopup) => void | Promise<void>;
+	"kick:chatPopupMessage": (message: ChatMessagePopupEvent) => void | Promise<void>;
+	"kick:messageMenu": (message: MessageMenuEvent) => void | Promise<void>;
 } & KickSettingsEvents &
 	CommonEvents;
 

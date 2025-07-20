@@ -6,6 +6,7 @@ export type KickSettings = {
 	chatImagesSize: number;
 	chatBadgesEnabled: boolean;
 	chatNicknameCustomizationEnabled: boolean;
+	chatMessageMenuEnabled: boolean;
 	quickAccessLinks: QuickAccessLink[];
 	streamLatencyEnabled: boolean;
 	realVideoTimeEnabled: boolean;
