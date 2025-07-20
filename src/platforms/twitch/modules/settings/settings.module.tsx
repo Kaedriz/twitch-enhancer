@@ -66,6 +66,7 @@ export default class SettingsModule extends TwitchModule {
 				description: "Shows the current stream delay on top of the chat.",
 				type: "toggle",
 				tabIndex: 0,
+				requiresRefreshToDisable: true,
 			},
 			{
 				id: "realVideoTimeEnabled",
@@ -73,6 +74,7 @@ export default class SettingsModule extends TwitchModule {
 				description: "Displays the real-world time of the VOD.",
 				type: "toggle",
 				tabIndex: 0,
+				requiresRefreshToDisable: true,
 			},
 			{
 				id: "pinnedStreamersEnabled",
@@ -80,6 +82,7 @@ export default class SettingsModule extends TwitchModule {
 				description: "Allows you to pin your favorite streamers for easy access.",
 				type: "toggle",
 				tabIndex: 0,
+				requiresRefreshToDisable: true,
 			},
 			{
 				id: "xayoWatchtimeEnabled",
@@ -88,6 +91,7 @@ export default class SettingsModule extends TwitchModule {
 					"Displays watchtime in usercards and via the /watchtime command for Polish channels by xayo.pl serivce.",
 				type: "toggle",
 				tabIndex: 0,
+				requiresRefreshToDisable: true,
 			},
 			{
 				id: "chatImagesEnabled",

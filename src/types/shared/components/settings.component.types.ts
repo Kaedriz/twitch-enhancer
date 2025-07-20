@@ -6,6 +6,7 @@ export type CommonSettingDefinition<T = any> = {
 	description: string;
 	tabIndex: number;
 	hideInfo?: boolean;
+	requiresRefreshToDisable?: boolean;
 };
 
 export type ToggleSettingDefinition<T = any> = {

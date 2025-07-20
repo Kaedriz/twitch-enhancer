@@ -3,8 +3,6 @@ import { h } from "preact";
 import { useState } from "preact/hooks";
 import styled from "styled-components";
 
-// ... (existing styled components)
-
 const SettingsContainer = styled.div`
 	display: flex;
 	width: 800px;
@@ -168,6 +166,15 @@ const SettingDescription = styled.div`
 	font-size: 14px;
 `;
 
+const RefreshWarning = styled.div`
+	color: #ed5959;
+	font-size: 12px;
+	margin-top: 4px;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+`;
+
 const SettingControl = styled.div`
 	flex-shrink: 0;
 `;
@@ -286,7 +293,7 @@ const ModalOverlay = styled.div`
 	left: 0;
 	width: 100%;
 	height: 100%;
-	background: rgba(0, 0, 0, 0.7); /* Keep the semi-transparent overlay */
+	background: rgba(0, 0, 0, 0.7);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -296,10 +303,9 @@ const ModalOverlay = styled.div`
 
 const ModalContent = styled.div`
 	background-color: #0d0d0d;
-	border-radius: 15px;      
+	border-radius: 15px;
 	border: 1px solid #232323;
 	font-family: "Inter", "Noto Sans Arabic", "Roobert", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-
 	padding: 25px;
 	box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.5);
 	max-width: 500px;
@@ -334,13 +340,11 @@ const ModalButton = styled.button<{ primary?: boolean }>`
 	cursor: pointer;
 	border: none;
 	transition: background-color 0.2s ease, color 0.2s ease;
-
 	${(props) =>
 		props.primary
 			? `
     background-color: #9147ff;
     color: white;
-
     &:hover {
       background-color: #7a3cc8;
     }
@@ -348,7 +352,6 @@ const ModalButton = styled.button<{ primary?: boolean }>`
 			: `
     background-color: #232323;
     color: #ccc;
-
     &:hover {
       background-color: #333333;
     }
@@ -369,6 +372,8 @@ const Settings = <T,>({
 		value: boolean;
 		confirmationMessage?: string;
 	} | null>(null);
+
+	const [justTurnedOff, setJustTurnedOff] = useState<keyof T | null>(null);
 
 	const updateSetting = (key: keyof T, value: unknown) => {
 		const newSettings = { ...settings, [key]: value };
@@ -408,6 +413,15 @@ const Settings = <T,>({
 		} else {
 			updateSetting(setting.id as keyof T, checked);
 			setPendingToggle(null);
+
+			if (setting.requiresRefreshToDisable && settings[setting.id as keyof T] === true && !checked) {
+				setJustTurnedOff(setting.id as keyof T);
+				setTimeout(() => {
+					setJustTurnedOff((current) => (current === setting.id ? null : current));
+				}, 5000);
+			} else if (checked && justTurnedOff === setting.id) {
+				setJustTurnedOff(null);
+			}
 		}
 	};
 
@@ -445,7 +459,6 @@ const Settings = <T,>({
 					</ToggleContainer>
 				);
 			}
-
 			case "input": {
 				return (
 					<TextInput
@@ -455,7 +468,6 @@ const Settings = <T,>({
 					/>
 				);
 			}
-
 			case "number": {
 				return (
 					<NumberInput
@@ -468,7 +480,6 @@ const Settings = <T,>({
 					/>
 				);
 			}
-
 			case "select": {
 				return (
 					<Select
@@ -483,7 +494,6 @@ const Settings = <T,>({
 					</Select>
 				);
 			}
-
 			case "radio": {
 				return (
 					<RadioContainer>
@@ -504,7 +514,6 @@ const Settings = <T,>({
 					</RadioContainer>
 				);
 			}
-
 			case "array": {
 				const arrayValue = (value as unknown[]) || [];
 				const fields = setting.arrayItemFields || [{ name: "page", placeholder: "Enter value..." }];
@@ -557,7 +566,6 @@ const Settings = <T,>({
 					</ArrayContainer>
 				);
 			}
-
 			case "text": {
 				try {
 					const Component = setting.content;
@@ -567,7 +575,6 @@ const Settings = <T,>({
 				}
 				return null;
 			}
-
 			default:
 				return null;
 		}
@@ -620,6 +627,7 @@ const Settings = <T,>({
 					</Header>
 					<SettingsContent>
 						{currentTabSettings.map((setting) => {
+							const value = settings[setting.id as keyof T];
 							if (setting.hideInfo) {
 								return (
 									<Setting
@@ -630,12 +638,16 @@ const Settings = <T,>({
 									</Setting>
 								);
 							}
-
 							return (
 								<Setting key={`setting-${setting.id as string}`}>
 									<SettingInfo>
 										<SettingTitle>{setting.title}</SettingTitle>
 										<SettingDescription>{setting.description}</SettingDescription>
+										{setting.requiresRefreshToDisable && justTurnedOff === setting.id && (
+											<RefreshWarning>
+												Disabling this feature requires a page refresh to fully take effect.
+											</RefreshWarning>
+										)}
 									</SettingInfo>
 									<SettingControl>{renderSettingControl(setting)}</SettingControl>
 								</Setting>
@@ -644,8 +656,6 @@ const Settings = <T,>({
 					</SettingsContent>
 				</Main>
 			</SettingsContainer>
-
-			{/* Confirmation Modal */}
 			{pendingToggle && (
 				<ModalOverlay onClick={cancelToggle}>
 					<ModalContent onClick={(e) => e.stopPropagation()}>
@@ -669,24 +679,24 @@ const Settings = <T,>({
 export default Settings;
 
 const SettingsOverlayBackground = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: -1;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
 `;
 
 export const SettingsOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-  backdrop-filter: blur(4px);
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: rgba(0, 0, 0, 0.8);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 10000;
+	backdrop-filter: blur(4px);
 `;
