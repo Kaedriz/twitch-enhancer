@@ -21,7 +21,6 @@ export default class PinStreamerModule extends TwitchModule {
 				selectors: ['#side-nav .side-nav-section .side-nav-card__link[data-test-selector="followed-channel"]'],
 				callback: (elements) => elements.forEach((element) => this.createPin(element)),
 				key: "pin-streamer",
-				once: true,
 			},
 			{
 				type: "selector",
