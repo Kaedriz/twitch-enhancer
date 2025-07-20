@@ -88,8 +88,8 @@ export default class SettingsModule extends KickModule {
 			},
 			{
 				id: "chatImagesOnHover",
-				title: "Blur Images by Default",
-				description: "Images will be blurred until you hover your mouse over them.",
+				title: "Show Images on Hover",
+				description: "Images are hidden until you hover your mouse to reveal them.",
 				type: "toggle",
 				tabIndex: 1,
 			},

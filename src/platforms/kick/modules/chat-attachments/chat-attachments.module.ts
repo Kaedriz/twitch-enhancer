@@ -13,15 +13,19 @@ import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
 
 export default class ChatAttachmentsModule extends KickModule {
 	private readonly httpClient = new HttpClient();
-	private readonly imageAttachmentConfig = new ImageChatAttachmentConfig(this.settingsService(), async () => {
-		const chatRoom = this.kickUtils().getChannelChatRoom();
-		if (!chatRoom) return;
-		if (!chatRoom.isPaused) {
-			chatRoom.setIsPaused(true);
-			await this.commonUtils().delay(10);
-			chatRoom.setIsPaused(false);
-		}
-	});
+	private readonly imageAttachmentConfig = new ImageChatAttachmentConfig(
+		this.settingsService(),
+		this.workerService(),
+		async () => {
+			const chatRoom = this.kickUtils().getChannelChatRoom();
+			if (!chatRoom) return;
+			if (!chatRoom.isPaused) {
+				chatRoom.setIsPaused(true);
+				await this.commonUtils().delay(10);
+				chatRoom.setIsPaused(false);
+			}
+		},
+	);
 	private previousInputContent = "";
 	private inputMonitoringInterval: NodeJS.Timeout | undefined;
 
@@ -191,14 +195,6 @@ export default class ChatAttachmentsModule extends KickModule {
 				min-height: 16px;
 				max-height: 256px;
 				width: 100%;
-			}
-
-			.enhancer-chat-image-blurred {
-				filter: blur(5px);
-			}
-
-			.enhancer-chat-image-blurred:hover {
-				filter: blur(0);
 			}`);
 	}
 }
