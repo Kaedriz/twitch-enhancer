@@ -42,7 +42,10 @@ export default class ChannelSectionModule extends TwitchModule {
 	private async run(elements: Element[]) {
 		const wrappers = this.commonUtils().createEmptyElements(this.getId(), elements, "div");
 		for (const wrapper of wrappers) {
+			this.logger.debug("essa");
 			if (this.updateNames()) continue;
+			this.logger.debug("essa1");
+
 			await this.startWatchtimeUpdates();
 			const logo = await this.commonUtils().getIcon(
 				this.workerService(),
@@ -63,12 +66,12 @@ export default class ChannelSectionModule extends TwitchModule {
 	}
 
 	private updateNames() {
-		const channelInfo = this.twitchUtils().getChannelInfo();
+		const channelInfo = this.twitchUtils().getChannelInfo() || this.twitchUtils().getChannelInfoFromHomeLowerContent();
 		if (!channelInfo) {
 			this.logger.warn("Channel name not found");
 			return true;
 		}
-		this.currentDisplayName.value = channelInfo.channelName;
+		this.currentDisplayName.value = channelInfo.displayName;
 		this.currentLogin.value = channelInfo.channelLogin;
 		return false;
 	}

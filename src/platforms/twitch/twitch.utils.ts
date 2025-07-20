@@ -1,19 +1,22 @@
 import type ReactUtils from "$shared/utils/react.utils.ts";
-import type {
-	ChannelInfoComponent,
-	Chat,
-	ChatCommandStoreComponent,
-	ChatControllerComponent,
-	ChatInfoComponent,
-	ChatInput,
-	CurrentLiveStatusComponent,
-	FollowedSectionComponenet,
-	MediaPlayerComponent,
-	PersistentPlayerComponent,
-	RootComponent,
-	ScrollableChatComponent,
-	TwitchChatCommand,
-	TwitchChatMessageComponent,
+import {
+	ChannelDisplayName,
+	type ChannelInfo,
+	type ChannelInfoAlternativeComponent,
+	type ChannelInfoComponent,
+	type Chat,
+	type ChatCommandStoreComponent,
+	type ChatControllerComponent,
+	type ChatInfoComponent,
+	type ChatInput,
+	type CurrentLiveStatusComponent,
+	type FollowedSectionComponenet,
+	type MediaPlayerComponent,
+	type PersistentPlayerComponent,
+	type RootComponent,
+	type ScrollableChatComponent,
+	type TwitchChatCommand,
+	type TwitchChatMessageComponent,
 } from "$types/platforms/twitch/twitch.utils.types";
 
 export default class TwitchUtils {
@@ -220,12 +223,24 @@ export default class TwitchUtils {
 		)?.stateNode.props;
 	}
 
-	getChannelInfo() {
-		return this.reactUtils.findReactChildren<ChannelInfoComponent>(
+	getChannelInfo(): ChannelInfo | undefined {
+		const props = this.reactUtils.findReactChildren<ChannelInfoComponent>(
 			this.reactUtils.getReactInstance(document.querySelector("#live-channel-stream-information")),
 			(n) => n?.stateNode?.props.channelLogin !== undefined && n?.stateNode?.props.channelName !== undefined,
 			100,
 		)?.stateNode.props;
+		if (!props) return;
+		return { displayName: props.channelName, channelLogin: props.channelLogin };
+	}
+
+	getChannelInfoFromHomeLowerContent(): ChannelInfo | undefined {
+		const props = this.reactUtils.findReactChildren<ChannelInfoAlternativeComponent>(
+			this.reactUtils.getReactInstance(document.querySelector(".home__lower-content")),
+			(n) => n?.stateNode?.props.channelID !== undefined && n?.stateNode?.props.channelLogin !== undefined,
+			100,
+		)?.stateNode.props;
+		if (!props) return;
+		return { displayName: props.displayName, channelLogin: props.channelLogin, channelId: props.channelID };
 	}
 
 	getApolloClient() {

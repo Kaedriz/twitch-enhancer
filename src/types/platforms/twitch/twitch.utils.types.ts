@@ -219,6 +219,20 @@ export type ChannelInfoComponent = {
 	};
 };
 
+export type ChannelInfoAlternativeComponent = {
+	props: {
+		channelID: string;
+		channelLogin: string;
+		displayName: string;
+	};
+};
+
+export type ChannelInfo = {
+	displayName: string;
+	channelLogin: string;
+	channelId?: string;
+};
+
 export type RootComponent = {
 	value: {
 		client: ApolloClient;
