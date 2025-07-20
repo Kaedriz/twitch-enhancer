@@ -1,0 +1,97 @@
+import { KICK_LIVE_VIDEO_DURATION } from "$kick/kick.constants.ts";
+import type ReactUtils from "$shared/utils/react.utils.ts";
+import type { KickChatMessageData } from "$types/platforms/kick/kick.events.types.ts";
+import type { IsoDateProps, StreamStatusProps, VideoProgressProps } from "$types/platforms/kick/kick.utils.types.ts";
+import type { ChannelChatRoom, ChannelChatRoomInfo, ChannelInfo } from "$types/platforms/kick/kick.utils.types.ts";
+
+export default class KickUtils {
+	constructor(protected readonly reactUtils: ReactUtils) {}
+
+	getMessageData(messageElement: Element): KickChatMessageData | null {
+		const props = this.reactUtils.findReactChildren<KickChatMessageData>(
+			this.reactUtils.getReactInstance(messageElement),
+			(n) => n.pendingProps?.message,
+			100,
+		)?.pendingProps;
+
+		if (!props?.message) {
+			return null;
+		}
+
+		return props.message;
+	}
+
+	getChannelInfo() {
+		return this.reactUtils.findReactParents<never, ChannelInfo>(
+			this.reactUtils.getReactInstance(document.querySelector("main")),
+			(n) => !!n?.memoizedProps.channelId && !!n?.memoizedProps.slug,
+		)?.memoizedProps;
+	}
+
+	getIsoDateProps() {
+		return this.reactUtils.findReactChildren<never, IsoDateProps>(
+			this.reactUtils.getReactInstance(document.querySelector("main")),
+			(n) => {
+				return !!n?.memoizedProps?.isoDate;
+			},
+			1000,
+		)?.memoizedProps;
+	}
+
+	getVideoElement() {
+		const videoElement = document.querySelector("video");
+		if (videoElement) {
+			return videoElement;
+		}
+		return null;
+	}
+
+	getVideoProgressProps() {
+		return this.reactUtils.findReactChildren<VideoProgressProps>(
+			this.reactUtils.getReactInstance(document.querySelector("#injected-embedded-channel-player-video")),
+			(n) => {
+				const props = n?.memoizedProps;
+				return props?.durationInMs && props?.currentProgressInMs && props?.loadedInMs;
+			},
+			1000,
+		)?.memoizedProps;
+	}
+
+	getStreamStatusProps() {
+		return this.reactUtils.findReactChildren<never, StreamStatusProps>(
+			this.reactUtils.getReactInstance(document.querySelector("#injected-embedded-channel-player-video")),
+			(n) => {
+				const props = n?.memoizedProps;
+				return props?.isLive !== undefined && props?.isPlaying !== undefined;
+			},
+			1000,
+		)?.memoizedProps;
+	}
+
+	getChannelChatRoomInfo() {
+		return this.reactUtils.findReactParents<never, ChannelChatRoomInfo>(
+			this.reactUtils.getReactInstance(document.querySelector("#channel-chatroom")),
+			(n) => !!n.memoizedProps.slug,
+		)?.memoizedProps;
+	}
+
+	getChannelChatRoom() {
+		return this.reactUtils.findReactChildren<never, ChannelChatRoom>(
+			this.reactUtils.getReactInstance(document.querySelector("#channel-chatroom")),
+			(n) => !!n.memoizedProps.messages && !!n.memoizedProps.setIsPaused,
+		)?.memoizedProps;
+	}
+
+	isUsingNTV(element?: Element): boolean {
+		const elementToSerach = element ?? document;
+		return !!(
+			elementToSerach.querySelector(".ntv__chat-message__username") ||
+			elementToSerach.querySelector(".ntv__chat-message__inner") ||
+			elementToSerach.querySelector("[class*='ntv__']")
+		);
+	}
+
+	isLiveVideo(video: HTMLVideoElement): boolean {
+		return video.duration === KICK_LIVE_VIDEO_DURATION;
+	}
+}

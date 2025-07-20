@@ -1,0 +1,11 @@
+{
+	"build": {
+		"sourcePath": "./src/",
+		"entryPointsPath": ["./src/inject.ts", "./src/index.ts"],
+		"distributionPath": "./dist/",
+		"publicPath": "./public/"
+	},
+	"server": {
+		"port": 3360
+	}
+}
