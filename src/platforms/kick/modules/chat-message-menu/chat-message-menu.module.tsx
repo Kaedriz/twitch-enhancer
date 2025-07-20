@@ -37,7 +37,7 @@ export default class ChatMessageMenuModule extends KickModule {
 				onClick: () => this.kickUtils().setChatInputContent(message.content, true),
 			},
 			{
-				key: "copy-message-to-text-area",
+				key: "copy-username-to-text-area",
 				label: "Copy username to text area",
 				onClick: () => this.kickUtils().setChatInputContent(`@${message.sender.slug}`, true),
 			},

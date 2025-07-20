@@ -92,7 +92,7 @@ export default class KickUtils {
 	}
 
 	setChatInputContent(text: string, focus?: boolean) {
-		const chatInput = this.getChatInput() as HTMLElement;
+		const chatInput = this.getChatInput() as HTMLElement | null;
 		if (!chatInput) return;
 		chatInput.innerText = text;
 		chatInput.dispatchEvent(new Event("input", { bubbles: true }));
