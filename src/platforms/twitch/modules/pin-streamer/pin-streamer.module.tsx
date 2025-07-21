@@ -71,7 +71,11 @@ export default class PinStreamerModule extends TwitchModule {
 	}
 
 	private createPin(channelWrapper: Element) {
-		if (channelWrapper.querySelector(".pin-streamer-button")) return;
+		if (
+			channelWrapper.querySelector(".pin-streamer-button") ||
+			channelWrapper.querySelector('a[data-test-selector="similarity-channel"]')
+		)
+			return;
 		const channelID = this.twitchUtils().getUserIdBySideElement(channelWrapper);
 		if (!channelID) return;
 		const imageWrapper = channelWrapper.querySelector("div.tw-avatar");
