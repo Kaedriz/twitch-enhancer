@@ -64,7 +64,7 @@ export function MessageMenuComponent({ options, x, y, onClose }: MessageMenuProp
 		<MenuContainer ref={menuRef} style={{ left: pos.left, top: pos.top }}>
 			<div>
 				{options.map((opt, i) => (
-					<div key={opt.key}>
+					<div key={`${opt.key}-${i}`}>
 						<MenuOption
 							onClick={() => {
 								opt.onClick();
