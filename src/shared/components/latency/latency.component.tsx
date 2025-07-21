@@ -1,3 +1,4 @@
+import { TooltipComponent } from "$shared/components/tooltip/tooltip.component.tsx";
 import type { Signal } from "@preact/signals";
 import styled from "styled-components";
 
@@ -44,9 +45,11 @@ export function LatencyComponent({ click, latencyCounter, isLive }: LatencyCompo
 	};
 
 	return (
-		<LatencyWrapper onClick={click}>
-			<StatusDot isLive={isLive.value} />
-			{isLive.value ? `Latency: ${formatLatency()}` : "OFFLINE"}
-		</LatencyWrapper>
+		<TooltipComponent content={"Stream delay. Click to refresh player."} position={"bottom"}>
+			<LatencyWrapper onClick={click}>
+				<StatusDot isLive={isLive.value} />
+				{isLive.value ? `Latency: ${formatLatency()}` : "OFFLINE"}
+			</LatencyWrapper>
+		</TooltipComponent>
 	);
 }
