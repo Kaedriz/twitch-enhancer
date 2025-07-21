@@ -130,7 +130,7 @@ export default class WatchTimeModule extends TwitchModule {
 		this.isLoadingPopupVisible = false;
 		this.emitter.emit("twitch:chatPopupMessage", {
 			title: `Failed to fetch watchtime for ${username}`,
-			autoclose: 10,
+			autoclose: 5,
 			content: <WatchTimePopupErrorMessage />,
 		});
 	}

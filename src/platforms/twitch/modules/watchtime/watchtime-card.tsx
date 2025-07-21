@@ -80,6 +80,7 @@ const UserCardWrapper = styled.div`
 	background-color: #18181b;
 	padding: 12px 16px;
 	color: #efeff1;
+	--main-color: #bf94ff;
 `;
 
 interface UserCardProps {
