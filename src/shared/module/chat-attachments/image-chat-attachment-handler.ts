@@ -11,7 +11,7 @@ import type { Signal } from "@preact/signals";
 
 export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 	constructor(
-		logger: Logger,
+		readonly logger: Logger,
 		private readonly config: ImageChatAttachmentConfig,
 	) {
 		super(logger);
@@ -77,16 +77,56 @@ export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 		const image = new Image();
 		const imageSource = this.parseUrl(data.url).href;
 		image.classList.add("enhancer-chat-image");
-		if (this.config.imagesOnHover.value) {
-			image.classList.add("enhancer-chat-image-blurred");
-		}
-		image.src = imageSource;
-		image.onload = async () => {
+
+		const styleAsFakeImage = () => {
+			image.style.objectFit = "contain";
+			image.style.backgroundColor = "rgba(22, 16, 33, 1)";
+			image.style.backgroundImage = "linear-gradient(57deg, rgba(22, 16, 33, 1) 0%, rgba(94, 45, 191, 1) 100%)";
+		};
+
+		const styleAsOriginal = () => {
+			image.style.objectFit = "";
+			image.style.background = "";
+			image.style.backgroundImage = "";
+		};
+
+		const renderImage = async () => {
 			element.href = this.parsePreviewUrl(data.url).href;
 			element.classList.add("enhancer-chat-link");
 			element.replaceChildren(image);
+			image.style.width = `${image.width}px`;
+			image.style.height = `${image.height}px`;
+			if (this.config.imagesOnHover.value) {
+				styleAsFakeImage();
+				image.src = this.config.imageOnHoverSource;
+			}
 			await this.config.callback();
 		};
+
+		let isRendered = false;
+		let renderingOriginal = !this.config.imagesOnHover.value;
+
+		image.src = imageSource;
+		image.onload = async () => {
+			if (!isRendered) {
+				await renderImage();
+				isRendered = true;
+			}
+			if (renderingOriginal) styleAsOriginal();
+			else styleAsFakeImage();
+		};
+
+		if (this.config.imagesOnHover.value) {
+			image.addEventListener("mouseenter", () => {
+				renderingOriginal = true;
+				image.src = imageSource;
+			});
+			image.addEventListener("mouseleave", () => {
+				renderingOriginal = false;
+				image.src = this.config.imageOnHoverSource;
+			});
+		}
+
 		image.onerror = () => {
 			this.logger.warn("Failed to load image");
 		};

@@ -13,9 +13,13 @@ import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 
 export default class ChatAttachmentsModule extends TwitchModule {
 	private readonly httpClient = new HttpClient();
-	private readonly imageAttachmentConfig = new ImageChatAttachmentConfig(this.settingsService(), () => {
-		this.twitchUtils().unstuckScroll();
-	});
+	private readonly imageAttachmentConfig = new ImageChatAttachmentConfig(
+		this.settingsService(),
+		this.workerService(),
+		() => {
+			this.twitchUtils().unstuckScroll();
+		},
+	);
 	private previousInputContent = "";
 	private inputMonitoringInterval: NodeJS.Timeout | undefined;
 
@@ -173,14 +177,6 @@ export default class ChatAttachmentsModule extends TwitchModule {
 				max-height: 256px;
 				width: 100%;
 				transition: filter 0.3s ease-in-out;
-			}
-			
-			.enhancer-chat-image-blurred {
-				filter: blur(5px);
-			}
-
-			.enhancer-chat-image-blurred:hover {
-				filter: blur(0);
 			}`);
 	}
 }
