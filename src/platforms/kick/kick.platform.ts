@@ -52,8 +52,8 @@ export default class KickPlatform extends Platform<KickModule, KickEvents, KickS
 			new LocalWatchtimeCounterModule(...dependencies),
 			new ChatHighlightUserModule(...dependencies),
 			new ChatMessagePopupModule(...dependencies),
-			new MessageMenuModule(...dependencies),
-			new ChatMessageMenuModule(...dependencies),
+			// new MessageMenuModule(...dependencies),
+			// new ChatMessageMenuModule(...dependencies),
 		];
 	}
 }
