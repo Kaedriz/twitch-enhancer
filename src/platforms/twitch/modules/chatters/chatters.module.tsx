@@ -213,7 +213,8 @@ const Wrapper = styled.span`
 	}
 `;
 
-const formatChatters = (chatters: number) => chatters.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+const formatChatters = (chatters: number) =>
+	Math.abs(chatters) < 10000 ? chatters.toString() : chatters.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
 const ChattersComponent = ({
 	click,
