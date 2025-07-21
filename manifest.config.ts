@@ -47,7 +47,7 @@ export function getManifest() {
 		],
 		browser_specific_settings: {
 			gecko: {
-				id: "{7ddb770a-37fb-48ce-b1fb-0afaf281fa0b}",
+				id: "{09b8dba2-ae33-4bea-8bf1-d85e50691408}",
 			},
 		},
 		// Firefox Normal {09b8dba2-ae33-4bea-8bf1-d85e50691408}
