@@ -38,14 +38,6 @@ export default class KickUtils {
 		)?.memoizedProps;
 	}
 
-	getVideoElement() {
-		const videoElement = document.querySelector("video");
-		if (videoElement) {
-			return videoElement;
-		}
-		return null;
-	}
-
 	getVideoProgressProps() {
 		return this.reactUtils.findReactChildren<VideoProgressProps>(
 			this.reactUtils.getReactInstance(document.querySelector("#injected-embedded-channel-player-video")),
@@ -89,6 +81,32 @@ export default class KickUtils {
 			elementToSerach.querySelector(".ntv__chat-message__inner") ||
 			elementToSerach.querySelector("[class*='ntv__']")
 		);
+	}
+
+	private getChatInput() {
+		return document.querySelector("#ntv__message-input") ?? document.querySelector('div[data-testid="chat-input"]');
+	}
+
+	getChatInputContent() {
+		return this.getChatInput()?.textContent;
+	}
+
+	setChatInputContent(text: string, focus?: boolean) {
+		const chatInput = this.getChatInput() as HTMLElement | null;
+		if (!chatInput) return;
+		chatInput.innerText = text;
+		chatInput.dispatchEvent(new Event("input", { bubbles: true }));
+		if (focus) {
+			chatInput.focus();
+			const range = document.createRange();
+			range.selectNodeContents(chatInput);
+			range.collapse(false);
+			const sel = window.getSelection();
+			if (sel) {
+				sel.removeAllRanges();
+				sel.addRange(range);
+			}
+		}
 	}
 
 	isLiveVideo(video: HTMLVideoElement): boolean {

@@ -6,6 +6,7 @@ export const TWITCH_DEFAULT_SETTINGS: TwitchSettings = {
 	chatImagesSize: 15,
 	chatBadgesEnabled: true,
 	chatNicknameCustomizationEnabled: true,
+	chatMessageMenuEnabled: true,
 	pinnedStreamers: [],
 	quickAccessLinks: [
 		{ title: "TwitchTracker", url: "https://twitchtracker.com/%username%" },
