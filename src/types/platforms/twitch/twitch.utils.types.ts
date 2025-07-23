@@ -1,3 +1,5 @@
+import type gql from "graphql-tag";
+
 export type PersistentPlayerComponent = {
 	props: { content: { type: "live"; channelLogin: string } };
 };
@@ -236,6 +238,12 @@ export type ChatCommandStore = {
 	getCommands: () => string[];
 };
 
+export type ApolloClientFetchPolicy = "cache-first" | "network-only" | "no-cache" | "cache-only";
+
 export type ApolloClient = {
-	query: (params: { query: any; variables?: Record<string, any> }) => Promise<Record<string, any>>;
+	query: (params: {
+		query: ReturnType<typeof gql>;
+		variables?: Record<string, any>;
+		fetchPolicy?: ApolloClientFetchPolicy;
+	}) => Promise<Record<string, any>>;
 };
