@@ -74,7 +74,6 @@ export default class ChatModule extends KickModule {
 			if (!messageData) return;
 			if (!element.matches("div[data-index]")) return;
 			this.markMessageAsHandled(element);
-			await this.commonUtils().delay(5); // Have to leave this delay, because NTV rendering can be disabled via NTV options
 			const isUsingNTV = this.kickUtils().isUsingNTV(element);
 			this.emitter.emit("kick:chatMessage", { ...messageData, isUsingNTV });
 		} catch (err) {
