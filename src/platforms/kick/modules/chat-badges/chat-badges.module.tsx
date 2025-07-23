@@ -24,7 +24,6 @@ export default class ChatBadgesModule extends KickModule {
 		const userBadges = this.enhancerApi().findUserBadgesForCurrentChannel(message.sender.id.toString());
 		if (!userBadges?.length) return;
 
-		await this.commonUtils().delay(20);
 		const badgesContainers = [
 			element.querySelector(".ntv__chat-message__badges"),
 			element.querySelector(`button[title="${message.sender.username}"]`)?.parentElement,
