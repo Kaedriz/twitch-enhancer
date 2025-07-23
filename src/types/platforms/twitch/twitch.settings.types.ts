@@ -7,6 +7,9 @@ export type TwitchSettings = {
 	chatBadgesEnabled: boolean;
 	chatNicknameCustomizationEnabled: boolean;
 	chatMessageMenuEnabled: boolean;
+	chatMentionSoundEnabled: boolean;
+	chatMentionSoundSource: string;
+	chatMentionSoundVolume: number;
 	quickAccessLinks: QuickAccessLink[];
 	pinnedStreamers: string[];
 	streamLatencyEnabled: boolean;

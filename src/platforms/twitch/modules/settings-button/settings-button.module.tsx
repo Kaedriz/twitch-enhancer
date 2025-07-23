@@ -33,7 +33,7 @@ export default class SettingsButtonModule extends TwitchModule {
 			.map((element) => [...element.children].at(-1))
 			.filter((element) => element !== undefined) as Element[];
 		const wrappers = this.commonUtils().createEmptyElements(this.getId(), properElements, "span");
-		const logo = await this.commonUtils().getIcon(this.workerService(), "enhancer/logo-gray.svg");
+		const logo = await this.commonUtils().getAssetFile(this.workerService(), "enhancer/logo-gray.svg");
 		wrappers.forEach((element) => {
 			element.style.order = "-1";
 			render(

@@ -52,7 +52,7 @@ export default class ChannelSectionModule extends KickModule {
 			}
 			this.currentUsername.value = channelName;
 			await this.startWatchtimeUpdates();
-			const logo = await this.commonUtils().getIcon(
+			const logo = await this.commonUtils().getAssetFile(
 				this.workerService(),
 				"enhancer/logo.svg",
 				"https://enhancer.at/assets/brand/logo.png",

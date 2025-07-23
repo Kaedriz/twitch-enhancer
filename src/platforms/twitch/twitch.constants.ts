@@ -7,6 +7,9 @@ export const TWITCH_DEFAULT_SETTINGS: TwitchSettings = {
 	chatBadgesEnabled: true,
 	chatNicknameCustomizationEnabled: true,
 	chatMessageMenuEnabled: true,
+	chatMentionSoundEnabled: true,
+	chatMentionSoundSource: "",
+	chatMentionSoundVolume: 50,
 	pinnedStreamers: [],
 	quickAccessLinks: [
 		{ title: "TwitchTracker", url: "https://twitchtracker.com/%username%" },

@@ -1,3 +1,4 @@
+import type { TwitchChatMessageEvent } from "$types/platforms/twitch/twitch.events.types.ts";
 import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 import TwitchModule from "../../twitch.module.ts";
 
@@ -18,7 +19,7 @@ export default class ChatHighlightUserModule extends TwitchModule {
 		this.commonUtils().createGlobalStyle(".enhancer-highlighted-user-message { background-color: #444 !important; }");
 	}
 
-	private handleMessage({ element }: { element: Element }) {
+	private handleMessage({ element }: TwitchChatMessageEvent) {
 		const mentions = [
 			...Array.from(element.querySelectorAll(".chat-line__message-mention")),
 			...Array.from(element.querySelectorAll(".mention-fragment")),
