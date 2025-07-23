@@ -24,10 +24,12 @@ export default class ChatBadgesModule extends KickModule {
 		const userBadges = this.enhancerApi().findUserBadgesForCurrentChannel(message.sender.id.toString());
 		if (!userBadges?.length) return;
 
-		const badgesContainer = isUsingNTV
-			? element.querySelector(".ntv__chat-message__badges")
-			: element.querySelector(`button[title="${message.sender.username}"]`)?.parentElement;
-		if (!badgesContainer) return;
+		const badgesContainers = [
+			element.querySelector(".ntv__chat-message__badges"),
+			element.querySelector(`button[title="${message.sender.username}"]`)?.parentElement,
+		].filter(Boolean);
+
+		if (!badgesContainers.length) return;
 
 		for (const badge of userBadges) {
 			const badgeWrapper = document.createElement("div");
@@ -43,7 +45,11 @@ export default class ChatBadgesModule extends KickModule {
 				badgeWrapper,
 			);
 
-			badgesContainer.insertBefore(badgeWrapper, badgesContainer.firstChild);
+			for (const container of badgesContainers) {
+				if (container) {
+					container.insertBefore(badgeWrapper.cloneNode(true), container.firstChild);
+				}
+			}
 		}
 	}
 
