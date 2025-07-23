@@ -18,6 +18,7 @@ export default class ChatNicknameCustomizationModule extends KickModule {
 
 	private async handleMessage({ message, element }: KickChatMessageEvent) {
 		if (!(await this.isModuleEnabled())) return;
+		await this.commonUtils().delay(15);
 		const usernameElements = [
 			...element.querySelectorAll<HTMLElement>(".ntv__chat-message__username"),
 			...element.querySelectorAll<HTMLElement>(`[title='${message.sender.slug}']`),
