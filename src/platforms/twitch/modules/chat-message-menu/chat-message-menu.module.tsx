@@ -19,7 +19,9 @@ export default class ChatMessageMenuModule extends TwitchModule {
 
 	private async handleMessage({ message, element }: TwitchChatMessageEvent) {
 		if (!(await this.isModuleEnabled())) return;
-		(element as HTMLElement).addEventListener("contextmenu", (e) => {
+		(element as HTMLElement).addEventListener("contextmenu", async (e) => {
+			if (window.getSelection()?.toString()) return;
+			if ((e.target as HTMLElement)?.closest("a")) return;
 			e.preventDefault();
 			this.emitter.emit("twitch:messageMenu", {
 				options: this.getOptions(message),
