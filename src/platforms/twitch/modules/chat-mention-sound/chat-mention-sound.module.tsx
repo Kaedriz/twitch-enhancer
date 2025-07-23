@@ -76,7 +76,12 @@ export default class ChatMentionSoundModule extends TwitchModule {
 
 	playSound() {
 		this.audio.load();
-		if (!this.audio.paused) this.audio.currentTime = 0;
-		else this.audio.play().then(() => this.logger.debug("Played mention sound"));
+		if (!this.audio.paused) {
+			this.audio.currentTime = 0;
+		} else {
+			this.audio.play()
+				.then(() => this.logger.debug("Played mention sound"))
+				.catch(error => this.logger.error("Failed to play mention sound:", error));
+		}
 	}
 }
