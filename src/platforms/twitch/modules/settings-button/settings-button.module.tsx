@@ -15,15 +15,27 @@ export default class SettingsButtonModule extends TwitchModule {
 				key: "settings-button-main",
 				once: true,
 			},
-			// {
-			// 	type: "selector",
-			// 	selectors: [".stream-chat-header"],
-			// 	callback: this.run.bind(this),
-			// 	key: "settings-button-chat",
-			// 	validateUrl: (url) => url.includes("/popout/"),
-			// 	once: true,
-			// },
+			{
+				type: "selector",
+				selectors: [".top-nav__menu .ffz-top-nav"],
+				callback: this.setProperOrder.bind(this),
+				key: "ffz_icon",
+				once: true,
+			},
+			{
+				type: "selector",
+				selectors: [".top-nav__menu #seventv-settings-button"],
+				callback: this.setProperOrder.bind(this),
+				key: "7TV_ICON",
+				once: true,
+			},
 		],
+	};
+
+	private static readonly ICONS_ORDER_MAP: Record<string, string> = {
+		ENHANCER_ICON: "-5",
+		FFZ_ICON: "-4",
+		"7TV_ICON": "-3",
 	};
 
 	private async run(elements: Element[], key: string) {
@@ -35,13 +47,20 @@ export default class SettingsButtonModule extends TwitchModule {
 		const wrappers = this.commonUtils().createEmptyElements(this.getId(), properElements, "span");
 		const logo = await this.commonUtils().getIcon(this.workerService(), "enhancer/logo-gray.svg");
 		wrappers.forEach((element) => {
-			element.style.order = "-1";
+			element.style.order = SettingsButtonModule.ICONS_ORDER_MAP.ENHANCER_ICON;
 			render(
 				<TooltipComponent content={<p>Open Enhancer Settings</p>} position="bottom">
 					<SettingsButtonComponent onClick={this.openSettings.bind(this)} logoUrl={logo} />
 				</TooltipComponent>,
 				element,
 			);
+		});
+	}
+
+	private setProperOrder(elements: Element[], key: string) {
+		const order = SettingsButtonModule.ICONS_ORDER_MAP[key.toUpperCase()] ?? -1;
+		elements.forEach((element) => {
+			(element as HTMLElement).style.order = order.toString();
 		});
 	}
 
