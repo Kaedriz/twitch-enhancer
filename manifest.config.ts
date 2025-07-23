@@ -42,6 +42,7 @@ export function getManifest() {
 					"assets/settings/*.png",
 					"assets/modules/*.png",
 					"assets/modules/*.svg",
+					"assets/modules/*.ogg",
 				],
 			},
 		],

@@ -21,7 +21,7 @@ export default class SettingsButtonModule extends KickModule {
 		const menu = elements.at(0)?.lastElementChild;
 		if (!menu) return;
 		const wrappers = this.commonUtils().createEmptyElements(this.getId(), [menu], "span");
-		const logo = await this.commonUtils().getIcon(this.workerService(), "enhancer/logo-gray.svg");
+		const logo = await this.commonUtils().getAssetFile(this.workerService(), "enhancer/logo-gray.svg");
 		wrappers.forEach((element) => {
 			element.style.order = "-1";
 			render(<SettingsButtonComponent onClick={this.openSettings.bind(this)} logoUrl={logo} />, element);

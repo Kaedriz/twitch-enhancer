@@ -1,3 +1,4 @@
+import type { TwitchChatMessageEvent } from "$types/platforms/twitch/twitch.events.types.ts";
 import type { TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 import TwitchModule from "../../twitch.module.ts";
 
@@ -14,7 +15,7 @@ export default class ChatCopyEmoteModule extends TwitchModule {
 		],
 	};
 
-	private handleMessage({ element }: { element: Element }) {
+	private handleMessage({ element }: TwitchChatMessageEvent) {
 		const emotes = element.querySelectorAll(".seventv-chat-emote, .chat-line__message--emote");
 		if (emotes.length < 1) return;
 

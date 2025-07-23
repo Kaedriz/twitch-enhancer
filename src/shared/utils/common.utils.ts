@@ -67,9 +67,9 @@ export default class CommonUtils {
 		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 
-	async getIcon(workerApi: WorkerService, path: string, defaultPath = ""): Promise<string> {
+	async getAssetFile(workerApi: WorkerService, path: string, defaultValue = ""): Promise<string> {
 		const response = await workerApi.send("getAssetsFile", { path });
-		return response?.url || defaultPath;
+		return response?.url || defaultValue;
 	}
 
 	timeToHHMMSS(time: number | Date): string {

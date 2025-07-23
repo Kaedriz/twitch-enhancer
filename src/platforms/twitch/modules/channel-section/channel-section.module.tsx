@@ -42,12 +42,9 @@ export default class ChannelSectionModule extends TwitchModule {
 	private async run(elements: Element[]) {
 		const wrappers = this.commonUtils().createEmptyElements(this.getId(), elements, "div");
 		for (const wrapper of wrappers) {
-			this.logger.debug("essa");
 			if (this.updateNames()) continue;
-			this.logger.debug("essa1");
-
 			await this.startWatchtimeUpdates();
-			const logo = await this.commonUtils().getIcon(
+			const logo = await this.commonUtils().getAssetFile(
 				this.workerService(),
 				"enhancer/logo.svg",
 				"https://enhancer.at/assets/brand/logo.png",

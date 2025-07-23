@@ -38,26 +38,26 @@ export default class SettingsModule extends TwitchModule {
 		this.SETTINGS_TABS = [
 			{
 				title: "General",
-				iconUrl: await this.commonUtils().getIcon(this.workerService(), "settings/general.svg"),
+				iconUrl: await this.commonUtils().getAssetFile(this.workerService(), "settings/general.svg"),
 			},
 			{
 				title: "Chat",
-				iconUrl: await this.commonUtils().getIcon(this.workerService(), "settings/chat.svg"),
+				iconUrl: await this.commonUtils().getAssetFile(this.workerService(), "settings/chat.svg"),
 			},
 			{
 				title: "Channel",
-				iconUrl: await this.commonUtils().getIcon(this.workerService(), "settings/channel.svg"),
+				iconUrl: await this.commonUtils().getAssetFile(this.workerService(), "settings/channel.svg"),
 			},
 			{
 				title: "About",
-				iconUrl: await this.commonUtils().getIcon(this.workerService(), "settings/about.svg"),
+				iconUrl: await this.commonUtils().getAssetFile(this.workerService(), "settings/about.svg"),
 			},
 		];
 		const brandIcons = {
-			website: await this.commonUtils().getIcon(this.workerService(), "brands/website.svg"),
-			github: await this.commonUtils().getIcon(this.workerService(), "brands/github.svg"),
-			twitter: await this.commonUtils().getIcon(this.workerService(), "brands/twitter.svg"),
-			discord: await this.commonUtils().getIcon(this.workerService(), "brands/discord.svg"),
+			website: await this.commonUtils().getAssetFile(this.workerService(), "brands/website.svg"),
+			github: await this.commonUtils().getAssetFile(this.workerService(), "brands/github.svg"),
+			twitter: await this.commonUtils().getAssetFile(this.workerService(), "brands/twitter.svg"),
+			discord: await this.commonUtils().getAssetFile(this.workerService(), "brands/discord.svg"),
 		};
 		this.SETTING_DEFINITIONS = [
 			{
@@ -141,6 +141,31 @@ export default class SettingsModule extends TwitchModule {
 				tabIndex: 1,
 			},
 			{
+				id: "chatMentionSoundEnabled",
+				title: "Enable Chat Mention Sound",
+				description: "Turn on to receive a sound notification when someone mentions you in chat.",
+				type: "toggle",
+				tabIndex: 1,
+			},
+			{
+				id: "chatMentionSoundSource",
+				title: "Custom Mention Sound URL",
+				description:
+					"Set a custom audio file to play when you are mentioned in chat. Leave it empty for default sound.",
+				type: "input",
+				tabIndex: 1,
+			},
+			{
+				id: "chatMentionSoundVolume",
+				title: "Custom Mention Sound",
+				description: "Adjust the volume level for your mention notification sound.",
+				type: "number",
+				min: 0,
+				max: 100,
+				step: 1,
+				tabIndex: 1,
+			},
+			{
 				id: "quickAccessLinks",
 				title: "Quick Access Links",
 				description:
@@ -202,7 +227,7 @@ export default class SettingsModule extends TwitchModule {
 			document.body,
 		) as HTMLDivElement;
 		this.settingsContainer = wrapper as HTMLDivElement;
-		const logo = await this.commonUtils().getIcon(
+		const logo = await this.commonUtils().getAssetFile(
 			this.workerService(),
 			"enhancer/logo.svg",
 			"https://enhancer.at/assets/brand/logo.png",
