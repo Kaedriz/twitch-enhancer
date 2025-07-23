@@ -17,16 +17,20 @@ export default class ChatMessageMenuModule extends TwitchModule {
 		isModuleEnabledCallback: () => this.settingsService().getSettingsKey("chatMessageMenuEnabled"),
 	};
 
-	private async handleMessage({ message, element }: TwitchChatMessageEvent) {
+	private static readonly BLOCKED_TAGS = ["a", "img"];
+
+	private async handleMessage({ message, element: _element }: TwitchChatMessageEvent) {
 		if (!(await this.isModuleEnabled())) return;
-		(element as HTMLElement).addEventListener("contextmenu", async (e) => {
+		const element = _element as HTMLElement;
+		element.addEventListener("contextmenu", async (event) => {
 			if (window.getSelection()?.toString()) return;
-			if ((e.target as HTMLElement)?.closest("a")) return;
-			e.preventDefault();
+			const tag = (event.target as HTMLElement | null)?.tagName.toLowerCase();
+			if (ChatMessageMenuModule.BLOCKED_TAGS.includes(tag || "")) return;
+			event.preventDefault();
 			this.emitter.emit("twitch:messageMenu", {
 				options: this.getOptions(message),
-				x: e.x,
-				y: e.y,
+				x: event.x,
+				y: event.y,
 			});
 		});
 	}
