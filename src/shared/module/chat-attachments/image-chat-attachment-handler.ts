@@ -100,7 +100,6 @@ export default class ImageChatAttachmentHandler extends ChatAttachmentHandler {
 				styleAsFakeImage();
 				image.src = this.config.imageOnHoverSource;
 			}
-			console.info("calling callback");
 			await this.config.callback();
 		};
 
