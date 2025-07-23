@@ -6,7 +6,7 @@ import gql from "graphql-tag";
 export default class TwitchApi {
 	constructor(private readonly twitchUtils: TwitchUtils) {}
 
-	async gql<T>(query: string, variables: Record<string, string>, fetchPolicy?: ApolloClientFetchPolicy) {
+	async gql<T>(query: string, variables: Record<string, string>, fetchPolicy: ApolloClientFetchPolicy = "cache-first") {
 		const client = this.twitchUtils.getApolloClient();
 		if (!client) throw new Error("Failed to find Apollo Client");
 		return (await client.query({ query: gql`${query}`, variables, fetchPolicy })) as GQLResponse<T>;
