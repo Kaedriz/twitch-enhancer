@@ -7,7 +7,7 @@ export const TWITCH_DEFAULT_SETTINGS: TwitchSettings = {
 	chatBadgesEnabled: true,
 	chatNicknameCustomizationEnabled: true,
 	chatMessageMenuEnabled: true,
-	chatMentionSoundEnabled: true,
+	chatMentionSoundEnabled: false,
 	chatMentionSoundSource: "",
 	chatMentionSoundVolume: 50,
 	pinnedStreamers: [],
