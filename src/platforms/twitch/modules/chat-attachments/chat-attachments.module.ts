@@ -16,7 +16,9 @@ export default class ChatAttachmentsModule extends TwitchModule {
 	private readonly imageAttachmentConfig = new ImageChatAttachmentConfig(
 		this.settingsService(),
 		this.workerService(),
-		() => {
+		async () => {
+			await this.commonUtils().delay(5000);
+			console.info("tryign to scroll");
 			this.twitchUtils().unstuckScroll();
 		},
 	);

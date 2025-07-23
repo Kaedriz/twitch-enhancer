@@ -150,32 +150,29 @@ export default class TwitchUtils {
 	}
 
 	getScrollableChat() {
-		const element = document.querySelector(".chat-scrollable-area__message-container");
-
-		const node = this.reactUtils.findReactParents<ScrollableChatComponent>(
+		const element = document.querySelector('section[data-test-selector="chat-room-component-layout"]');
+		if (!element) return;
+		const props = this.reactUtils.findReactChildren<ScrollableChatComponent>(
 			this.reactUtils.getReactInstance(element),
-			(n) => n.stateNode?.onScroll,
-		);
-
-		return {
-			component: node?.stateNode,
-			element,
-		};
+			(n) => n?.stateNode?.props?.scrollToBottom && n?.stateNode?.props?.messagesHash,
+		)?.stateNode.props;
+		if (!props) return;
+		return { element, props };
 	}
 
 	unstuckScroll() {
 		const nativeChat = this.getScrollableChat();
 		const sevenTvChat = document.querySelector(".scrollable-contents");
 		if (!nativeChat && !sevenTvChat) return;
-		if (
-			nativeChat.element?.classList.contains("chat-scrollable-area__message-container--paused") ||
-			sevenTvChat?.querySelector(".seventv-message-buffer-notice")?.textContent === "Chat Paused"
-		)
-			return;
+
+		const isNativePaused = nativeChat?.element?.classList.contains("chat-scrollable-area__message-container--paused");
+		const isSevenTvPaused = sevenTvChat?.querySelector(".seventv-message-buffer-notice")?.textContent === "Chat Paused";
+		if (isNativePaused || isSevenTvPaused) return;
+
 		if (sevenTvChat) {
 			sevenTvChat.scrollTop = sevenTvChat.scrollHeight;
 		} else if (nativeChat) {
-			nativeChat.component?.scrollToBottom();
+			nativeChat.props.scrollToBottom();
 		}
 	}
 

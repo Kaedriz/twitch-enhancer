@@ -163,7 +163,14 @@ export type ChatInputComponent = {
 };
 
 export type ScrollableChatComponent = {
-	scrollToBottom: () => void;
+	props: {
+		currentUserLogin: string;
+		channelID: string;
+		children: HTMLElement[];
+		focusEscape: () => void;
+		messageHash: TwitchChatMessage[];
+		scrollToBottom: () => void;
+	};
 };
 
 export type ChatInfoComponent = {
