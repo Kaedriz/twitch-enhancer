@@ -174,7 +174,6 @@ export default class TwitchUtils {
 			sevenTvChat.scrollTop = sevenTvChat.scrollHeight;
 		} else if (nativeChat) {
 			nativeChat.props.scrollToBottom();
-			console.info("Scrolling to down");
 		}
 	}
 
