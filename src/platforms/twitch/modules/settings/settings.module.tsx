@@ -88,7 +88,7 @@ export default class SettingsModule extends TwitchModule {
 				id: "xayoWatchtimeEnabled",
 				title: "Enabled Usercard Watchtime",
 				description:
-					"Displays watchtime in usercards and via the /watchtime command for Polish channels by xayo.pl serivce.",
+					"Displays watchtime in usercards and via the /watchtime command for Polish channels by xayo.pl service.",
 				type: "toggle",
 				tabIndex: 0,
 				requiresRefreshToDisable: true,
