@@ -79,9 +79,10 @@ export default class ChatMentionSoundModule extends TwitchModule {
 		if (!this.audio.paused) {
 			this.audio.currentTime = 0;
 		} else {
-			this.audio.play()
+			this.audio
+				.play()
 				.then(() => this.logger.debug("Played mention sound"))
-				.catch(error => this.logger.error("Failed to play mention sound:", error));
+				.catch((error) => this.logger.error("Failed to play mention sound:", error));
 		}
 	}
 }
