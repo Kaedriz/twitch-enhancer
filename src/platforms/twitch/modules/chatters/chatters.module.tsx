@@ -118,16 +118,17 @@ export default class ChattersModule extends TwitchModule {
 
 	private async refreshChatters(loginsToUpdate: string[] = []) {
 		await this.commonUtils().waitFor(
-			() => this.twitchUtils().getChatInfo()?.props,
-			async (chatInfo) => {
-				const sharedLogins = Array.from(chatInfo.sharedChatDataByChannelID.values()).map((userInfo) =>
-					userInfo.login.toLowerCase(),
-				);
-				const uniqueLogins = [...new Set([chatInfo.channelLogin.toLowerCase(), ...sharedLogins])];
-				if (uniqueLogins.length === 0) return true;
+			() => this.twitchUtils().getGuestList(),
+			async () => {
+				const guestList = this.twitchUtils().getGuestList();
+				const uniqueLogins = [
+					this.twitchUtils().getCurrentChannelByUrl(),
+					...(guestList.guestList?.map((guest) => guest.user.login) ?? []),
+				];
 
 				const logins =
 					loginsToUpdate.length > 0 ? uniqueLogins.filter((login) => loginsToUpdate.includes(login)) : uniqueLogins;
+
 				await Promise.all(
 					logins.map(async (login) => {
 						try {

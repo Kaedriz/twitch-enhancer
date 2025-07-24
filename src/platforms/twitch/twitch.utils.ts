@@ -10,6 +10,7 @@ import type {
 	ChatInputComponent,
 	CurrentLiveStatusComponent,
 	FollowedSectionComponenet,
+	GuestStarChannelGuestListProps,
 	MediaPlayerComponent,
 	PersistentPlayerComponent,
 	RootComponent,
@@ -233,5 +234,21 @@ export default class TwitchUtils {
 			(n) => n.pendingProps?.value?.client,
 			100,
 		)?.pendingProps.value.client;
+	}
+
+	getGuestList(): GuestStarChannelGuestListProps | undefined {
+		const props = this.reactUtils.findReactChildren<GuestStarChannelGuestListProps>(
+			this.reactUtils.getReactInstance(document.querySelector("#live-channel-stream-information")),
+			(n) => {
+				const nodeProps = n?.stateNode?.props;
+				if (nodeProps?.name === "GuestStarChannelGuestList") {
+					return nodeProps;
+				}
+				return false;
+			},
+			100,
+		)?.pendingProps.children.props.children.props.children.props;
+		if (!props) return;
+		return props;
 	}
 }
