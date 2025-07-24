@@ -91,6 +91,8 @@ export default class ChattersModule extends TwitchModule {
 	}
 
 	private createIndividualChattersComponents(elements: Element[]) {
+		this.logger.debug("Creating individual chatters components", elements);
+		this.commonUtils().delay(700);
 		elements.forEach((root) => {
 			const indicators = Array.from(root.querySelectorAll(".tw-channel-status-indicator")).filter(
 				(el) => !el.closest(".online-side-nav-channel-tooltip__body"),
@@ -123,7 +125,7 @@ export default class ChattersModule extends TwitchModule {
 				const guestList = this.twitchUtils().getGuestList();
 				const uniqueLogins = [
 					this.twitchUtils().getCurrentChannelByUrl(),
-					...(guestList.guestList?.map((guest) => guest.user.login) ?? []),
+					...(guestList?.guestList?.map((guest) => guest.user.login) ?? []),
 				];
 
 				const logins =

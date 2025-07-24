@@ -256,27 +256,27 @@ export type ApolloClient = {
 };
 
 export type GuestStarChannelGuestListUser = {
-    id: string;
-    login: string;
-    displayName: string;
-    profileImageURL: string;
-    primaryColorHex: string | null;
-    description: string;
+	id: string;
+	login: string;
+	displayName: string;
+	profileImageURL: string;
+	primaryColorHex: string | null;
+	description: string;
 };
 
 export type GuestStarChannelGuestListSlot = {
-    id: string;
-    slotID: string;
-    user: GuestStarChannelGuestListUser;
+	id: string;
+	slotID: string;
+	user: GuestStarChannelGuestListUser;
 };
 
 export type GuestStarChannelGuestListProps = {
-    containerWidth: number;
-    guestList: GuestStarChannelGuestListSlot[];
-    isLive: boolean;
-    requestQueueMessage: string | null;
-    sessionID: string;
-    channelLogin: string;
-    channelID: string;
-    currentUserID: string;
+	containerWidth: number;
+	guestList: GuestStarChannelGuestListSlot[];
+	isLive: boolean;
+	requestQueueMessage: string | null;
+	sessionID: string;
+	channelLogin: string;
+	channelID: string;
+	currentUserID: string;
 };
