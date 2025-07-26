@@ -68,6 +68,20 @@ export default class ChattersModule extends TwitchModule {
 		return container?.querySelector("p")?.textContent ?? null;
 	}
 
+	private getUniqueLogins(): string[] {
+		const guestList = this.twitchUtils().getGuestList();
+		return [
+			this.twitchUtils().getCurrentChannelByUrl(),
+			...(guestList?.guestList?.map((guest) => guest.user.login) ?? []),
+		];
+	}
+
+	private getFilteredIndicators(root: Element): Element[] {
+		return Array.from(root.querySelectorAll(".tw-channel-status-indicator")).filter(
+			(el) => !el.closest(".online-side-nav-channel-tooltip__body"),
+		);
+	}
+
 	private createTotalChattersComponent(elements: Element[]) {
 		const wrappers = this.commonUtils().createEmptyElements(this.getId(), elements, "span");
 
@@ -90,43 +104,49 @@ export default class ChattersModule extends TwitchModule {
 		});
 	}
 
-	private createIndividualChattersComponents(elements: Element[]) {
-		this.logger.debug("Creating individual chatters components", elements);
-		this.commonUtils().delay(700);
-		elements.forEach((root) => {
-			const indicators = Array.from(root.querySelectorAll(".tw-channel-status-indicator")).filter(
-				(el) => !el.closest(".online-side-nav-channel-tooltip__body"),
-			);
+	private async createIndividualChattersComponents(elements: Element[]) {
+		await this.commonUtils().waitFor(
+			() => {
+				const uniqueLogins = this.getUniqueLogins();
+				const totalIndicators = elements.reduce((total, root) => {
+					const indicators = this.getFilteredIndicators(root);
+					return total + indicators.length;
+				}, 0);
+				return totalIndicators === uniqueLogins.length;
+			},
+			async () => {
+				elements.forEach((root) => {
+					const indicators = this.getFilteredIndicators(root);
 
-			indicators.forEach((indicator) => {
-				const username = this.findUsernameFromStatusIndicator(indicator)?.toLowerCase();
-				if (!username) return;
+					indicators.forEach((indicator) => {
+						const username = this.findUsernameFromStatusIndicator(indicator)?.toLowerCase();
+						if (!username) return;
 
-				const counter = this.getOrCreateCounter(username, ChattersModule.LOADING_VALUE);
-				if (counter !== undefined && indicator.parentElement) {
-					let existing = indicator.parentElement.querySelector(
-						`.${ChattersModule.INDIVIDUAL_CHATTERS_COMPONENT_WRAPPER_CLASS}`,
-					);
-					if (!existing) {
-						existing = document.createElement("span");
-						existing.className = ChattersModule.INDIVIDUAL_CHATTERS_COMPONENT_WRAPPER_CLASS;
-						indicator.parentElement.appendChild(existing);
-					}
-					render(<ChattersComponent click={this.refreshChatters.bind(this)} counter={counter} />, existing);
-				}
-			});
-		});
+						const counter = this.getOrCreateCounter(username, ChattersModule.LOADING_VALUE);
+						if (counter !== undefined && indicator.parentElement) {
+							let existing = indicator.parentElement.querySelector(
+								`.${ChattersModule.INDIVIDUAL_CHATTERS_COMPONENT_WRAPPER_CLASS}`,
+							);
+							if (!existing) {
+								existing = document.createElement("span");
+								existing.className = ChattersModule.INDIVIDUAL_CHATTERS_COMPONENT_WRAPPER_CLASS;
+								indicator.parentElement.appendChild(existing);
+							}
+							render(<ChattersComponent click={this.refreshChatters.bind(this)} counter={counter} />, existing);
+						}
+					});
+				});
+				return true;
+			},
+			{ delay: 1000, maxRetries: 5, initialDelay: 30 },
+		);
 	}
 
 	private async refreshChatters(loginsToUpdate: string[] = []) {
 		await this.commonUtils().waitFor(
 			() => this.twitchUtils().getGuestList(),
 			async () => {
-				const guestList = this.twitchUtils().getGuestList();
-				const uniqueLogins = [
-					this.twitchUtils().getCurrentChannelByUrl(),
-					...(guestList?.guestList?.map((guest) => guest.user.login) ?? []),
-				];
+				const uniqueLogins = this.getUniqueLogins();
 
 				const logins =
 					loginsToUpdate.length > 0 ? uniqueLogins.filter((login) => loginsToUpdate.includes(login)) : uniqueLogins;
