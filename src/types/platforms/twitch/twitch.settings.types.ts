@@ -14,6 +14,7 @@ export type TwitchSettings = {
 	pinnedStreamers: string[];
 	streamLatencyEnabled: boolean;
 	realVideoTimeEnabled: boolean;
+	realVideoTimeFormat12h: boolean;
 	pinnedStreamersEnabled: boolean;
 	xayoWatchtimeEnabled: boolean;
 };

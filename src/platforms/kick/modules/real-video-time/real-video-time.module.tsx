@@ -15,6 +15,12 @@ export default class RealVideoTimeModule extends KickModule {
 				callback: this.run.bind(this),
 				once: true,
 			},
+			{
+				type: "event",
+				event: "kick:settings:realVideoTimeFormat12h",
+				callback: this.onTimeFormatSettingChange.bind(this),
+				key: "real-video-time-format-change",
+			},
 		],
 		isModuleEnabledCallback: async () => await this.settingsService().getSettingsKey("realVideoTimeEnabled"),
 	};
@@ -23,8 +29,10 @@ export default class RealVideoTimeModule extends KickModule {
 	private visibilitySignal = signal(true);
 	private videoCreatedAt: Date | undefined;
 	private timeInterval: NodeJS.Timeout | undefined;
+	private use12HourFormat = signal<boolean>(false);
 
-	private run(elements: Element[]) {
+	private async run(elements: Element[]) {
+		await this.loadTimeFormatSetting();
 		const video = document.querySelector<HTMLVideoElement>("video");
 		if (!video) return;
 		this.tryGetVideoCreatedAt();
@@ -46,6 +54,31 @@ export default class RealVideoTimeModule extends KickModule {
 		});
 	}
 
+	private async loadTimeFormatSetting() {
+		try {
+			const use12Hour = await this.settingsService().getSettingsKey("realVideoTimeFormat12h");
+			this.use12HourFormat.value = use12Hour ?? false;
+		} catch (error) {
+			this.logger.error("Failed to load time format setting:", error);
+		}
+	}
+
+	private async onTimeFormatSettingChange() {
+		await this.loadTimeFormatSetting();
+	}
+
+	private formatTime(timeInMs: number): string {
+		if (timeInMs < 0) {
+			return "--:--:--";
+		}
+		const date = new Date(timeInMs);
+
+		if (this.use12HourFormat.value) {
+			return this.commonUtils().timeTo12HourFormat(date);
+		}
+		return this.commonUtils().timeToHHMMSS(date);
+	}
+
 	private runOnHover(player: Element) {
 		if (player.querySelector(`#${this.getId()}`)) return;
 		const element = player.querySelector(".z-controls");
@@ -55,7 +88,7 @@ export default class RealVideoTimeModule extends KickModule {
 		wrapper.classList.add("enhancer-video-real-time-wrapper");
 		render(
 			<RealTimeComponent
-				formatTime={this.commonUtils().timeToHHMMSS}
+				formatTime={this.formatTime.bind(this)}
 				visibility={this.visibilitySignal}
 				time={this.timeCounter}
 			/>,

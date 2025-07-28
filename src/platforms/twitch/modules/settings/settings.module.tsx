@@ -94,6 +94,13 @@ export default class SettingsModule extends TwitchModule {
 				requiresRefreshToDisable: true,
 			},
 			{
+				id: "realVideoTimeFormat12h",
+				title: "12-Hour Time Format",
+				description: "Display real video time in 12-hour format (AM/PM) instead of 24-hour format.",
+				type: "toggle",
+				tabIndex: 0,
+			},
+			{
 				id: "chatImagesEnabled",
 				title: "Enable Chat Images",
 				description: "Display images sent in chat messages.",

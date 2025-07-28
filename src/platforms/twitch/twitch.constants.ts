@@ -18,6 +18,7 @@ export const TWITCH_DEFAULT_SETTINGS: TwitchSettings = {
 	],
 	streamLatencyEnabled: true,
 	realVideoTimeEnabled: true,
+	realVideoTimeFormat12h: false,
 	pinnedStreamersEnabled: true,
 	xayoWatchtimeEnabled: true,
 };

@@ -10,6 +10,7 @@ export type KickSettings = {
 	quickAccessLinks: QuickAccessLink[];
 	streamLatencyEnabled: boolean;
 	realVideoTimeEnabled: boolean;
+	realVideoTimeFormat12h: boolean;
 };
 
 export type KickSettingsEvents = {
