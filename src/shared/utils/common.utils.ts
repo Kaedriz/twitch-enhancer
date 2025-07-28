@@ -72,27 +72,20 @@ export default class CommonUtils {
 		return response?.url || defaultValue;
 	}
 
-	timeToHHMMSS(time: number | Date): string {
-		if (!(time instanceof Date) && time < 0) {
+	timeInMsToTimestamp(timeInMs: number, type: "24" | "12" = "24"): string {
+		if (timeInMs < 0) {
 			return "--:--:--";
 		}
-		const date = typeof time === "number" ? new Date(time) : time;
-		const hours = date.getHours().toString().padStart(2, "0");
+		const date = new Date(timeInMs);
+		const hours = date.getHours();
 		const minutes = date.getMinutes().toString().padStart(2, "0");
 		const seconds = date.getSeconds().toString().padStart(2, "0");
-		return `${hours}:${minutes}:${seconds}`;
-	}
-
-	timeTo12HourFormat(date: Date): string {
-		let hours = date.getHours();
-		const minutes = date.getMinutes().toString().padStart(2, "0");
-		const seconds = date.getSeconds().toString().padStart(2, "0");
-		const ampm = hours >= 12 ? "PM" : "AM";
-
-		hours = hours % 12;
-		hours = hours ? hours : 12;
-
-		return `${hours}:${minutes}:${seconds} ${ampm}`;
+		if (type === "12") {
+			const ampm = hours >= 12 ? "PM" : "AM";
+			const twelveHour = (hours % 12 || 12).toString().padStart(2, "0");
+			return `${twelveHour}:${minutes}:${seconds} ${ampm}`;
+		}
+		return `${hours.toString().padStart(2, "0")}:${minutes}:${seconds}`;
 	}
 
 	getLowestBadgeSourceUrl(sources: Partial<Record<EnhancerBadgeSize, string>>): string | null {

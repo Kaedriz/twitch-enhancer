@@ -25,6 +25,12 @@ export default class RealVideoTimeModule extends TwitchModule {
 			},
 			{
 				type: "event",
+				key: "settings-real-video-time-format12h",
+				event: "twitch:settings:realVideoTimeFormat12h",
+				callback: (enabled) => this.updateTimeFormat(enabled),
+			},
+			{
+				type: "event",
 				event: "twitch:chatInitialized",
 				callback: () => {
 					if (!RealVideoTimeModule.URL_CONFIG(window.location.href)) {
@@ -33,12 +39,6 @@ export default class RealVideoTimeModule extends TwitchModule {
 					}
 				},
 				key: "real-video-time-url-validator",
-			},
-			{
-				type: "event",
-				event: "twitch:settings:realVideoTimeFormat12h",
-				callback: this.onTimeFormatSettingChange.bind(this),
-				key: "real-video-time-format-change",
 			},
 		],
 		isModuleEnabledCallback: async () => await this.settingsService().getSettingsKey("realVideoTimeEnabled"),
@@ -52,7 +52,6 @@ export default class RealVideoTimeModule extends TwitchModule {
 	private use12HourFormat = signal<boolean>(false);
 
 	private async run(elements: Element[]) {
-		await this.loadTimeFormatSetting();
 		this.createTimeCounter();
 		await this.updateCurrentVideo();
 		const wrappers = this.commonUtils().createEmptyElements(this.getId(), elements, "span");
@@ -69,29 +68,13 @@ export default class RealVideoTimeModule extends TwitchModule {
 		}, 1000);
 	}
 
-	private async loadTimeFormatSetting() {
-		try {
-			const use12Hour = await this.settingsService().getSettingsKey("realVideoTimeFormat12h");
-			this.use12HourFormat.value = use12Hour ?? false;
-		} catch (error) {
-			this.logger.error("Failed to load time format setting:", error);
-		}
-	}
-
-	private async onTimeFormatSettingChange() {
-		await this.loadTimeFormatSetting();
+	private updateTimeFormat(enabled: boolean) {
+		this.use12HourFormat.value = enabled;
+		this.updateTime();
 	}
 
 	private formatTime(timeInMs: number): string {
-		if (timeInMs < 0) {
-			return "--:--:--";
-		}
-		const date = new Date(timeInMs);
-
-		if (this.use12HourFormat.value) {
-			return this.commonUtils().timeTo12HourFormat(date);
-		}
-		return this.commonUtils().timeToHHMMSS(date);
+		return this.commonUtils().timeInMsToTimestamp(timeInMs, this.use12HourFormat.value ? "12" : "24");
 	}
 
 	private async getVideoCreatedAt(videoId: string) {

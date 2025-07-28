@@ -17,9 +17,9 @@ export default class RealVideoTimeModule extends KickModule {
 			},
 			{
 				type: "event",
+				key: "settings-real-video-time-format12h",
 				event: "kick:settings:realVideoTimeFormat12h",
-				callback: this.onTimeFormatSettingChange.bind(this),
-				key: "real-video-time-format-change",
+				callback: (enabled) => this.updateTimeFormat(enabled),
 			},
 		],
 		isModuleEnabledCallback: async () => await this.settingsService().getSettingsKey("realVideoTimeEnabled"),
@@ -32,7 +32,6 @@ export default class RealVideoTimeModule extends KickModule {
 	private use12HourFormat = signal<boolean>(false);
 
 	private async run(elements: Element[]) {
-		await this.loadTimeFormatSetting();
 		const video = document.querySelector<HTMLVideoElement>("video");
 		if (!video) return;
 		this.tryGetVideoCreatedAt();
@@ -54,29 +53,12 @@ export default class RealVideoTimeModule extends KickModule {
 		});
 	}
 
-	private async loadTimeFormatSetting() {
-		try {
-			const use12Hour = await this.settingsService().getSettingsKey("realVideoTimeFormat12h");
-			this.use12HourFormat.value = use12Hour ?? false;
-		} catch (error) {
-			this.logger.error("Failed to load time format setting:", error);
-		}
-	}
-
-	private async onTimeFormatSettingChange() {
-		await this.loadTimeFormatSetting();
+	private updateTimeFormat(enabled: boolean) {
+		this.use12HourFormat.value = enabled;
 	}
 
 	private formatTime(timeInMs: number): string {
-		if (timeInMs < 0) {
-			return "--:--:--";
-		}
-		const date = new Date(timeInMs);
-
-		if (this.use12HourFormat.value) {
-			return this.commonUtils().timeTo12HourFormat(date);
-		}
-		return this.commonUtils().timeToHHMMSS(date);
+		return this.commonUtils().timeInMsToTimestamp(timeInMs, this.use12HourFormat.value ? "12" : "24");
 	}
 
 	private runOnHover(player: Element) {
