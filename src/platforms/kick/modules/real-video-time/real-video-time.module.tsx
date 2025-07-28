@@ -15,6 +15,12 @@ export default class RealVideoTimeModule extends KickModule {
 				callback: this.run.bind(this),
 				once: true,
 			},
+			{
+				type: "event",
+				key: "settings-real-video-time-format12h",
+				event: "kick:settings:realVideoTimeFormat12h",
+				callback: (enabled) => this.updateTimeFormat(enabled),
+			},
 		],
 		isModuleEnabledCallback: async () => await this.settingsService().getSettingsKey("realVideoTimeEnabled"),
 	};
@@ -23,8 +29,9 @@ export default class RealVideoTimeModule extends KickModule {
 	private visibilitySignal = signal(true);
 	private videoCreatedAt: Date | undefined;
 	private timeInterval: NodeJS.Timeout | undefined;
+	private use12HourFormat = signal<boolean>(false);
 
-	private run(elements: Element[]) {
+	private async run(elements: Element[]) {
 		const video = document.querySelector<HTMLVideoElement>("video");
 		if (!video) return;
 		this.tryGetVideoCreatedAt();
@@ -46,6 +53,14 @@ export default class RealVideoTimeModule extends KickModule {
 		});
 	}
 
+	private updateTimeFormat(enabled: boolean) {
+		this.use12HourFormat.value = enabled;
+	}
+
+	private formatTime(timeInMs: number): string {
+		return this.commonUtils().timeInMsToTimestamp(timeInMs, this.use12HourFormat.value ? "12" : "24");
+	}
+
 	private runOnHover(player: Element) {
 		if (player.querySelector(`#${this.getId()}`)) return;
 		const element = player.querySelector(".z-controls");
@@ -55,7 +70,7 @@ export default class RealVideoTimeModule extends KickModule {
 		wrapper.classList.add("enhancer-video-real-time-wrapper");
 		render(
 			<RealTimeComponent
-				formatTime={this.commonUtils().timeToHHMMSS}
+				formatTime={this.formatTime.bind(this)}
 				visibility={this.visibilitySignal}
 				time={this.timeCounter}
 			/>,

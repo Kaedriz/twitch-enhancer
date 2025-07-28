@@ -25,6 +25,12 @@ export default class RealVideoTimeModule extends TwitchModule {
 			},
 			{
 				type: "event",
+				key: "settings-real-video-time-format12h",
+				event: "twitch:settings:realVideoTimeFormat12h",
+				callback: (enabled) => this.updateTimeFormat(enabled),
+			},
+			{
+				type: "event",
 				event: "twitch:chatInitialized",
 				callback: () => {
 					if (!RealVideoTimeModule.URL_CONFIG(window.location.href)) {
@@ -43,13 +49,14 @@ export default class RealVideoTimeModule extends TwitchModule {
 	private timeInterval: NodeJS.Timeout | undefined;
 	private videoCreatedAt = new Date(0);
 	private mediaPlayer: MediaPlayerInstance | undefined;
+	private use12HourFormat = signal<boolean>(false);
 
 	private async run(elements: Element[]) {
 		this.createTimeCounter();
 		await this.updateCurrentVideo();
 		const wrappers = this.commonUtils().createEmptyElements(this.getId(), elements, "span");
 		wrappers.forEach((element) => {
-			render(<RealTimeComponent formatTime={this.commonUtils().timeToHHMMSS} time={this.timeCounter} />, element);
+			render(<RealTimeComponent formatTime={this.formatTime.bind(this)} time={this.timeCounter} />, element);
 		});
 		this.updateTime();
 		if (this.timeInterval) {
@@ -59,6 +66,15 @@ export default class RealVideoTimeModule extends TwitchModule {
 			await this.updateCurrentVideo();
 			this.updateTime();
 		}, 1000);
+	}
+
+	private updateTimeFormat(enabled: boolean) {
+		this.use12HourFormat.value = enabled;
+		this.updateTime();
+	}
+
+	private formatTime(timeInMs: number): string {
+		return this.commonUtils().timeInMsToTimestamp(timeInMs, this.use12HourFormat.value ? "12" : "24");
 	}
 
 	private async getVideoCreatedAt(videoId: string) {

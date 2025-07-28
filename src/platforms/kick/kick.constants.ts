@@ -10,6 +10,7 @@ export const KICK_DEFAULT_SETTINGS: KickSettings = {
 	quickAccessLinks: [{ title: "Streams Charts", url: "https://streamscharts.com/channels/%username%?platform=kick" }],
 	streamLatencyEnabled: true,
 	realVideoTimeEnabled: true,
+	realVideoTimeFormat12h: false,
 };
 
 export const KICK_LIVE_VIDEO_DURATION = 1073741824;
