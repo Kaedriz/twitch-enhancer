@@ -2,6 +2,7 @@ import { TooltipComponent } from "$shared/components/tooltip/tooltip.component.t
 import { ChattersQuery } from "$twitch/apis/twitch-queries.ts";
 import type { ChattersResponse } from "$types/platforms/twitch/twitch.api.types.ts";
 import type { TwitchEvents } from "$types/platforms/twitch/twitch.events.types.ts";
+import type { GuestStarChannelGuestListProps } from "$types/platforms/twitch/twitch.utils.types.ts";
 import { ModuleConfig, type TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 import { type Signal, signal } from "@preact/signals";
 import { render } from "preact";
@@ -68,8 +69,7 @@ export default class ChattersModule extends TwitchModule {
 		return container?.querySelector("p")?.textContent ?? null;
 	}
 
-	private getUniqueLogins(): string[] {
-		const guestList = this.twitchUtils().getGuestList();
+	private getUniqueLogins(guestList: GuestStarChannelGuestListProps | undefined): string[] {
 		return [
 			this.twitchUtils().getCurrentChannelByUrl(),
 			...(guestList?.guestList?.map((guest) => guest.user.login) ?? []),
@@ -107,7 +107,7 @@ export default class ChattersModule extends TwitchModule {
 	private async createIndividualChattersComponents(elements: Element[]) {
 		await this.commonUtils().waitFor(
 			() => {
-				const uniqueLogins = this.getUniqueLogins();
+				const uniqueLogins = this.getUniqueLogins(this.twitchUtils().getGuestList());
 				const totalIndicators = elements.reduce((total, root) => {
 					const indicators = this.getFilteredIndicators(root);
 					return total + indicators.length;
@@ -136,6 +136,15 @@ export default class ChattersModule extends TwitchModule {
 						}
 					});
 				});
+
+				const loadingLogins = Object.keys(this.chattersCounters).filter(
+					(login) => this.chattersCounters[login].value === ChattersModule.LOADING_VALUE,
+				);
+
+				if (loadingLogins.length > 0) {
+					await this.refreshChatters(loadingLogins);
+				}
+
 				return true;
 			},
 			{ delay: 1000, maxRetries: 5, initialDelay: 30 },
@@ -145,8 +154,8 @@ export default class ChattersModule extends TwitchModule {
 	private async refreshChatters(loginsToUpdate: string[] = []) {
 		await this.commonUtils().waitFor(
 			() => this.twitchUtils().getGuestList(),
-			async () => {
-				const uniqueLogins = this.getUniqueLogins();
+			async (guestList) => {
+				const uniqueLogins = this.getUniqueLogins(guestList);
 
 				const logins =
 					loginsToUpdate.length > 0 ? uniqueLogins.filter((login) => loginsToUpdate.includes(login)) : uniqueLogins;
