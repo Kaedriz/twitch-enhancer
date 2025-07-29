@@ -2,6 +2,7 @@ import { TooltipComponent } from "$shared/components/tooltip/tooltip.component.t
 import { ChattersQuery } from "$twitch/apis/twitch-queries.ts";
 import type { ChattersResponse } from "$types/platforms/twitch/twitch.api.types.ts";
 import type { TwitchEvents } from "$types/platforms/twitch/twitch.events.types.ts";
+import type { GuestStarChannelGuestListProps } from "$types/platforms/twitch/twitch.utils.types.ts";
 import { ModuleConfig, type TwitchModuleConfig } from "$types/shared/module/module.types.ts";
 import { type Signal, signal } from "@preact/signals";
 import { render } from "preact";
@@ -68,6 +69,19 @@ export default class ChattersModule extends TwitchModule {
 		return container?.querySelector("p")?.textContent ?? null;
 	}
 
+	private getUniqueLogins(guestList: GuestStarChannelGuestListProps | undefined): string[] {
+		return [
+			this.twitchUtils().getCurrentChannelByUrl(),
+			...(guestList?.guestList?.map((guest) => guest.user.login) ?? []),
+		];
+	}
+
+	private getFilteredIndicators(root: Element): Element[] {
+		return Array.from(root.querySelectorAll(".tw-channel-status-indicator")).filter(
+			(el) => !el.closest(".online-side-nav-channel-tooltip__body"),
+		);
+	}
+
 	private createTotalChattersComponent(elements: Element[]) {
 		const wrappers = this.commonUtils().createEmptyElements(this.getId(), elements, "span");
 
@@ -90,44 +104,62 @@ export default class ChattersModule extends TwitchModule {
 		});
 	}
 
-	private createIndividualChattersComponents(elements: Element[]) {
-		elements.forEach((root) => {
-			const indicators = Array.from(root.querySelectorAll(".tw-channel-status-indicator")).filter(
-				(el) => !el.closest(".online-side-nav-channel-tooltip__body"),
-			);
+	private async createIndividualChattersComponents(elements: Element[]) {
+		await this.commonUtils().waitFor(
+			() => {
+				const uniqueLogins = this.getUniqueLogins(this.twitchUtils().getGuestList());
+				const totalIndicators = elements.reduce((total, root) => {
+					const indicators = this.getFilteredIndicators(root);
+					return total + indicators.length;
+				}, 0);
+				return totalIndicators === uniqueLogins.length;
+			},
+			async () => {
+				elements.forEach((root) => {
+					const indicators = this.getFilteredIndicators(root);
 
-			indicators.forEach((indicator) => {
-				const username = this.findUsernameFromStatusIndicator(indicator)?.toLowerCase();
-				if (!username) return;
+					indicators.forEach((indicator) => {
+						const username = this.findUsernameFromStatusIndicator(indicator)?.toLowerCase();
+						if (!username) return;
 
-				const counter = this.getOrCreateCounter(username, ChattersModule.LOADING_VALUE);
-				if (counter !== undefined && indicator.parentElement) {
-					let existing = indicator.parentElement.querySelector(
-						`.${ChattersModule.INDIVIDUAL_CHATTERS_COMPONENT_WRAPPER_CLASS}`,
-					);
-					if (!existing) {
-						existing = document.createElement("span");
-						existing.className = ChattersModule.INDIVIDUAL_CHATTERS_COMPONENT_WRAPPER_CLASS;
-						indicator.parentElement.appendChild(existing);
-					}
-					render(<ChattersComponent click={this.refreshChatters.bind(this)} counter={counter} />, existing);
+						const counter = this.getOrCreateCounter(username, ChattersModule.LOADING_VALUE);
+						if (counter !== undefined && indicator.parentElement) {
+							let existing = indicator.parentElement.querySelector(
+								`.${ChattersModule.INDIVIDUAL_CHATTERS_COMPONENT_WRAPPER_CLASS}`,
+							);
+							if (!existing) {
+								existing = document.createElement("span");
+								existing.className = ChattersModule.INDIVIDUAL_CHATTERS_COMPONENT_WRAPPER_CLASS;
+								indicator.parentElement.appendChild(existing);
+							}
+							render(<ChattersComponent click={this.refreshChatters.bind(this)} counter={counter} />, existing);
+						}
+					});
+				});
+
+				const loadingLogins = Object.keys(this.chattersCounters).filter(
+					(login) => this.chattersCounters[login].value === ChattersModule.LOADING_VALUE,
+				);
+
+				if (loadingLogins.length > 0) {
+					await this.refreshChatters(loadingLogins);
 				}
-			});
-		});
+
+				return true;
+			},
+			{ delay: 1000, maxRetries: 5, initialDelay: 30 },
+		);
 	}
 
 	private async refreshChatters(loginsToUpdate: string[] = []) {
 		await this.commonUtils().waitFor(
-			() => this.twitchUtils().getChatInfo()?.props,
-			async (chatInfo) => {
-				const sharedLogins = Array.from(chatInfo.sharedChatDataByChannelID.values()).map((userInfo) =>
-					userInfo.login.toLowerCase(),
-				);
-				const uniqueLogins = [...new Set([chatInfo.channelLogin.toLowerCase(), ...sharedLogins])];
-				if (uniqueLogins.length === 0) return true;
+			() => this.twitchUtils().getGuestList(),
+			async (guestList) => {
+				const uniqueLogins = this.getUniqueLogins(guestList);
 
 				const logins =
 					loginsToUpdate.length > 0 ? uniqueLogins.filter((login) => loginsToUpdate.includes(login)) : uniqueLogins;
+
 				await Promise.all(
 					logins.map(async (login) => {
 						try {
