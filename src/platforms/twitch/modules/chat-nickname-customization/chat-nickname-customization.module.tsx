@@ -49,7 +49,6 @@ export default class ChatNicknameCustomizationModule extends TwitchModule {
 			color = userMessageColor || "white";
 		}
 		element.style.textShadow = `${color} 0 0 10px`;
-		element.style.color = color;
 		element.style.fontWeight = "bold";
 	}
 }
