@@ -154,7 +154,7 @@ export default class TwitchUtils {
 		const chatInput = this.getAutoCompleteHandler();
 		if (!chatInput) return;
 		const fullMessage = `${chatInput.state.value} ${message}`;
-		chatInput?.componentRef.props.onChange({ target: { value: fullMessage } });
+		chatInput.componentRef.props.onChange({ target: { value: fullMessage } });
 		if (focus) chatInput?.componentRef.focus();
 	}
 
