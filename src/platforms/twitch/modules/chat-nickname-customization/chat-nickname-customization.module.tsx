@@ -24,6 +24,7 @@ export default class ChatNicknameCustomizationModule extends TwitchModule {
 			element.querySelector<HTMLElement>(".chat-author__display-name") ||
 			element.querySelector<HTMLElement>(".seventv-chat-user-username");
 		if (!usernameElement) return;
+		this.applyGlow(usernameElement, message.user.color);
 
 		const userCustomization = this.enhancerApi().findUserNicknameForCurrentChannel(message.user.userID);
 		if (!userCustomization) return;
@@ -32,6 +33,7 @@ export default class ChatNicknameCustomizationModule extends TwitchModule {
 			usernameElement.textContent = userCustomization.customNickname;
 		}
 
+		this.applyGlow(usernameElement, message.user.color);
 		if (userCustomization.hasGlow) {
 			this.applyGlow(usernameElement, message.user.color);
 		}
@@ -49,7 +51,6 @@ export default class ChatNicknameCustomizationModule extends TwitchModule {
 			color = userMessageColor || "white";
 		}
 		element.style.textShadow = `${color} 0 0 10px`;
-		element.style.color = color;
 		element.style.fontWeight = "bold";
 	}
 }

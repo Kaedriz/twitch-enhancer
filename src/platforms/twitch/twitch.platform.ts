@@ -5,9 +5,9 @@ import ChatBadgesModule from "$twitch/modules/chat-badges/chat-badges.module.tsx
 import ChatMentionSoundModule from "$twitch/modules/chat-mention-sound/chat-mention-sound.module.tsx";
 import ChatMessageMenuModule from "$twitch/modules/chat-message-menu/chat-message-menu.module.tsx";
 import MessageMenuModule from "$twitch/modules/chat-message-menu/message-menu.module.tsx";
+import ChatNicknameCustomizationModule from "$twitch/modules/chat-nickname-customization/chat-nickname-customization.module.tsx";
 import ChattersModule from "$twitch/modules/chatters/chatters.module.tsx";
 import LocalWatchtimeCounterModule from "$twitch/modules/local-watchtime-counter/local-watchtime-counter.module.tsx";
-import ChatNicknameCustomizationModule from "$twitch/modules/nickname-customization/chat-nickname-customization.module.tsx";
 import PinStreamerModule from "$twitch/modules/pin-streamer/pin-streamer.module.tsx";
 import RealVideoTimeModule from "$twitch/modules/real-video-time/real-video-time.module.tsx";
 import SettingsButtonModule from "$twitch/modules/settings-button/settings-button.module.tsx";
