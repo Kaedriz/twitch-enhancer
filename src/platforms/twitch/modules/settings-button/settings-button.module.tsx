@@ -15,31 +15,10 @@ export default class SettingsButtonModule extends TwitchModule {
 				key: "settings-button-main",
 				once: true,
 			},
-			{
-				type: "selector",
-				selectors: [".top-nav__menu .ffz-top-nav"],
-				callback: this.setProperOrder.bind(this),
-				key: "ffz_icon",
-				once: true,
-			},
-			{
-				type: "selector",
-				selectors: [".top-nav__menu #seventv-settings-button"],
-				callback: this.setProperOrder.bind(this),
-				key: "7TV_ICON",
-				once: true,
-			},
 		],
 	};
 
-	private static readonly ICONS_ORDER_MAP: Record<string, string> = {
-		ENHANCER_ICON: "-5",
-		FFZ_ICON: "-4",
-		"7TV_ICON": "-3",
-	};
-
 	private async run(elements: Element[], key: string) {
-		const isChat = key === "settings-button-chat";
 		const properElements = elements
 			.filter((element) => element.children.length > 0)
 			.map((element) => [...element.children].at(-1))
@@ -47,7 +26,6 @@ export default class SettingsButtonModule extends TwitchModule {
 		const wrappers = this.commonUtils().createEmptyElements(this.getId(), properElements, "span");
 		const logo = await this.commonUtils().getAssetFile(this.workerService(), "enhancer/logo-gray.svg");
 		wrappers.forEach((element) => {
-			element.style.order = SettingsButtonModule.ICONS_ORDER_MAP.ENHANCER_ICON;
 			render(
 				<TooltipComponent content={<p>Open Enhancer Settings</p>} position="bottom">
 					<SettingsButtonComponent onClick={this.openSettings.bind(this)} logoUrl={logo} />
@@ -57,15 +35,16 @@ export default class SettingsButtonModule extends TwitchModule {
 		});
 	}
 
-	private setProperOrder(elements: Element[], key: string) {
-		const order = SettingsButtonModule.ICONS_ORDER_MAP[key.toUpperCase()] ?? -1;
-		elements.forEach((element) => {
-			(element as HTMLElement).style.order = order.toString();
-		});
-	}
-
 	private openSettings() {
 		this.emitter.emit("extension:settings-open");
+	}
+
+	async initialize() {
+		this.commonUtils().createGlobalStyle(`
+			.top-nav__menu .enhancer-settings-button { order: -5 !important; }
+		    .top-nav__menu .ffz-top-nav { order: -4 !important; }
+		    .top-nav__menu #seventv-settings-button { order: -3 !important; }
+		`);
 	}
 }
 
