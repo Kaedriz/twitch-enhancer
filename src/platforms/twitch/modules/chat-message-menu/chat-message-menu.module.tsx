@@ -44,7 +44,7 @@ export default class ChatMessageMenuModule extends TwitchModule {
 			const options = this.getOptions(message);
 			if (options.length < 1) return;
 			this.emitter.emit("twitch:messageMenu", {
-				options: options,
+				options,
 				x: event.x,
 				y: event.y,
 			});
