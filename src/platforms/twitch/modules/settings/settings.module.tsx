@@ -148,6 +148,14 @@ export default class SettingsModule extends TwitchModule {
 				tabIndex: 1,
 			},
 			{
+				id: "chatMessageMenuUseAddInsteadOfSet",
+				title: "Appending Content via Chat Message Menu",
+				description:
+					"When using the chat message menu, new content will be added to the message in chat input instead of replacing it.",
+				type: "toggle",
+				tabIndex: 1,
+			},
+			{
 				id: "chatMentionSoundEnabled",
 				title: "Enable Chat Mention Sound",
 				description: "Turn on to receive a sound notification when someone mentions you in chat.",
