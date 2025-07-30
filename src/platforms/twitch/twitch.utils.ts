@@ -32,6 +32,16 @@ export default class TwitchUtils {
 		return name.toLowerCase();
 	}
 
+	getCurrentChannelFromDirectTwitchPlayer() {
+		if (!this.isDirectTwitchPlayer()) return;
+		const url = new URL(window.location.href);
+		return url.searchParams.get("channel");
+	}
+
+	isDirectTwitchPlayer() {
+		return window.location.href.includes("player.twitch.tv");
+	}
+
 	getUserIdBySideElement(element: Element): string | undefined {
 		return this.reactUtils.findReactChildren<number>(
 			this.reactUtils.getReactInstance(element),

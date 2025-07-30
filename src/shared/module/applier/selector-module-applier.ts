@@ -24,9 +24,12 @@ export default class SelectorModuleApplier<
 		);
 	}
 
+	private selectorInterval: NodeJS.Timeout | undefined;
+
 	async start() {
 		await this.run();
-		setInterval(async () => this.run(), 1000);
+		if (this.selectorInterval) clearInterval(this.selectorInterval);
+		this.selectorInterval = setInterval(async () => this.run(), 1000);
 		this.logger.debug("Started selector interval");
 	}
 
