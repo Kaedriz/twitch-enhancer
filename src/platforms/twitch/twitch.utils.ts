@@ -150,6 +150,14 @@ export default class TwitchUtils {
 		if (focus) chatInput?.componentRef.focus();
 	}
 
+	addChatText(message: string, focus?: boolean) {
+		const chatInput = this.getAutoCompleteHandler();
+		if (!chatInput) return;
+		const fullMessage = `${chatInput.state.value} ${message}`;
+		chatInput?.componentRef.props.onChange({ target: { value: fullMessage } });
+		if (focus) chatInput?.componentRef.focus();
+	}
+
 	addTextToChatInput(message: string) {
 		const value = this.getAutoCompleteHandler()?.state.value || "";
 		this.setChatText(this.format(message, value), true);
