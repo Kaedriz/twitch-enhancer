@@ -33,7 +33,6 @@ export default class ChatNicknameCustomizationModule extends TwitchModule {
 			usernameElement.textContent = userCustomization.customNickname;
 		}
 
-		this.applyGlow(usernameElement, message.user.color);
 		if (userCustomization.hasGlow) {
 			this.applyGlow(usernameElement, message.user.color);
 		}
