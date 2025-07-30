@@ -71,8 +71,13 @@ export default class ChattersModule extends TwitchModule {
 
 	private getUniqueLogins(guestList: GuestStarChannelGuestListProps | undefined): string[] {
 		return [
-			this.twitchUtils().getCurrentChannelByUrl(),
-			...(guestList?.guestList?.map((guest) => guest.user.login) ?? []),
+			...new Set<string>(
+				[
+					this.twitchUtils().getCurrentChannelByUrl(),
+					this.twitchUtils().getCurrentChannelFromDirectTwitchPlayer(),
+					...(guestList?.guestList?.map((guest) => guest.user.login) ?? []),
+				].filter(Boolean) as string[],
+			),
 		];
 	}
 
@@ -153,9 +158,9 @@ export default class ChattersModule extends TwitchModule {
 
 	private async refreshChatters(loginsToUpdate: string[] = []) {
 		await this.commonUtils().waitFor(
-			() => this.twitchUtils().getGuestList(),
+			() => this.getGuestListOrIsDirectPlayer(),
 			async (guestList) => {
-				const uniqueLogins = this.getUniqueLogins(guestList);
+				const uniqueLogins = this.getUniqueLogins(guestList === true ? undefined : guestList);
 
 				const logins =
 					loginsToUpdate.length > 0 ? uniqueLogins.filter((login) => loginsToUpdate.includes(login)) : uniqueLogins;
@@ -189,6 +194,10 @@ export default class ChattersModule extends TwitchModule {
 			},
 			{ delay: 1000, maxRetries: 5, initialDelay: 30 },
 		);
+	}
+
+	private getGuestListOrIsDirectPlayer() {
+		return this.twitchUtils().isDirectTwitchPlayer() || this.twitchUtils().getGuestList();
 	}
 
 	private updateTotalChattersCounter() {
