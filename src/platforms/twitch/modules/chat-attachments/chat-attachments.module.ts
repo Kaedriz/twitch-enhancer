@@ -23,6 +23,8 @@ export default class ChatAttachmentsModule extends TwitchModule {
 	private previousInputContent = "";
 	private inputMonitoringInterval: NodeJS.Timeout | undefined;
 
+	static readonly FFZ_RICH_EMBED_CLASS = ".ffz-card-rich";
+
 	config: TwitchModuleConfig = {
 		name: "chat-attachments",
 		appliers: [
@@ -60,6 +62,10 @@ export default class ChatAttachmentsModule extends TwitchModule {
 
 	private async handleMessage(message: TwitchChatMessageEvent) {
 		if (!(await this.isModuleEnabled())) return;
+
+		await this.commonUtils().delay(1); // Doing this for FFZ Rich Embed Check
+		if (message.element.querySelector(ChatAttachmentsModule.FFZ_RICH_EMBED_CLASS)) return;
+
 		const baseData = this.getBaseData(message);
 		if (!baseData) return;
 		try {
