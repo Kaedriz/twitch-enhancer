@@ -132,21 +132,19 @@ export type TwitchChatCommand = {
 };
 
 export interface TwitchChatMessageComponent {
-	props: {
-		channelLogin: string;
-		channelID: string;
-		message: {
-			badges: Record<string, string>;
+	channelLogin: string;
+	channelID: string;
+	message: {
+		badges: Record<string, string>;
+		id: string;
+		message: string;
+		user: {
+			color: string;
 			id: string;
-			message: string;
-			user: {
-				color: string;
-				id: string;
-				displayName: string;
-				login: string;
-			};
-			nonce: string;
+			displayName: string;
+			login: string;
 		};
+		nonce: string;
 	};
 }
 

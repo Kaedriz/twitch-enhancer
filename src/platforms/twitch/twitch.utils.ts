@@ -132,8 +132,11 @@ export default class TwitchUtils {
 
 	getChatMessage(message: Node | Element | HTMLElement | null) {
 		if (!message) return;
-		const instance = this.reactUtils.getReactInstance(message)?.return?.stateNode as TwitchChatMessageComponent;
-		return instance?.props.message ? instance : undefined;
+		return this.reactUtils.findReactChildren<TwitchChatMessageComponent>(
+			this.reactUtils.getReactInstance(message),
+			(n) => n.return?.stateNode?.props?.message,
+			10,
+		)?.return.stateNode.props as TwitchChatMessageComponent;
 	}
 
 	getAutoCompleteHandler() {
