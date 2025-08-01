@@ -85,7 +85,6 @@ export default class ChatModule extends TwitchModule {
 		this.observer = new MutationObserver(async (list) => {
 			for (const mutation of list) {
 				if (mutation.type === "childList" && mutation.addedNodes) {
-					this.logger.debug("recieved upate for", mutation.addedNodes);
 					for (const node of mutation.addedNodes) {
 						const element = node as Element;
 						const seventvId = element.getAttribute("msg-id");
