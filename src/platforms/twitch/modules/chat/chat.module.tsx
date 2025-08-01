@@ -10,8 +10,7 @@ import TwitchChatMessageListener from "./listener/twitch-chat-message.listener.t
 export default class ChatModule extends TwitchModule {
 	static readonly TWITCHTV_CHAT_SELECTOR = ".chat-scrollable-area__message-container";
 	static readonly SEVENTV_CHAT_SELECTOR = "main.seventv-chat-list";
-	static readonly VALID_MESSAGE_TYPES_IDS = [0, 43];
-	static readonly SPECIAL_MESSAGES_IDS = [43];
+	static readonly VALID_MESSAGE_TYPES_IDS = [0];
 	static readonly LINK_MESSAGE_ID = 51;
 
 	private listener = {} as ChatMessageListener;
@@ -86,10 +85,11 @@ export default class ChatModule extends TwitchModule {
 		this.observer = new MutationObserver(async (list) => {
 			for (const mutation of list) {
 				if (mutation.type === "childList" && mutation.addedNodes) {
+					this.logger.debug("recieved upate for", mutation.addedNodes);
 					for (const node of mutation.addedNodes) {
 						const element = node as Element;
 						const seventvId = element.getAttribute("msg-id");
-						const messageProps = this.twitchUtils().getChatMessage(element.querySelector(".chat-line__message"))?.props;
+						const messageProps = this.twitchUtils().getChatMessage(node);
 						const id = seventvId ?? messageProps?.message.id;
 						if (!id) continue;
 						let message = this.queue.getAndRemove(id);
@@ -107,12 +107,28 @@ export default class ChatModule extends TwitchModule {
 		elements.forEach((element) => this.observer?.observe(element, { attributes: true, childList: true }));
 	}
 
+	private isWrappedMessage(message: TwitchChatMessage) {
+		const wrappedMessage = message.message;
+		if (!wrappedMessage || typeof wrappedMessage !== "object" || wrappedMessage === null) {
+			return false;
+		}
+		return (
+			"id" in wrappedMessage &&
+			"user" in wrappedMessage &&
+			("message" in wrappedMessage || "messageBody" in wrappedMessage)
+		);
+	}
+
 	private async handleMessage(_message: TwitchChatMessage) {
 		let message = _message;
-		if (ChatModule.VALID_MESSAGE_TYPES_IDS.includes(message.type)) {
-			if (ChatModule.SPECIAL_MESSAGES_IDS.includes(message.type)) {
-				message = message.message as unknown as TwitchChatMessage;
-			}
+
+		const isWrappedMessage = this.isWrappedMessage(message);
+		if (isWrappedMessage) {
+			this.logger.debug("Found wrapped message, replacing it...");
+			message = message.message as unknown as TwitchChatMessage;
+		}
+
+		if (ChatModule.VALID_MESSAGE_TYPES_IDS.includes(message.type) || isWrappedMessage) {
 			if (message.id) {
 				this.queue.addByValue({
 					...message,
