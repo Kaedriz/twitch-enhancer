@@ -113,6 +113,10 @@ export default class RealVideoTimeModule extends TwitchModule {
 			id: videoId,
 		});
 	}
+
+	async initialize() {
+		this.use12HourFormat.value = await this.settingsService().getSettingsKey("realVideoTimeFormat12h");
+	}
 }
 
 interface RealVideoTimeComponentProps {

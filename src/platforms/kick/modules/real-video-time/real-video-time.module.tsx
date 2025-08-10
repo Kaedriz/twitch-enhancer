@@ -113,6 +113,7 @@ export default class RealVideoTimeModule extends KickModule {
 	}
 
 	async initialize() {
+		this.use12HourFormat.value = await this.settingsService().getSettingsKey("realVideoTimeFormat12h");
 		this.commonUtils().createGlobalStyle(`
 			.enhancer-video-real-time-wrapper {
 				flex-grow: 1;
