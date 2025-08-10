@@ -110,50 +110,38 @@ export default class ChattersModule extends TwitchModule {
 	}
 
 	private async createIndividualChattersComponents(elements: Element[]) {
-		await this.commonUtils().waitFor(
-			() => {
-				const uniqueLogins = this.getUniqueLogins(this.twitchUtils().getGuestList());
-				const totalIndicators = elements.reduce((total, root) => {
-					const indicators = this.getFilteredIndicators(root);
-					return total + indicators.length;
-				}, 0);
-				return totalIndicators === uniqueLogins.length;
-			},
-			async () => {
-				elements.forEach((root) => {
-					const indicators = this.getFilteredIndicators(root);
+		await this.commonUtils().delay(300);
+		elements.forEach((root) => {
+			const indicators = this.getFilteredIndicators(root);
 
-					indicators.forEach((indicator) => {
-						const username = this.findUsernameFromStatusIndicator(indicator)?.toLowerCase();
-						if (!username) return;
+			indicators.forEach((indicator) => {
+				const username = this.findUsernameFromStatusIndicator(indicator)?.toLowerCase();
+				if (!username) return;
 
-						const counter = this.getOrCreateCounter(username, ChattersModule.LOADING_VALUE);
-						if (counter !== undefined && indicator.parentElement) {
-							let existing = indicator.parentElement.querySelector(
-								`.${ChattersModule.INDIVIDUAL_CHATTERS_COMPONENT_WRAPPER_CLASS}`,
-							);
-							if (!existing) {
-								existing = document.createElement("span");
-								existing.className = ChattersModule.INDIVIDUAL_CHATTERS_COMPONENT_WRAPPER_CLASS;
-								indicator.parentElement.appendChild(existing);
-							}
-							render(<ChattersComponent click={this.refreshChatters.bind(this)} counter={counter} />, existing);
-						}
-					});
-				});
-
-				const loadingLogins = Object.keys(this.chattersCounters).filter(
-					(login) => this.chattersCounters[login].value === ChattersModule.LOADING_VALUE,
-				);
-
-				if (loadingLogins.length > 0) {
-					await this.refreshChatters(loadingLogins);
+				const counter = this.getOrCreateCounter(username, ChattersModule.LOADING_VALUE);
+				if (counter !== undefined && indicator.parentElement) {
+					let existing = indicator.parentElement.querySelector(
+						`.${ChattersModule.INDIVIDUAL_CHATTERS_COMPONENT_WRAPPER_CLASS}`,
+					);
+					if (!existing) {
+						existing = document.createElement("span");
+						existing.className = ChattersModule.INDIVIDUAL_CHATTERS_COMPONENT_WRAPPER_CLASS;
+						indicator.parentElement.appendChild(existing);
+					}
+					render(<ChattersComponent click={this.refreshChatters.bind(this)} counter={counter} />, existing);
 				}
+			});
+		});
 
-				return true;
-			},
-			{ delay: 1000, maxRetries: 5, initialDelay: 30 },
+		const loadingLogins = Object.keys(this.chattersCounters).filter(
+			(login) => this.chattersCounters[login].value === ChattersModule.LOADING_VALUE,
 		);
+
+		if (loadingLogins.length > 0) {
+			await this.refreshChatters(loadingLogins);
+		}
+
+		return true;
 	}
 
 	private async refreshChatters(loginsToUpdate: string[] = []) {
