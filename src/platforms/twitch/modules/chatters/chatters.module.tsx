@@ -110,7 +110,7 @@ export default class ChattersModule extends TwitchModule {
 	}
 
 	private async createIndividualChattersComponents(elements: Element[]) {
-		await this.commonUtils().delay(400);
+		await this.commonUtils().delay(300);
 		elements.forEach((root) => {
 			const indicators = this.getFilteredIndicators(root);
 
