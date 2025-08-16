@@ -48,6 +48,20 @@ export interface GetWatchtimePayload {
 
 export interface WatchtimeResponse extends WatchtimeRecord {}
 
+export interface GetPaginatedWatchtimePayload {
+	platform: PlatformType;
+	page: number;
+	pageSize: number;
+	sortOrder?: "asc" | "desc";
+}
+
+export interface PaginatedWatchtimeResponse {
+	data: WatchtimeRecord[];
+	page: number;
+	pageSize: number;
+	total: number;
+}
+
 export interface GetSettingsPayload {
 	platform: PlatformType;
 }
@@ -76,6 +90,10 @@ export interface WorkerApiActions {
 	getWatchtime: {
 		payload: GetWatchtimePayload;
 		response: WatchtimeResponse | null;
+	};
+	getPaginatedWatchtime: {
+		payload: GetPaginatedWatchtimePayload;
+		response: PaginatedWatchtimeResponse;
 	};
 	getSettings: {
 		payload: GetSettingsPayload;

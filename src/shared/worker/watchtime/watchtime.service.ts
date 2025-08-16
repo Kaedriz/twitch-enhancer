@@ -58,8 +58,8 @@ export class WatchtimeService {
 		return await this.database.getWatchtime(platform, channel);
 	}
 
-	async getAllWatchtimeByPlatform(platform: PlatformType): Promise<WatchtimeRecord[]> {
-		return await this.database.getAllWatchtimeByPlatform(platform);
+	async getAllWatchtimePaginated(platform: PlatformType, page: number, pageSize: number): Promise<WatchtimeRecord[]> {
+		return await this.database.getAllWatchtimePaginated(platform, page, pageSize);
 	}
 
 	stop(): void {
