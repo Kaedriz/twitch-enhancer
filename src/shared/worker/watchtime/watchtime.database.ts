@@ -6,7 +6,7 @@ export class WatchtimeDatabase {
 	private readonly logger = new Logger({ context: "watchtime-db" });
 	private database: IDBDatabase | null = null;
 	private readonly dbName = "enhancer_watchtime";
-	private readonly dbVersion = 1;
+	private readonly dbVersion = 2;
 	private readonly storeName = "watchtime";
 
 	async initialize(): Promise<void> {
