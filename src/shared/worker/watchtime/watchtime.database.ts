@@ -31,6 +31,7 @@ export class WatchtimeDatabase {
 	}
 
 	private handleUpgrade(event: IDBVersionChangeEvent): void {
+		if (event.oldVersion === 1 && event.newVersion === 2) return;
 		const db = (event.target as IDBOpenDBRequest).result;
 		this.logger.info(`Creating watchtime database (version ${this.dbVersion})...`);
 		const store = db.createObjectStore(this.storeName, { keyPath: "id" });
