@@ -146,7 +146,7 @@ export default class ChattersModule extends TwitchModule {
 
 	private async refreshChatters(loginsToUpdate: string[] = []) {
 		await this.commonUtils().waitFor(
-			() => this.getGuestListOrIsDirectPlayer(),
+			() => this.getGuestListOrIsAllowedPage(),
 			async (guestList) => {
 				const uniqueLogins = this.getUniqueLogins(guestList === true ? undefined : guestList);
 
@@ -180,8 +180,12 @@ export default class ChattersModule extends TwitchModule {
 		);
 	}
 
-	private getGuestListOrIsDirectPlayer() {
-		return this.twitchUtils().isDirectTwitchPlayer() || this.twitchUtils().getGuestList();
+	private getGuestListOrIsAllowedPage() {
+		return (
+			this.twitchUtils().isDirectTwitchPlayer() ||
+			this.twitchUtils().isModeratorView() ||
+			this.twitchUtils().getGuestList()
+		);
 	}
 
 	private updateTotalChattersCounter() {
