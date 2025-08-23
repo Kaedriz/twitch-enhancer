@@ -76,4 +76,6 @@ export default abstract class Platform<
 	getPlatformType() {
 		return this.config.type;
 	}
+
+	abstract shouldStart(location: Location): boolean;
 }
