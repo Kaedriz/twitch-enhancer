@@ -70,4 +70,8 @@ export default class TwitchPlatform extends Platform<TwitchModule, TwitchEvents,
 			new ChatMentionSoundModule(...dependencies),
 		];
 	}
+
+	shouldStart(): boolean {
+		return true;
+	}
 }

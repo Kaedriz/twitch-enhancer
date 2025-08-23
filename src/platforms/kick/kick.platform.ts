@@ -56,4 +56,8 @@ export default class KickPlatform extends Platform<KickModule, KickEvents, KickS
 			// new ChatMessageMenuModule(...dependencies),
 		];
 	}
+
+	shouldStart(location: Location): boolean {
+		return location.hostname !== "docs.kick.com";
+	}
 }
