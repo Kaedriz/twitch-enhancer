@@ -195,7 +195,7 @@ export default class SettingsModule extends TwitchModule {
 				],
 			},
 			{
-				id: "about",
+				id: "watchtime-list",
 				title: "Watchtime List",
 				description: "Watchtime List",
 				type: "text",

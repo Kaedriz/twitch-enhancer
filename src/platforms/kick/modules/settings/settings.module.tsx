@@ -2,6 +2,7 @@ import { KICK_DEFAULT_SETTINGS } from "$kick/kick.constants.ts";
 import KickModule from "$kick/kick.module.ts";
 import { EnhancerAboutComponent } from "$shared/components/settings/about.component.tsx";
 import Settings, { SettingsOverlay } from "$shared/components/settings/settings.component.tsx";
+import { WatchtimeListComponent } from "$shared/components/watchtime-list/watchtime-list.component.tsx";
 import type { KickSettings } from "$types/platforms/kick/kick.settings.types.ts";
 import type { SettingDefinition, TabDefinition } from "$types/shared/components/settings.component.types.ts";
 import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
@@ -35,6 +36,7 @@ export default class SettingsModule extends KickModule {
 	private settingsContainer: HTMLDivElement | null = null;
 
 	async initialize() {
+		const workerService = this.workerService();
 		this.SETTINGS_TABS = [
 			{
 				title: "General",
@@ -140,6 +142,17 @@ export default class SettingsModule extends KickModule {
 					{ name: "title", placeholder: "Enter link name..." },
 					{ name: "url", placeholder: "Enter URL..." },
 				],
+			},
+			{
+				id: "watchtime-list",
+				title: "Watchtime List",
+				description: "Watchtime List",
+				type: "text",
+				tabIndex: 2,
+				content: () => {
+					return <WatchtimeListComponent platform="kick" workerService={workerService} />;
+				},
+				hideInfo: true,
 			},
 			{
 				id: "about",

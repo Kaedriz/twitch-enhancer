@@ -248,7 +248,7 @@ interface WatchtimeListComponentProps {
 	workerService: WorkerService;
 }
 
-export function WatchtimeListComponent({ platform, pageSize = 10, workerService }: WatchtimeListComponentProps) {
+export function WatchtimeListComponent({ platform, pageSize = 5, workerService }: WatchtimeListComponentProps) {
 	const [expanded, setExpanded] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [data, setData] = useState<PaginatedWatchtimeResponse | null>(null);
@@ -352,14 +352,14 @@ export function WatchtimeListComponent({ platform, pageSize = 10, workerService 
 		setExporting(true);
 		try {
 			const allData = await fetchAllData();
-			const headers = "Position,Username,Minutes,First Watched,Last Watched\n";
+			const headers = "Position,Username,Seconds,First Watched,Last Watched\n";
 			const content = allData
 				.map((record, index) => {
 					const position = index + 1;
-					const minutes = Math.round(record.time / 60);
+					const seconds = record.time;
 					const firstUpdate = new Date(record.firstUpdate).toLocaleString();
 					const lastUpdate = new Date(record.lastUpdate).toLocaleString();
-					return `${position},${record.username},${minutes},"${firstUpdate}","${lastUpdate}"`;
+					return `${position},${record.username},${seconds},"${firstUpdate}","${lastUpdate}"`;
 				})
 				.join("\n");
 
