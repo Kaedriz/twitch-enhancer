@@ -1,5 +1,5 @@
 import type WorkerService from "$shared/worker/worker.service.ts";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "preact/hooks";
 import styled from "styled-components";
 
 const Container = styled.div`
@@ -10,9 +10,9 @@ const Container = styled.div`
 	max-width: none;
 `;
 
-const Header = styled.div<{ collapsed: boolean }>`
-	text-align: center;
-	padding: 30px 40px;
+const Header = styled.div`
+	margin-bottom: 20px;
+	padding: 20px 30px;
 	background: linear-gradient(
 		135deg,
 		rgba(145, 71, 255, 0.1) 0%,
@@ -20,201 +20,208 @@ const Header = styled.div<{ collapsed: boolean }>`
 	);
 	border-radius: 12px;
 	border: 1px solid rgba(145, 71, 255, 0.2);
+`;
+
+const TitleSection = styled.div`
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
 	cursor: pointer;
 	transition: all 0.2s ease;
-	user-select: none;
-	margin: 0 20px 20px 20px;
-	${(props) => props.collapsed && "margin-bottom: 0;"}
 
 	&:hover {
-		background: linear-gradient(
-			135deg,
-			rgba(145, 71, 255, 0.15) 0%,
-			rgba(145, 71, 255, 0.08) 100%
-		);
-		border-color: rgba(145, 71, 255, 0.3);
+		transform: translateY(-1px);
 	}
-`;
-
-const HeaderContent = styled.div`
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	width: 100%;
-`;
-
-const HeaderText = styled.div`
-	text-align: left;
 `;
 
 const Title = styled.h1`
 	color: #9147ff;
-	margin: 0 0 8px 0;
-	font-size: 30px;
+	margin: 0 0 4px 0;
+	font-size: 20px;
 	font-weight: 700;
 	text-shadow: 0 0 20px rgba(145, 71, 255, 0.3);
 `;
 
-const Subtitle = styled.p<{ collapsed: boolean }>`
-	font-size: 13px;
-	margin: 0;
-	color: #e0e0e0;
-	opacity: 0.9;
-	transition: opacity 0.2s ease;
-	${(props) =>
-		props.collapsed &&
-		`
-		opacity: 0;
-		height: 0;
-		overflow: hidden;
-	`}
-`;
-
-const CollapseIcon = styled.div<{ collapsed: boolean }>`
-	color: #9147ff;
-	font-size: 12px;
-	font-weight: 600;
-	transform: ${(props) => (props.collapsed ? "rotate(180deg)" : "rotate(0deg)")};
-	transition: transform 0.3s ease;
-	padding: 4px 8px;
-	border-radius: 4px;
-	background: rgba(145, 71, 255, 0.1);
-	border: 1px solid rgba(145, 71, 255, 0.2);
-
-	&:hover {
-		background: rgba(145, 71, 255, 0.2);
-		border-color: rgba(145, 71, 255, 0.4);
-	}
-`;
-
-const Content = styled.div<{ collapsed: boolean }>`
-	max-height: ${(props) => (props.collapsed ? "0" : "1000px")};
-	overflow: hidden;
-	transition: max-height 0.3s ease;
-	opacity: ${(props) => (props.collapsed ? "0" : "1")};
-`;
-
-const Section = styled.div`
-	padding: 0 20px 20px 20px;
-`;
-
-const WatchtimeList = styled.div`
-	background: rgba(255, 255, 255, 0.02);
-	border: 1px solid rgba(255, 255, 255, 0.1);
-	border-radius: 12px;
-	overflow: hidden;
-	height: 520px; /* Static height for exactly 10 items */
-	display: flex;
-	flex-direction: column;
-	position: relative;
-`;
-
-const WatchtimeContent = styled.div<{ loading: boolean }>`
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	${(props) =>
-		props.loading &&
-		`
-		opacity: 0.5;
-		pointer-events: none;
-	`}
-`;
-
-const LoadingOverlay = styled.div<{ show: boolean }>`
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	display: ${(props) => (props.show ? "flex" : "none")};
-	justify-content: center;
-	align-items: center;
-	background: rgba(0, 0, 0, 0.3);
-	color: #9147ff;
-	font-size: 12px;
-	z-index: 1;
-`;
-
-const WatchtimeItem = styled.div`
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 16px 20px;
-	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-	transition: background-color 0.2s ease;
-	height: 52px; /* Fixed height per item */
-	box-sizing: border-box;
-
-	&:last-child {
-		border-bottom: none;
-	}
-
-	&:hover {
-		background: rgba(145, 71, 255, 0.05);
-	}
-`;
-
-const Username = styled.span`
-	color: #e0e0e0;
-	font-size: 12px;
-	font-weight: 500;
-`;
-
-const WatchTime = styled.span`
-	color: #9147ff;
+const ActionText = styled.span`
+	color: #999;
 	font-size: 11px;
-	font-weight: 600;
+	font-weight: 500;
+	transition: color 0.2s ease;
+
+	${TitleSection}:hover & {
+		color: #b147ff;
+	}
 `;
 
-const PaginationContainer = styled.div`
-	display: flex;
-	justify-content: center;
-	align-items: center;
+const ExportSection = styled.div<{ $visible: boolean }>`
+	display: ${(props) => (props.$visible ? "flex" : "none")};
 	gap: 12px;
-	margin-top: 20px;
+	justify-content: center;
+	margin-bottom: 20px;
+	padding: 0 20px;
 `;
 
-const PaginationButton = styled.button<{ disabled?: boolean }>`
-	background: ${(props) => (props.disabled ? "rgba(255, 255, 255, 0.05)" : "rgba(145, 71, 255, 0.1)")};
-	border: 1px solid
-	${(props) => (props.disabled ? "rgba(255, 255, 255, 0.1)" : "rgba(145, 71, 255, 0.3)")};
-	color: ${(props) => (props.disabled ? "#666" : "#9147ff")};
+const ExportButton = styled.button`
+	background: rgba(145, 71, 255, 0.1);
+	border: 1px solid rgba(145, 71, 255, 0.3);
+	color: #9147ff;
 	padding: 8px 16px;
 	border-radius: 6px;
-	font-size: 11px;
-	font-weight: 500;
-	cursor: ${(props) => (props.disabled ? "not-allowed" : "pointer")};
+	font-size: 10px;
+	font-weight: 600;
+	cursor: pointer;
 	transition: all 0.2s ease;
 
 	&:hover:not(:disabled) {
 		background: rgba(145, 71, 255, 0.2);
 		border-color: rgba(145, 71, 255, 0.4);
+		transform: translateY(-1px);
+	}
+
+	&:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+		transform: none;
+	}
+`;
+
+const Content = styled.div<{ $visible: boolean }>`
+	padding: 0 20px;
+	display: ${(props) => (props.$visible ? "block" : "none")};
+`;
+
+const TableContainer = styled.div`
+	background: rgba(255, 255, 255, 0.02);
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 12px;
+	overflow: hidden;
+	margin-bottom: 25px;
+`;
+
+const Table = styled.table`
+	width: 100%;
+	border-collapse: collapse;
+`;
+
+const TableHeader = styled.thead`
+	background: rgba(145, 71, 255, 0.1);
+`;
+
+const TableHeaderRow = styled.tr`
+	border-bottom: 1px solid rgba(145, 71, 255, 0.2);
+`;
+
+const TableHeaderCell = styled.th`
+	padding: 16px 20px;
+	text-align: left;
+	color: #9147ff;
+	font-size: 12px;
+	font-weight: 600;
+	border-right: 1px solid rgba(255, 255, 255, 0.05);
+
+	&:last-child {
+		border-right: none;
+	}
+`;
+
+const PositionHeaderCell = styled(TableHeaderCell)`
+	width: 80px;
+	text-align: center;
+`;
+
+const TableBody = styled.tbody``;
+
+const TableRow = styled.tr`
+	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+	transition: all 0.2s ease;
+
+	&:hover {
+		background: rgba(145, 71, 255, 0.05);
+	}
+
+	&:last-child {
+		border-bottom: none;
+	}
+`;
+
+const TableCell = styled.td`
+	padding: 14px 20px;
+	font-size: 11px;
+	color: #e0e0e0;
+	border-right: 1px solid rgba(255, 255, 255, 0.05);
+
+	&:last-child {
+		border-right: none;
+	}
+`;
+
+const PositionCell = styled(TableCell)`
+	text-align: center;
+	color: #999;
+	font-weight: 600;
+	width: 80px;
+`;
+
+const UsernameCell = styled(TableCell)`
+	color: #9147ff;
+	font-weight: 600;
+	font-size: 12px;
+`;
+
+const UsernameLink = styled.a`
+	color: #b887ff !important;
+	text-decoration: none;
+	transition: all 0.2s ease;
+
+	&:hover {
+		color: #b147ff;
+		text-decoration: underline;
+	}
+`;
+
+const PaginationSection = styled.div`
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 15px;
+	margin-top: 25px;
+`;
+
+const PageButton = styled.button`
+	background: rgba(145, 71, 255, 0.1);
+	border: 1px solid rgba(145, 71, 255, 0.3);
+	color: #9147ff;
+	padding: 8px 16px;
+	border-radius: 6px;
+	font-size: 11px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s ease;
+
+	&:hover:not(:disabled) {
+		background: rgba(145, 71, 255, 0.2);
+		border-color: rgba(145, 71, 255, 0.4);
+		transform: translateY(-1px);
+	}
+
+	&:disabled {
+		opacity: 0.3;
+		cursor: not-allowed;
+		transform: none;
 	}
 `;
 
 const PageInfo = styled.span`
 	color: #ccc;
 	font-size: 11px;
-	margin: 0 8px;
 `;
 
-const EmptyContainer = styled.div`
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex: 1;
-	color: #666;
-	font-size: 12px;
-`;
-
-const ErrorContainer = styled.div`
-	display: flex;
-	justify-content: center;
-	align-items: center;
-	flex: 1;
-	color: #ff6b6b;
-	font-size: 12px;
+const LoadingText = styled.div`
+	text-align: center;
+	color: #999;
+	font-size: 11px;
+	padding: 20px;
 `;
 
 export interface PaginatedWatchtimeResponse {
@@ -226,138 +233,210 @@ export interface PaginatedWatchtimeResponse {
 
 export interface WatchtimeRecord {
 	id: string;
-	platform: string;
+	platform: PlatformType;
 	username: string;
 	time: number;
 	firstUpdate: number;
 	lastUpdate: number;
 }
 
-interface EnhancerWatchtimeListComponentProps {
-	workerService: () => WorkerService;
+export type PlatformType = "twitch" | "kick";
+
+interface WatchtimeListComponentProps {
+	platform: PlatformType;
+	pageSize?: number;
+	workerService: WorkerService;
 }
 
-export function EnhancerWatchtimeListComponent({ workerService }: EnhancerWatchtimeListComponentProps) {
-	const [data, setData] = useState<WatchtimeRecord[]>([]);
+export function WatchtimeListComponent({ platform, pageSize = 10, workerService }: WatchtimeListComponentProps) {
+	const [expanded, setExpanded] = useState(false);
 	const [currentPage, setCurrentPage] = useState(1);
-	const [hasNextPage, setHasNextPage] = useState(false);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState<string | null>(null);
-	const [collapsed, setCollapsed] = useState(false);
+	const [data, setData] = useState<PaginatedWatchtimeResponse | null>(null);
+	const [loading, setLoading] = useState(false);
+	const [exporting, setExporting] = useState(false);
 
-	const pageSize = 10;
+	const fetchPage = async (page: number): Promise<PaginatedWatchtimeResponse | null> => {
+		const response = await workerService.send("getPaginatedWatchtime", {
+			platform,
+			page,
+			pageSize,
+		});
+		return response || null;
+	};
+
+	const fetchAllData = async (): Promise<WatchtimeRecord[]> => {
+		const allData: WatchtimeRecord[] = [];
+		let currentPageNum = 1;
+		let hasMore = true;
+
+		while (hasMore) {
+			const response = await fetchPage(currentPageNum);
+			if (response && response.data.length > 0) {
+				allData.push(...response.data);
+				hasMore = response.data.length === pageSize;
+				currentPageNum++;
+			} else {
+				hasMore = false;
+			}
+		}
+
+		return allData;
+	};
+
+	const loadData = async (page: number) => {
+		setLoading(true);
+		const response = await fetchPage(page);
+		if (response) {
+			setData(response);
+		}
+		setLoading(false);
+	};
+
+	useEffect(() => {
+		if (expanded && !data) {
+			loadData(1);
+		}
+	}, [expanded]);
+
+	const handleNextPage = async () => {
+		if (data && data.data.length === pageSize) {
+			setCurrentPage(currentPage + 1);
+			await loadData(currentPage + 1);
+		}
+	};
+
+	const handlePrevPage = async () => {
+		if (currentPage > 1) {
+			setCurrentPage(currentPage - 1);
+			await loadData(currentPage - 1);
+		}
+	};
 
 	const formatTime = (seconds: number): string => {
 		const hours = Math.floor(seconds / 3600);
 		const minutes = Math.floor((seconds % 3600) / 60);
-		const remainingSeconds = seconds % 60;
-
-		const parts = [];
-
-		if (hours > 0) {
-			parts.push(`${hours}h`);
-		}
-		if (minutes > 0) {
-			parts.push(`${minutes}m`);
-		}
-		if (remainingSeconds > 0 || parts.length === 0) {
-			parts.push(`${remainingSeconds}s`);
-		}
-
-		return parts.join(" ");
+		const secs = seconds % 60;
+		return `${hours}h ${minutes}m ${secs}s`;
 	};
 
-	const fetchWatchtime = async (page: number) => {
+	const formatDate = (timestamp: number): string => {
+		return new Date(timestamp).toLocaleDateString();
+	};
+
+	const getPlatformUrl = (username: string): string => {
+		return platform === "twitch" ? `https://twitch.tv/${username}` : `https://kick.com/${username}`;
+	};
+
+	const getPosition = (index: number): number => {
+		return (currentPage - 1) * pageSize + index + 1;
+	};
+
+	const exportToTxt = async () => {
+		setExporting(true);
 		try {
-			setLoading(true);
-			setError(null);
-
-			const response = await workerService().send("getPaginatedWatchtime", {
-				platform: "twitch",
-				page: page - 1, // Convert to 0-based for API
-				pageSize,
-			});
-			if (!response) return;
-
-			setData(response.data);
-			setCurrentPage(page);
-			setHasNextPage(response.total === pageSize);
-		} catch (err) {
-			setError("Failed to load watchtime data");
-			console.error("Error fetching watchtime:", err);
+			const allData = await fetchAllData();
+			const content = allData.map((record) => `${record.username},${record.time}`).join("\n");
+			const blob = new Blob([content], { type: "text/plain" });
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement("a");
+			a.href = url;
+			a.download = `watchtime-${platform}-all.txt`;
+			a.click();
+			URL.revokeObjectURL(url);
 		} finally {
-			setLoading(false);
+			setExporting(false);
 		}
 	};
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies:
-	useEffect(() => {
-		fetchWatchtime(1);
-	}, []);
+	const exportToExcel = async () => {
+		setExporting(true);
+		try {
+			const allData = await fetchAllData();
+			const headers = "Position,Username,Minutes,First Watched,Last Watched\n";
+			const content = allData
+				.map((record, index) => {
+					const position = index + 1;
+					const minutes = Math.round(record.time / 60);
+					const firstUpdate = new Date(record.firstUpdate).toLocaleString();
+					const lastUpdate = new Date(record.lastUpdate).toLocaleString();
+					return `${position},${record.username},${minutes},"${firstUpdate}","${lastUpdate}"`;
+				})
+				.join("\n");
 
-	const handlePageChange = (newPage: number) => {
-		if (newPage >= 1 && !loading) {
-			// Prevent scroll jumping by maintaining scroll position
-			const scrollY = window.scrollY;
-			fetchWatchtime(newPage);
-			// Restore scroll position after a brief delay
-			setTimeout(() => {
-				window.scrollTo(0, scrollY);
-			}, 0);
+			const csvContent = headers + content;
+			const blob = new Blob([csvContent], { type: "text/csv" });
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement("a");
+			a.href = url;
+			a.download = `watchtime-${platform}-all.csv`;
+			a.click();
+			URL.revokeObjectURL(url);
+		} finally {
+			setExporting(false);
 		}
-	};
-
-	const toggleCollapse = () => {
-		setCollapsed(!collapsed);
 	};
 
 	return (
 		<Container>
-			<Header collapsed={collapsed} onClick={toggleCollapse}>
-				<HeaderContent>
-					<HeaderText>
-						<Title>Watchtime Statistics</Title>
-						<Subtitle collapsed={collapsed}>Track your viewing time across streamers</Subtitle>
-					</HeaderText>
-					<CollapseIcon collapsed={collapsed}>▼</CollapseIcon>
-				</HeaderContent>
+			<Header>
+				<TitleSection onClick={() => setExpanded(!expanded)}>
+					<Title>Watchtime List</Title>
+					<ActionText>{expanded ? "Click to hide" : "Click to see your watchtime"}</ActionText>
+				</TitleSection>
 			</Header>
 
-			<Content collapsed={collapsed}>
-				<Section>
-					<WatchtimeList>
-						<LoadingOverlay show={loading}>Loading watchtime data...</LoadingOverlay>
+			<ExportSection $visible={expanded && !!data}>
+				<ExportButton onClick={exportToTxt} disabled={exporting}>
+					{exporting ? "Exporting..." : "Export TXT"}
+				</ExportButton>
+				<ExportButton onClick={exportToExcel} disabled={exporting}>
+					{exporting ? "Exporting..." : "Export CSV"}
+				</ExportButton>
+			</ExportSection>
 
-						<WatchtimeContent loading={loading}>
-							{error ? (
-								<ErrorContainer>{error}</ErrorContainer>
-							) : data.length === 0 && !loading ? (
-								<EmptyContainer>No watchtime data found</EmptyContainer>
-							) : (
-								data.map((record) => (
-									<WatchtimeItem key={record.id}>
-										<Username>{record.username}</Username>
-										<WatchTime>{formatTime(record.time)}</WatchTime>
-									</WatchtimeItem>
-								))
-							)}
-						</WatchtimeContent>
-					</WatchtimeList>
+			<Content $visible={expanded}>
+				{loading && <LoadingText>Loading watchtime data...</LoadingText>}
 
-					{!loading && !error && (currentPage > 1 || hasNextPage) && (
-						<PaginationContainer>
-							<PaginationButton onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1}>
+				{data && (
+					<>
+						<TableContainer>
+							<Table>
+								<TableHeader>
+									<TableHeaderRow>
+										<PositionHeaderCell>#</PositionHeaderCell>
+										<TableHeaderCell>Username</TableHeaderCell>
+										<TableHeaderCell>Watch Time</TableHeaderCell>
+									</TableHeaderRow>
+								</TableHeader>
+								<TableBody>
+									{data.data.map((record, index) => (
+										<TableRow key={record.id}>
+											<PositionCell>{getPosition(index)}</PositionCell>
+											<UsernameCell>
+												<UsernameLink href={getPlatformUrl(record.username)} target="_blank" rel="noopener noreferrer">
+													{record.username}
+												</UsernameLink>
+											</UsernameCell>
+											<TableCell>{formatTime(record.time)}</TableCell>
+										</TableRow>
+									))}
+								</TableBody>
+							</Table>
+						</TableContainer>
+
+						<PaginationSection>
+							<PageButton onClick={handlePrevPage} disabled={currentPage === 1}>
 								Previous
-							</PaginationButton>
+							</PageButton>
 
 							<PageInfo>Page {currentPage}</PageInfo>
 
-							<PaginationButton onClick={() => handlePageChange(currentPage + 1)} disabled={!hasNextPage}>
+							<PageButton onClick={handleNextPage} disabled={!data || data.data.length < pageSize}>
 								Next
-							</PaginationButton>
-						</PaginationContainer>
-					)}
-				</Section>
+							</PageButton>
+						</PaginationSection>
+					</>
+				)}
 			</Content>
 		</Container>
 	);

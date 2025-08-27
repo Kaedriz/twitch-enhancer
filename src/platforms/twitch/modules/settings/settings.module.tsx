@@ -1,6 +1,6 @@
 import { EnhancerAboutComponent } from "$shared/components/settings/about.component.tsx";
 import Settings, { SettingsOverlay } from "$shared/components/settings/settings.component.tsx";
-import { EnhancerWatchtimeListComponent } from "$shared/components/watchtime-list/watchtime-list.component.tsx";
+import { WatchtimeListComponent } from "$shared/components/watchtime-list/watchtime-list.component.tsx";
 import { TWITCH_DEFAULT_SETTINGS } from "$twitch/twitch.constants.ts";
 import TwitchModule from "$twitch/twitch.module.ts";
 import type { TwitchSettings } from "$types/platforms/twitch/twitch.settings.types.ts";
@@ -36,6 +36,7 @@ export default class SettingsModule extends TwitchModule {
 	private settingsContainer: HTMLDivElement | null = null;
 
 	async initialize() {
+		const workerService = this.workerService();
 		this.SETTINGS_TABS = [
 			{
 				title: "General",
@@ -200,7 +201,7 @@ export default class SettingsModule extends TwitchModule {
 				type: "text",
 				tabIndex: 2,
 				content: () => {
-					return <EnhancerWatchtimeListComponent workerService={() => this.workerService()} />;
+					return <WatchtimeListComponent platform="twitch" workerService={workerService} />;
 				},
 				hideInfo: true,
 			},
