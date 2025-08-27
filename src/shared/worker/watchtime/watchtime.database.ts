@@ -95,6 +95,9 @@ export class WatchtimeDatabase {
 		if (!this.database) {
 			throw new Error("Database not initialized");
 		}
+		if (pageSize <= 0) {
+			throw new Error("Page size must be a positive number");
+		}
 
 		return new Promise((resolve, reject) => {
 			// biome-ignore lint/style/noNonNullAssertion: checking it above
