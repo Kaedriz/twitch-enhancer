@@ -63,6 +63,14 @@ export default class TwitchUtils {
 		)?.stateNode.props.mediaPlayerInstance;
 	}
 
+	getMediaPlayerComponent() {
+		return this.reactUtils.findReactChildren<MediaPlayerComponent>(
+			this.reactUtils.getReactInstance(document.querySelector(".persistent-player")),
+			(n) => !!n.stateNode?.props?.mediaPlayerInstance,
+			200,
+		)?.stateNode.props;
+	}
+
 	getPersonalSections() {
 		return this.reactUtils.findReactParents<FollowedSectionComponenet>(
 			this.reactUtils.getReactInstance(document.querySelector(".side-nav-section")),
@@ -109,11 +117,8 @@ export default class TwitchUtils {
 
 	addCommandToChat(command: TwitchChatCommand) {
 		const commandStore = this.getChatCommandStore();
-		console.info("[plyta-debug] command store", commandStore);
 		if (!commandStore) return;
-		console.info("[plyta-debug] adding command", command);
 		commandStore.addCommand({ ...command, group: "Enhancer" });
-		console.info("[plyta-debug] current commands", commandStore.getCommands());
 	}
 
 	getChatInputContent(): string | null {

@@ -48,8 +48,16 @@ export type TwitchChatMessageUser = {
 export type MediaPlayerComponent = {
 	props: {
 		mediaPlayerInstance: MediaPlayerInstance;
+		content: MediaPlayerContentType;
 	};
 };
+
+export type MediaPlayerContentType =
+	| {
+			channelLogin: string;
+			type: "live";
+	  }
+	| { vodID: string; type: "vod" };
 
 export type MediaPlayerInstance = {
 	core: { state: { liveLatency: number; ingestLatency: number }; paused: boolean };

@@ -29,9 +29,11 @@ export default class LocalWatchtimeCounterModule extends TwitchModule {
 			clearInterval(this.watchingCheckerInterval);
 		}
 		this.watchingCheckerInterval = setInterval(async () => {
-			const channelName = this.twitchUtils().getCurrentChannelByUrl()?.toLowerCase();
-			if (!channelName) return;
-			const mediaPlayerInstance = this.twitchUtils().getMediaPlayerInstance();
+			const mediaPlayerComponent = this.twitchUtils().getMediaPlayerComponent();
+			if (!mediaPlayerComponent?.mediaPlayerInstance) return;
+			const mediaPlayerInstance = mediaPlayerComponent.mediaPlayerInstance;
+			if (mediaPlayerComponent?.content.type !== "live") return;
+			const channelName = mediaPlayerComponent.content.channelLogin;
 			if (!this.isLive()) return;
 			if (mediaPlayerInstance && !mediaPlayerInstance.core.paused) {
 				this.logger.debug(`Adding watchtime for ${channelName}`);
