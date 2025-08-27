@@ -113,11 +113,11 @@ export default class EnhancerApi {
 	}
 
 	findUserForCurrentChannel(externalUserId: string): EnhancerUser | null {
-		const channelUser = this.getCurrentChannel()?.users.find((user) => user.externalId === externalUserId);
+		const channelUser = this.getCurrentChannel()?.users?.find((user) => user.externalId === externalUserId);
 		if (channelUser) {
 			return channelUser;
 		}
-		const globalUser = this.getGlobalChannel()?.users.find((user) => user.externalId === externalUserId);
+		const globalUser = this.getGlobalChannel()?.users?.find((user) => user.externalId === externalUserId);
 		return globalUser ?? null;
 	}
 
