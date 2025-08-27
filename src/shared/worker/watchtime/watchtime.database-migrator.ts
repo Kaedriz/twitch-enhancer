@@ -30,5 +30,28 @@ export class WatchtimeDatabaseMigrator {
 			store.createIndex("by_platform_time", ["platform", "time"]);
 			this.logger.info("Added index: by_platform_time");
 		}
+
+		if (event.oldVersion < 3) {
+			const request = event.target as IDBOpenDBRequest;
+			const tx = request.transaction;
+			if (!tx) {
+				throw new Error("No transaction available during upgrade");
+			}
+			const store = tx.objectStore(this.storeName);
+			const index = store.index("by_username");
+
+			const cursorRequest = index.openCursor("videos");
+			cursorRequest.onsuccess = () => {
+				const cursor = cursorRequest.result;
+				if (cursor) {
+					this.logger.info(`Deleting watchtime record for user "videos" (id: ${cursor.primaryKey})`);
+					cursor.delete();
+					cursor.continue();
+				}
+			};
+			cursorRequest.onerror = () => {
+				this.logger.error("Failed to remove user 'videos' during migration:", cursorRequest.error);
+			};
+		}
 	}
 }
