@@ -63,6 +63,14 @@ export default class TwitchUtils {
 		)?.stateNode.props.mediaPlayerInstance;
 	}
 
+	getMediaPlayerComponent() {
+		return this.reactUtils.findReactChildren<MediaPlayerComponent>(
+			this.reactUtils.getReactInstance(document.querySelector(".persistent-player")),
+			(n) => !!n.stateNode?.props?.mediaPlayerInstance,
+			200,
+		)?.stateNode.props;
+	}
+
 	getPersonalSections() {
 		return this.reactUtils.findReactParents<FollowedSectionComponenet>(
 			this.reactUtils.getReactInstance(document.querySelector(".side-nav-section")),
