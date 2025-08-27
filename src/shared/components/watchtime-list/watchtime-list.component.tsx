@@ -269,18 +269,22 @@ export function WatchtimeListComponent({ platform, pageSize = 5, workerService }
 		let currentPageNum = 1;
 		let hasMore = true;
 
-		while (hasMore) {
-			const response = await fetchPage(currentPageNum);
-			if (response && response.data.length > 0) {
-				allData.push(...response.data);
-				hasMore = response.data.length === pageSize;
-				currentPageNum++;
-			} else {
-				hasMore = false;
+		try {
+			while (hasMore) {
+				const response = await fetchPage(currentPageNum);
+				if (response && response.data.length > 0) {
+					allData.push(...response.data);
+					hasMore = response.data.length === pageSize;
+					currentPageNum++;
+				} else {
+					hasMore = false;
+				}
 			}
+			return allData;
+		} catch (error) {
+			console.error('Error fetching all watchtime data:', error);
+			return allData;
 		}
-
-		return allData;
 	};
 
 	const loadData = async (page: number) => {
