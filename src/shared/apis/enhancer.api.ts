@@ -101,8 +101,8 @@ export default class EnhancerApi {
 		const globalChannel = this.getGlobalChannel();
 		const currentChannel = this.getCurrentChannel();
 
-		const globalUser = globalChannel?.users.find((user) => user.externalId === externalUserId);
-		const channelUser = currentChannel?.users.find((user) => user.externalId === externalUserId);
+		const globalUser = globalChannel?.users?.find((user) => user.externalId === externalUserId);
+		const channelUser = currentChannel?.users?.find((user) => user.externalId === externalUserId);
 
 		const userBadgeIds = new Set([...(globalUser?.badgesIds ?? []), ...(channelUser?.badgesIds ?? [])]);
 		const allBadges = [...(globalChannel?.badges ?? []), ...(currentChannel?.badges ?? [])];
