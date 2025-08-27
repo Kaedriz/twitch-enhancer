@@ -282,7 +282,7 @@ export function WatchtimeListComponent({ platform, pageSize = 5, workerService }
 			}
 			return allData;
 		} catch (error) {
-			console.error('Error fetching all watchtime data:', error);
+			console.error("Error fetching all watchtime data:", error);
 			return allData;
 		}
 	};
