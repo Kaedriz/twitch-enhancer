@@ -28,6 +28,7 @@ export default class TwitchUtils {
 		const elements = url.split("/");
 		let name = elements[1];
 		if (name === "popout" || elements[0].includes("dashboard")) name = elements[2];
+		if (name === "moderator" || elements[0].includes("dashboard")) name = elements[2];
 		if (name.includes("?")) name = name.substring(0, name.indexOf("?"));
 		return name.toLowerCase();
 	}
@@ -40,6 +41,10 @@ export default class TwitchUtils {
 
 	isDirectTwitchPlayer() {
 		return window.location.href.includes("player.twitch.tv");
+	}
+
+	isModeratorView() {
+		return window.location.href.includes("/moderator/");
 	}
 
 	getUserIdBySideElement(element: Element): string | undefined {
