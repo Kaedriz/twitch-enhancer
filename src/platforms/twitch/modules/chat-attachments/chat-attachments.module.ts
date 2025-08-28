@@ -143,8 +143,9 @@ export default class ChatAttachmentsModule extends TwitchModule {
 			if (attachmentResolved) {
 				this.emitter.emit("twitch:chatPopupMessage", {
 					title: "Image preview",
-					autoclose: 3,
+					autoclose: 300,
 					content: "This image will be shown in chat.",
+					image: firstWordData?.url.toString() || lastWordData?.url.toString(),
 				});
 			}
 		}, 500);
