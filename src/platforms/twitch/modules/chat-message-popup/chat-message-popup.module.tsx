@@ -202,7 +202,7 @@ export function MessagePopup({ title, content, autoclose, onClose, image }: Chat
 			<ContentArea>
 				{content}
 				{image && <PreviewImage src={image} alt="Preview of image" />}
-				</ContentArea>
+			</ContentArea>
 		</PopupWrapper>
 	);
 }
