@@ -157,6 +157,7 @@ export default class ChatAttachmentsModule extends KickModule {
 					title: "Image preview",
 					autoclose: 3,
 					content: "This image will be shown in chat.",
+					image: firstWordData?.url.toString() || lastWordData?.url.toString(),
 				});
 			}
 		}, 500);
