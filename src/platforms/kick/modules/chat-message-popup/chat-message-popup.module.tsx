@@ -41,7 +41,6 @@ export default class ChatMessagePopupModule extends KickModule {
 						}
 					}}
 					content={message.content}
-					image={message.image}
 				/>,
 				wrapper,
 			);
@@ -116,20 +115,9 @@ const CloseButton = styled.button`
 
 const ContentArea = styled.div`
   padding: 4px 0;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
 `;
 
-const PreviewImage = styled.img`
-  max-height: 200px;
-  object-fit: contain;
-  width: auto;
-  border-radius: 4px;
-`;
-
-export function MessagePopup({ title, content, autoclose, onClose, image }: ChatMessagePopupEvent) {
+export function MessagePopup({ title, content, autoclose, onClose }: ChatMessagePopupEvent) {
 	const [timeLeft, setTimeLeft] = useState(autoclose || 0);
 	const intervalRef = useRef<NodeJS.Timeout | null>(null);
 	const startTimeRef = useRef<number | null>(null);
@@ -188,10 +176,7 @@ export function MessagePopup({ title, content, autoclose, onClose, image }: Chat
 				</CloseButton>
 				{autoclose && <HeaderProgress width={progressWidth} />}
 			</Header>
-			<ContentArea>
-				{content}
-				{image && <PreviewImage src={image} alt="Preview of image" />}
-			</ContentArea>
+			<ContentArea>{content}</ContentArea>
 		</PopupWrapper>
 	);
 }

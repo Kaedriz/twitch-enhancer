@@ -10,6 +10,7 @@ import {
 	ChatAttachmentMessageType,
 } from "$types/shared/module/chat-attachment/chat-attachment.types.ts";
 import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
+import { ImagePreview } from '$shared/components/image-preview/image-preview.component';
 
 export default class ChatAttachmentsModule extends KickModule {
 	private readonly httpClient = new HttpClient();
@@ -156,8 +157,7 @@ export default class ChatAttachmentsModule extends KickModule {
 				this.emitter.emit("kick:chatPopupMessage", {
 					title: "Image preview",
 					autoclose: 3,
-					content: "This image will be shown in chat.",
-					image: firstWordData?.url.toString() || lastWordData?.url.toString(),
+					content: ImagePreview(firstWordData?.url.toString() || lastWordData?.url.toString()),
 				});
 			}
 		}, 500);

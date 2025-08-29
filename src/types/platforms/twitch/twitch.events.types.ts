@@ -47,5 +47,4 @@ export type ChatMessagePopupEvent = {
 	content: ComponentChildren;
 	autoclose?: number;
 	onClose?: () => void;
-	image?: string;
 };
