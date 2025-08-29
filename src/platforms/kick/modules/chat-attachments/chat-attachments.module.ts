@@ -1,4 +1,5 @@
 import KickModule from "$kick/kick.module.ts";
+import { ImagePreview } from "$shared/components/image-preview/image-preview.component";
 import { HttpClient } from "$shared/http/http-client.ts";
 import type ChatAttachmentHandler from "$shared/module/chat-attachments/chat-attachment-handler.ts";
 import ImageChatAttachmentHandler from "$shared/module/chat-attachments/image-chat-attachment-handler.ts";
@@ -10,7 +11,6 @@ import {
 	ChatAttachmentMessageType,
 } from "$types/shared/module/chat-attachment/chat-attachment.types.ts";
 import type { KickModuleConfig } from "$types/shared/module/module.types.ts";
-import { ImagePreview } from '$shared/components/image-preview/image-preview.component';
 
 export default class ChatAttachmentsModule extends KickModule {
 	private readonly httpClient = new HttpClient();
